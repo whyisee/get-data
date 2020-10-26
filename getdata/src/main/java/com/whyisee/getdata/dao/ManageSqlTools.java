@@ -134,7 +134,7 @@ public class ManageSqlTools {
             query = entityManager.createNativeQuery(sql, clazz);
         }else {
             query = entityManager.createNativeQuery(sql);
-            query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
+            //query.unwrap(SQLQuery.class).setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP);
         }
 
         //设置条件
