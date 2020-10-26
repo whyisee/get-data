@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whyisee.getdata.dao.TcGdConfigflowMapper">
+  <resultMap id="BaseResultMap" type="com.whyisee.getdata.model.TcGdConfigflow">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="flow_id" jdbcType="VARCHAR" property="flowId" />
+    <result column="flow_name" jdbcType="VARCHAR" property="flowName" />
+    <result column="flow_type" jdbcType="VARCHAR" property="flowType" />
+    <result column="parent_flow_id" jdbcType="VARCHAR" property="parentFlowId" />
+    <result column="flow_key" jdbcType="VARCHAR" property="flowKey" />
+    <result column="flow_value1" jdbcType="VARCHAR" property="flowValue1" />
+    <result column="flow_value2" jdbcType="VARCHAR" property="flowValue2" />
+    <result column="flow_value3" jdbcType="VARCHAR" property="flowValue3" />
+    <result column="flow_value4" jdbcType="VARCHAR" property="flowValue4" />
+    <result column="flow_value5" jdbcType="VARCHAR" property="flowValue5" />
+    <result column="flow_sort" jdbcType="VARCHAR" property="flowSort" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_persion" jdbcType="VARCHAR" property="createPersion" />
+    <result column="create_date" jdbcType="VARCHAR" property="createDate" />
+  </resultMap>
+</mapper>

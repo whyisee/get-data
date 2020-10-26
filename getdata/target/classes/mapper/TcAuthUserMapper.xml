@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whyisee.getdata.dao.TcAuthUserMapper">
+  <resultMap id="BaseResultMap" type="com.whyisee.getdata.model.TcAuthUser">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="persion_id" jdbcType="VARCHAR" property="persionId" />
+    <result column="login_name" jdbcType="VARCHAR" property="loginName" />
+    <result column="show_name" jdbcType="VARCHAR" property="showName" />
+    <result column="true_name" jdbcType="VARCHAR" property="trueName" />
+    <result column="sex" jdbcType="VARCHAR" property="sex" />
+    <result column="birthday" jdbcType="VARCHAR" property="birthday" />
+    <result column="phone_number" jdbcType="VARCHAR" property="phoneNumber" />
+    <result column="email" jdbcType="VARCHAR" property="email" />
+    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="user_status" jdbcType="VARCHAR" property="userStatus" />
+    <result column="last_login_date" jdbcType="VARCHAR" property="lastLoginDate" />
+    <result column="role_id" jdbcType="VARCHAR" property="roleId" />
+    <result column="depart_id" jdbcType="VARCHAR" property="departId" />
+    <result column="group_id" jdbcType="VARCHAR" property="groupId" />
+    <result column="begin_date" jdbcType="VARCHAR" property="beginDate" />
+    <result column="end_date" jdbcType="VARCHAR" property="endDate" />
+    <result column="create_type" jdbcType="VARCHAR" property="createType" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_persion" jdbcType="VARCHAR" property="createPersion" />
+    <result column="create_date" jdbcType="VARCHAR" property="createDate" />
+    <result column="update_persion" jdbcType="VARCHAR" property="updatePersion" />
+    <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
+  </resultMap>
+</mapper>

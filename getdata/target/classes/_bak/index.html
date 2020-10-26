@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>简单调试</title>
+    <script src="/getdata/static/js/index.js"></script>
+    <script src="/getdata/static/js/jquery.min.js"></script>
+
+</head>
+<body>
+<h1>简单调试</h1>
+
+<h2>1.选择数据源</h2>
+<button onclick="getDataSource()">查询</button>
+<pre>
+    <code id="getDataSource"></code>
+</pre>
+<input type="text" id="choiceDataSource" >
+<button onclick="choiceDataSource()">保存</button>
+<button onclick="choiceDataSource()">下一步</button>
+
+<h2>2.选择用户群</h2>
+<button onclick="getUserTroop()">查询</button><button onclick="addUserTroop()">上传用户群</button>
+<pre>
+    <code id="getUserTroop"></code>
+</pre>
+<input type="text" id="choiceUserTroop" >
+<button onclick="choiceUserTroop()">保存</button>
+<button onclick="choiceUserTroop()">下一步</button>
+
+
+<h2>3.配置筛选条件</h2>
+<button onclick="getCondition()">查询</button>
+<pre>
+    <code id="getCondition"></code>
+    <code id="getConditionflow"></code>
+
+</pre>
+<input type="text" id="choiceCondition" >
+<button onclick="choiceCondition()">保存</button>
+<button onclick="choiceCondition()">下一步</button>
+
+<h2>4.选择展示指标</h2>
+<button onclick="getShowTag()">查询</button>
+<pre>
+    <code id="getShowTag"></code>
+    <code id="getShowTagflow"></code>
+</pre>
+<input type="text" id="choiceShowTag" >
+<button onclick="choiceShowTag()">保存</button>
+<button onclick="choiceShowTag()">下一步</button>
+
+<h2>5.配置执行计划</h2>
+<!--
+<button onclick="getExecPlan()">选择</button>
+-->
+<pre>
+    <code id="getExecPlan">执行引擎:localmysql</code>
+    <code id="getExecPlan">执行周期类型:周</code>
+    <code id="getExecPlan">选定日期:周一,周五</code>
+
+</pre>
+<button onclick="choiceExecPlan()">保存</button>
+<button onclick="choiceExecPlan()">下一步</button>
+
+<h2>6.选择结果保存方式</h2>
+<!--
+<button onclick="getDataSaveInfo()">选择</button>
+-->
+<pre>
+    <code id="">任务名称:</code><input type="text" id="getDataSaveInfo" >
+    <code id="">文件格式:csv</code>
+    <code id="">文件分隔符:逗号</code>
+    <code id="">是否生成用户群:是</code>
+    <code id="">生成用户群失效日期:2020.12.01</code>
+    <code id="">结果保存:直接下载</code>
+
+</pre>
+<button onclick="saveGD()">保存</button><button onclick="submitGD()">提交</button>
+
+
+<h2>7.执行情况</h2>
+<button onclick="listGD()">查询</button>
+<pre>
+    <code id="listGD"></code>
+</pre>
+
+<h2>8.结果预览(localmysql)</h2>
+<button onclick="getResultView()">查询</button>
+<pre>
+    <code id="">任务ID:</code><input type="text" id="getResultView" >
+    <code id="resultView"></code>
+</pre>
+
+</body>
+</html>

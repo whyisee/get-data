@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.whyisee.getdata.dao.TcGdUsertroopMapper">
+  <resultMap id="BaseResultMap" type="com.whyisee.getdata.model.TcGdUsertroop">
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="troop_id" jdbcType="VARCHAR" property="troopId" />
+    <result column="troop_name" jdbcType="VARCHAR" property="troopName" />
+    <result column="troop_from" jdbcType="VARCHAR" property="troopFrom" />
+    <result column="troop_type" jdbcType="VARCHAR" property="troopType" />
+    <result column="troop_num" jdbcType="VARCHAR" property="troopNum" />
+    <result column="troop_status" jdbcType="VARCHAR" property="troopStatus" />
+    <result column="troop_begin_date" jdbcType="VARCHAR" property="troopBeginDate" />
+    <result column="troop_end_date" jdbcType="VARCHAR" property="troopEndDate" />
+    <result column="source_file_name" jdbcType="VARCHAR" property="sourceFileName" />
+    <result column="troop_key" jdbcType="VARCHAR" property="troopKey" />
+    <result column="is_user_tag" jdbcType="VARCHAR" property="isUserTag" />
+    <result column="tag_flow_id" jdbcType="VARCHAR" property="tagFlowId" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="remark" jdbcType="VARCHAR" property="remark" />
+    <result column="create_persion" jdbcType="VARCHAR" property="createPersion" />
+    <result column="create_date" jdbcType="VARCHAR" property="createDate" />
+    <result column="update_persion" jdbcType="VARCHAR" property="updatePersion" />
+    <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
+  </resultMap>
+</mapper>
