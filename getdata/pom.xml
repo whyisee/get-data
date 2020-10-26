@@ -10,7 +10,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.whyisee</groupId>
-    <artifactId>springStart</artifactId>
+    <artifactId>getdata</artifactId>
     <version>1.0-SNAPSHOT</version>
 
 

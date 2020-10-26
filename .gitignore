@@ -32,11 +32,13 @@ getdata/data
 hs_err_pid*
 
 
-
+.idea
+target/
 # IntelliJ project files
 getdata/.idea
 getdata/out
 getdata/gen
+getdata/target/
 
 getdata-web/.DS_Store
 getdata-web/node_modules/
