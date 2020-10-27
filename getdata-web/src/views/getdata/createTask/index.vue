@@ -1,7 +1,15 @@
 <template>
   <div class="createPost-container">
     <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container">
-      <sticky />
+      <sticky :z-index="20" :class-name="'sub-navbar  draft'">
+        <el-steps direction="" :active="1">
+          <el-step title="步骤 1" />
+          <el-step title="步骤 2" />
+
+          <el-step title="步骤 3" description="这是一段很长很长很长的描述性文字" />
+
+        </el-steps>
+      </sticky>
       <!-- <sticky :z-index="200" :class-name="'sub-navbar '+postForm.status">
 
          <CommentDropdown v-model="postForm.comment_disabled" />
@@ -16,10 +24,11 @@
       </el-button>
       </sticky> -->
       <div class="createPost-main-container">
+
         <el-row>
           <Warning />
           <el-col :span="24">
-            <el-form-item style="margin-bottom: 40px;" prop="title">
+            <el-form-item style="margin-bottom: 10px;" prop="title">
               <MDinput v-model="postForm.title" :maxlength="100" name="name" required>
                 取数任务名称
               </MDinput>
@@ -27,30 +36,91 @@
           </el-col>
         </el-row>
 
-        <el-row style="margin-top:20px;">
+        <el-row :gutter="20" style="margin-top:10px;">
           <el-col :span="24">
             <el-card class="box-card">
               <div slot="header" class="clearfix">
                 <span>数据源与用户群</span>
               </div>
-              <div class="component-item" style="height:150px;">
-                <dropdown-menu :items="articleList" style="margin:0 ;" title="请选择数据源" />
+
+              <el-col :span="8">
+                <div class="component-item" style="height:200px;">
+                  <dropdown-menu :items="articleList" style="margin:0 ;" title="请选择数据源" />
+                </div>
+              </el-col>
+
+              <div class="components-item" style="margin-left:100px ;">
+                <el-col :span="5">
+                  <Kanban :key="1" :list="list1" :group="group" class="kanban todo" header-text="可使用用户群" />
+                </el-col>
+                <el-col :span="5">
+                  <Kanban :key="2" :list="list2" :group="group" class="kanban working" header-text="筛选用户群" />
+                  <Kanban :key="3" :list="list3" :group="group" class="kanban done" header-text="排除用户群" />
+                </el-col>
+
+              </div>
+
+            </el-card>
+
+          </el-col>
+        </el-row>
+
+        <el-row style="margin-top:20px;">
+          <el-col :span="24">
+            <el-card class="box-card">
+              <div slot="header" class="clearfix">
+                <span>筛选条件</span>
+              </div>
+              <div class="component-item" style="height:200px;">
+                <el-drag-select v-model="value" style="width:500px;" multiple placeholder="请选择数据源指标">
+                  <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+                </el-drag-select>
+                <el-drag-select v-model="value" style="width:500px;" multiple placeholder="请选择用户群指标">
+                  <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+                </el-drag-select>
+                <div style="margin-top:30px;">
+                  <el-tag v-for="item of value" :key="item" style="margin-right:15px;">
+                    {{ item }}
+                  </el-tag>
+                </div>
               </div>
             </el-card>
           </el-col>
         </el-row>
 
-        <div class="components-container">
-          <el-drag-select v-model="value" style="width:500px;" multiple placeholder="请选择展示指标">
-            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
-          </el-drag-select>
+        <el-row style="margin-top:20px;">
+          <el-col :span="24">
+            <el-card class="box-card">
+              <div slot="header" class="clearfix">
+                <span>展示指标</span>
+              </div>
+              <div class="component-item" style="height:150px;">
+                <el-drag-select v-model="value" style="width:500px;" multiple placeholder="请选择数据源指标">
+                  <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+                </el-drag-select>
+                <el-drag-select v-model="value" style="width:500px;" multiple placeholder="请选择用户群指标">
+                  <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+                </el-drag-select>
+                <div style="margin-top:30px;">
+                  <el-tag v-for="item of value" :key="item" style="margin-right:15px;">
+                    {{ item }}
+                  </el-tag>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
 
-          <div style="margin-top:30px;">
-            <el-tag v-for="item of value" :key="item" style="margin-right:15px;">
-              {{ item }}
-            </el-tag>
-          </div>
-        </div>
+        <el-row style="margin-top:20px;">
+          <el-col :span="24">
+            <el-card class="box-card">
+              <div slot="header" class="clearfix">
+                <span>执行控制与结果获取</span>
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+
       </div>
     </el-form>
   </div>
@@ -64,6 +134,8 @@ import { validURL } from '@/utils/validate'
 import MDinput from '@/components/MDinput'
 import DropdownMenu from '@/components/DropdownMenu'
 import ElDragSelect from '@/components/DragSelect'
+import Kanban from '@/components/Kanban'
+
 // import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from '../components/Dropdown'
 
 // import { fetchArticle } from '@/api/getdata'
@@ -84,7 +156,7 @@ const defaultForm = {
 }
 export default {
   name: 'ArticleDetail',
-  components: { MDinput, Sticky, Warning, DropdownMenu, ElDragSelect },
+  components: { MDinput, Sticky, Warning, DropdownMenu, ElDragSelect, Kanban },
   props: {
     isEdit: {
       type: Boolean,
@@ -151,7 +223,24 @@ export default {
       }, {
         value: 'Strawberry',
         label: 'Strawberry'
-      }]
+      }],
+      group: 'mission',
+      list1: [
+        { name: 'Mission', id: 1 },
+        { name: 'Mission', id: 2 },
+        { name: 'Mission', id: 3 },
+        { name: 'Mission', id: 4 }
+      ],
+      list2: [
+        { name: 'Mission', id: 5 },
+        { name: 'Mission', id: 6 },
+        { name: 'Mission', id: 7 }
+      ],
+      list3: [
+        { name: 'Mission', id: 8 },
+        { name: 'Mission', id: 9 },
+        { name: 'Mission', id: 10 }
+      ]
     }
   },
   created() {
@@ -271,5 +360,30 @@ export default {
     border-radius: 0px;
     border-bottom: 1px solid #bfcbd9;
   }
+.board {
+  width: 1000px;
+  margin-left: 20px;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+  align-items: flex-start;
+}
+.kanban {
+  &.todo {
+    .board-column-header {
+      background: #4A9FF9;
+    }
+  }
+  &.working {
+    .board-column-header {
+      background: #f9944a;
+    }
+  }
+  &.done {
+    .board-column-header {
+      background: #2ac06d;
+    }
+  }
+}
 }
 </style>
