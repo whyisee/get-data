@@ -148,7 +148,8 @@ export default {
     cancel: '取消',
     copy: '复制',
     view: '查看',
-    add: '创建'
+    add: '创建',
+    warning: '请注意数据保密!'
 
   },
   example: {

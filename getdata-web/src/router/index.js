@@ -84,7 +84,7 @@ export const constantRoutes = [
           {
             path: 'createTask',
             name: 'CreateTask',
-            component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
+            component: () => import('@/views/getdata/createTask/index'),
             meta: { title: '创建取数' }
           },
           {
