@@ -1,0 +1,275 @@
+<template>
+  <div class="createPost-container">
+    <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container">
+      <sticky />
+      <!-- <sticky :z-index="200" :class-name="'sub-navbar '+postForm.status">
+
+         <CommentDropdown v-model="postForm.comment_disabled" />
+        <PlatformDropdown v-model="postForm.platforms" />
+        <SourceUrlDropdown v-model="postForm.source_uri" />
+
+      <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">
+        提交
+      </el-button>
+      <el-button v-loading="loading" type="warning" @click="draftForm">
+        保存
+      </el-button>
+      </sticky> -->
+      <div class="createPost-main-container">
+        <el-row>
+          <Warning />
+          <el-col :span="24">
+            <el-form-item style="margin-bottom: 40px;" prop="title">
+              <MDinput v-model="postForm.title" :maxlength="100" name="name" required>
+                取数任务名称
+              </MDinput>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row style="margin-top:20px;">
+          <el-col :span="24">
+            <el-card class="box-card">
+              <div slot="header" class="clearfix">
+                <span>数据源与用户群</span>
+              </div>
+              <div class="component-item" style="height:150px;">
+                <dropdown-menu :items="articleList" style="margin:0 ;" title="请选择数据源" />
+              </div>
+            </el-card>
+          </el-col>
+        </el-row>
+
+        <div class="components-container">
+          <el-drag-select v-model="value" style="width:500px;" multiple placeholder="请选择展示指标">
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value" />
+          </el-drag-select>
+
+          <div style="margin-top:30px;">
+            <el-tag v-for="item of value" :key="item" style="margin-right:15px;">
+              {{ item }}
+            </el-tag>
+          </div>
+        </div>
+      </div>
+    </el-form>
+  </div>
+</template>
+
+<script>
+
+import Sticky from '@/components/Sticky' // 粘性header组件
+import Warning from '../components/Warning'
+import { validURL } from '@/utils/validate'
+import MDinput from '@/components/MDinput'
+import DropdownMenu from '@/components/DropdownMenu'
+import ElDragSelect from '@/components/DragSelect'
+// import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from '../components/Dropdown'
+
+// import { fetchArticle } from '@/api/getdata'
+import { searchUser } from '@/api/getdata'
+
+const defaultForm = {
+  status: 'draft',
+  title: '', // 文章题目
+  content: '', // 文章内容
+  content_short: '', // 文章摘要
+  source_uri: '', // 文章外链
+  image_uri: '', // 文章图片
+  display_time: undefined, // 前台展示时间
+  id: undefined,
+  platforms: ['a-platform'],
+  comment_disabled: false,
+  importance: 0
+}
+export default {
+  name: 'ArticleDetail',
+  components: { MDinput, Sticky, Warning, DropdownMenu, ElDragSelect },
+  props: {
+    isEdit: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
+    const validateRequire = (rule, value, callback) => {
+      if (value === '') {
+        this.$message({
+          message: rule.field + '为必传项',
+          type: 'error'
+        })
+        callback(new Error(rule.field + '为必传项'))
+      } else {
+        callback()
+      }
+    }
+    const validateSourceUri = (rule, value, callback) => {
+      if (value) {
+        if (validURL(value)) {
+          callback()
+        } else {
+          this.$message({
+            message: '外链url填写不正确',
+            type: 'error'
+          })
+          callback(new Error('外链url填写不正确'))
+        }
+      } else {
+        callback()
+      }
+    }
+    return {
+      postForm: defaultForm,
+      // postForm: Object.assign({}, defaultForm),
+      loading: false,
+      userListOptions: [],
+      rules: {
+        image_uri: [{ validator: validateRequire }],
+        title: [{ validator: validateRequire }],
+        content: [{ validator: validateRequire }],
+        source_uri: [{ validator: validateSourceUri, trigger: 'blur' }]
+      },
+      tempRoute: {},
+      articleList: [
+        { title: '业务数据表', href: '' },
+        { title: '登录权限篇', href: '' }
+
+      ],
+      value: ['Apple', 'Banana', 'Orange'],
+      options: [{
+        value: 'Apple',
+        label: 'Apple'
+      }, {
+        value: 'Banana',
+        label: 'Banana'
+      }, {
+        value: 'Orange',
+        label: 'Orange'
+      }, {
+        value: 'Pear',
+        label: 'Pear'
+      }, {
+        value: 'Strawberry',
+        label: 'Strawberry'
+      }]
+    }
+  },
+  created() {
+    // this.fetchData(id)
+    // console.log(postForm)
+    if (this.isEdit) {
+      const id = this.$route.params && this.$route.params.id
+      this.fetchData(id)
+    }
+    this.postForm = defaultForm
+    // Why need to make a copy of this.$route here?
+    // Because if you enter this page and quickly switch tag, may be in the execution of the setTagsViewTitle function, this.$route is no longer pointing to the current page
+    // https://github.com/PanJiaChen/vue-element-admin/issues/1221
+    // this.tempRoute = Object.assign({}, this.$route)
+  },
+  methods: {
+    fetchData(id) {
+      this.postForm = defaultForm
+      // fetchArticle(id).then(response => {
+      //   this.postForm = response.data
+      //   // just for test
+      //   this.postForm.title += `   Article Id:${this.postForm.id}`
+      //   this.postForm.content_short += `   Article Id:${this.postForm.id}`
+
+      //   // set tagsview title
+      //   this.setTagsViewTitle()
+
+      //   // set page title
+      //   this.setPageTitle()
+      // }).catch(err => {
+      //   console.log(err)
+      // })
+    },
+    setTagsViewTitle() {
+      const title = this.lang === 'zh' ? '编辑文章' : 'Edit Article'
+      const route = Object.assign({}, this.tempRoute, { title: `${title}-${this.postForm.id}` })
+      this.$store.dispatch('tagsView/updateVisitedView', route)
+    },
+    setPageTitle() {
+      const title = 'Edit Article'
+      document.title = `${title} - ${this.postForm.id}`
+    },
+    submitForm() {
+      console.log(this.postForm)
+      this.$refs.postForm.validate(valid => {
+        if (valid) {
+          this.loading = true
+          this.$notify({
+            title: '成功',
+            message: '发布文章成功',
+            type: 'success',
+            duration: 2000
+          })
+          this.postForm.status = 'published'
+          this.loading = false
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    draftForm() {
+      if (this.postForm.content.length === 0 || this.postForm.title.length === 0) {
+        this.$message({
+          message: '请填写必要的标题和内容',
+          type: 'warning'
+        })
+        return
+      }
+      this.$message({
+        message: '保存成功',
+        type: 'success',
+        showClose: true,
+        duration: 1000
+      })
+      this.postForm.status = 'draft'
+    },
+    getRemoteUserList(query) {
+      searchUser(query).then(response => {
+        if (!response.data.items) return
+        this.userListOptions = response.data.items.map(v => v.name)
+      })
+    }
+  }
+}
+
+</script>
+<style lang="scss" scoped>
+@import "~@/styles/mixin.scss";
+
+.createPost-container {
+  position: relative;
+  .createPost-main-container {
+    padding: 40px 45px 20px 50px;
+    .postInfo-container {
+      position: relative;
+      @include clearfix;
+      margin-bottom: 10px;
+
+      .postInfo-container-item {
+        float: left;
+      }
+    }
+  }
+  .word-counter {
+    width: 40px;
+    position: absolute;
+    right: 10px;
+    top: 0px;
+  }
+}
+.article-textarea ::v-deep {
+  textarea {
+    padding-right: 40px;
+    resize: none;
+    border: none;
+    border-radius: 0px;
+    border-bottom: 1px solid #bfcbd9;
+  }
+}
+</style>
