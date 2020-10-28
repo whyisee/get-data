@@ -149,7 +149,21 @@ export default {
     copy: '复制',
     view: '查看',
     add: '创建',
-    warning: '请注意数据保密!'
+    warning: '请注意数据保密!',
+    execType: '执行数据库',
+    execCycle: '执行周期',
+    cycleType: '周期类型',
+    cycleValue: '周期执行日',
+    interType: '对接接口',
+    dataSaveType: '文件保存方式',
+    fileType: '下载文件类型',
+    fileSeparator: '分隔符',
+    fileSplit: '文件拆分方式',
+    fileSize: '文件条数/大小(MB)',
+    zipType: '压缩方式',
+    zipEncryption: '解压密码',
+    operateType: '运算符',
+    conditionValues: '条件值'
 
   },
   example: {
