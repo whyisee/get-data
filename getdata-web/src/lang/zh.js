@@ -149,7 +149,7 @@ export default {
     copy: '复制',
     view: '查看',
     add: '创建',
-    warning: '请注意数据保密!',
+    warning: 'GetData 一个自由, 简洁, 强大数据平台!',
     execType: '执行数据库',
     execCycle: '执行周期',
     cycleType: '周期类型',
@@ -163,7 +163,8 @@ export default {
     zipType: '压缩方式',
     zipEncryption: '解压密码',
     operateType: '运算符',
-    conditionValues: '条件值'
+    conditionValues: '条件值',
+    unionType: '关系'
 
   },
   example: {

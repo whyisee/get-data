@@ -6,11 +6,12 @@
           <h3>{{ list1Title }}</h3>
           <div class="itxst">
             <div class="col">
-              <draggable :list="list1" group="article" class="dragArea" :scroll="true" animation="30">
+
+              <draggable :list="list1" :options="{group:{name: 'article',pull:'clone'}}" class="dragArea" :scroll="true" animation="30">
                 <transition-group>
-                  <div v-for="element in list1" :key="element.id" :class="element.id==1?'item forbid':'item'">
+                  <div v-for="(element,index) in list1" :key="element.id+'list1'+index" :class="element.id==1?'item forbid':'item'">
                     <div class="list-complete-item-handle2">
-                      {{ element.id }} [{{ element.author }}] {{ element.title }}
+                      {{ element.id }} {{ element.name }} {{ element.title }}
                     </div>
                   </div>
                 </transition-group>
@@ -27,24 +28,19 @@
             <div class="col">
               <draggable :set-data="setData" :list="list3" group="article" class="dragArea" :scroll="true" animation="30">
                 <transition-group>
-                  <div v-for="element in list3" :key="element.id" :class="element.id==1?'item forbid':'item'">
-                    并且 {{ element.name }}
-                    <el-select v-model="operateType" :placeholder="$t('getdata.operateType')" clearable class="filter-item" style="width: 100px">
+                  <div v-for="(element,index) in list3" :key="element.id+'list3'+index" :class="element.id==1?'item forbid':'item'">
+                    <el-select v-model="element.unionType" :placeholder="$t('getdata.unionType')" clearable class="filter-item" style="width: 100px">
+                      <el-option v-for="item in unionTypeOptions" :key="item.key" :label="item.label" :value="item.key" />
+                    </el-select>
+                    {{ element.name }}
+                    <el-select v-model="element.operateType" :placeholder="$t('getdata.operateType')" clearable class="filter-item" style="width: 100px">
                       <el-option v-for="item in operateTypeOptions" :key="item" :label="item" :value="item" />
                     </el-select>
                     {{ element.title }}
-                    <el-input v-model="conditionValues" :placeholder="$t('getdata.conditionValues')" style="width: 100px;" class="filter-item" />
-
+                    <el-input v-model="element.value" :placeholder="$t('getdata.conditionValues')" style="width: 100px;" class="filter-item" />
                     <span style="float: right ;margin-top: 0px;margin-right:5px;" @click="deleteEle(element,list3)">
                       <i style="color:#ff4949" class="el-icon-delete" />
                     </span>
-                    <span style="float: right ;margin-top: 0px;margin-right:10px;" @click="deleteEle(element)">
-                      <i style="color:#ff4949">)</i>
-                    </span>
-                    <span style="float: right ;margin-top: 0px;margin-right:15px;" @click="deleteEle(element)">
-                      <i style="color:#ff4949">(</i>
-                    </span>
-
                   </div>
                 </transition-group>
               </draggable>
@@ -60,9 +56,9 @@
             <div class="col">
               <draggable :list="list2" group="article" class="dragArea" :scroll="true" animation="30">
                 <transition-group>
-                  <div v-for="element in list2" :key="element.id" :class="element.id==1?'item forbid':'item'">
+                  <div v-for="(element,index) in list2" :key="element.id+'list2'+index" :class="element.id==1?'item forbid':'item'">
                     <div class="list-complete-item-handle2">
-                      {{ element.id }} [{{ element.author }}] {{ element.title }}
+                      {{ element.id }} {{ element.name }} {{ element.title }}
                     </div>
                   </div>
                 </transition-group>
@@ -79,8 +75,16 @@
             <div class="col">
               <draggable :set-data="setData" :list="list4" group="article" class="dragArea" :scroll="true" animation="30">
                 <transition-group>
-                  <div v-for="element in list4" :key="element.id" :class="element.id==1?'item forbid':'item'">
-                    {{ element.id }}[{{ element.author }}] {{ element.title }}
+                  <div v-for="(element,index) in list4" :key="element.id+'list4'+index" :class="element.id==1?'item forbid':'item'">
+                    <el-select v-model="element.unionType" :placeholder="$t('getdata.unionType')" clearable class="filter-item" style="width: 100px">
+                      <el-option v-for="item in unionTypeOptions" :key="item.key" :label="item.label" :value="item.key" />
+                    </el-select>
+                    {{ element.name }}
+                    <el-select v-model="element.operateType" :placeholder="$t('getdata.operateType')" clearable class="filter-item" style="width: 100px">
+                      <el-option v-for="item in operateTypeOptions" :key="item" :label="item" :value="item" />
+                    </el-select>
+                    {{ element.title }}
+                    <el-input v-model="element.value" :placeholder="$t('getdata.conditionValues')" style="width: 100px;" class="filter-item" />
                     <span style="float: right ;margin-top: 0px;margin-right:5px;" @click="deleteEle(element,list4)">
                       <i style="color:#ff4949" class="el-icon-delete" />
                     </span>
@@ -166,8 +170,10 @@ export default {
   data() {
     return {
       operateTypeOptions: ['=', '>', '<', '>=', '<=', 'in', 'like', 'not in', 'not like', 'is'],
+      unionTypeOptions: [{ label: '并且', key: 'AND' }, { label: '或者', key: 'OR' }],
       operateType: '',
       conditionValues: ''
+
     }
   },
   methods: {
@@ -191,6 +197,7 @@ export default {
       // }
     },
     pushEle(ele) {
+      console.log(123)
       for (const item of this.list2) {
         if (item.id === ele.id) {
           const index = this.list2.indexOf(item)
@@ -203,10 +210,12 @@ export default {
       }
     },
     setData(dataTransfer) {
+      console.log(1233)
       // to avoid Firefox bug
       // Detail see : https://github.com/RubaXa/Sortable/issues/1012
       dataTransfer.setData('Text', '')
     }
+
   }
 }
 </script>
@@ -283,7 +292,7 @@ export default {
       .col {
           width: 100%;
           flex: 1;
-          padding: 10px;
+          padding: 5px;
           border: solid 1px #eee;
           border-radius: 5px;
           float: left;
@@ -292,7 +301,7 @@ export default {
           margin-left: 10px;
       }
       .item {
-          padding: 20px 12px;
+          padding: 5px 12px;
           margin: 0px 10px 0px 10px;
           border: solid 1px #eee;
           background-color: #f1f1f1;

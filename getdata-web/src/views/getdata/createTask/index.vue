@@ -1,15 +1,26 @@
 <template>
+
   <div class="createPost-container">
-    <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container">
-      <sticky :z-index="20" :class-name="'sub-navbar  draft'">
-        <el-steps direction="" :active="1">
+    <div style="height:44px;">
+
+      <sticky :z-index="10" :sticky-top="-20">
+        <p />
+        <el-steps direction="" :active="1" style="sticky-steps" simple>
+          <!-- <el-step title="步骤 1 选择数据源" />
+          <el-step title="步骤 2 配置筛选条件" />
+          <el-step title="步骤 3 选择展示指标" />
+          <el-step title="步骤 4 配置执行结果" /> -->
+
           <el-step title="步骤 1" />
           <el-step title="步骤 2" />
-
-          <el-step title="步骤 3" description="这是一段很长很长很长的描述性文字" />
-
+          <el-step title="步骤 3" />
+          <el-step title="步骤 4" />
         </el-steps>
+
       </sticky>
+    </div>
+    <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container">
+
       <!-- <sticky :z-index="200" :class-name="'sub-navbar '+postForm.status">
 
          <CommentDropdown v-model="postForm.comment_disabled" />
@@ -24,42 +35,64 @@
       </el-button>
       </sticky> -->
       <div class="createPost-main-container">
+        <Warning />
 
         <el-row>
-          <Warning />
           <el-col :span="24">
             <el-form-item style="margin-bottom: 10px;" prop="title">
-              <MDinput v-model="postForm.title" :maxlength="100" name="name" required>
+              <MDinput v-model="postForm.taskName" :maxlength="100" name="name" required>
                 取数任务名称
+              </MDinput>
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px;" prop="title">
+              <MDinput v-model="postForm.remark" :maxlength="100" name="name" required>
+                说明
               </MDinput>
             </el-form-item>
           </el-col>
         </el-row>
 
-        <el-row :gutter="20" style="margin-top:10px;">
+        <el-row style="margin-top:10px;" :gutter="20">
           <el-col :span="24">
             <el-card class="box-card">
               <div slot="header" class="clearfix">
                 <span>数据源与用户群</span>
               </div>
 
-              <el-col :span="8">
-                <div class="component-item" style="height:200px;">
-                  <dropdown-menu :items="articleList" style="margin:0 ;" title="请选择数据源" />
+              <el-col :span="10">
+                <div v-for="element in dataSources" :key="element.id">
+                  <el-card class="box-card" style="margin-top:10px;">
+                    <div slot="header" class="clearfix">
+                      <span>数据源名称:</span>
+
+                      <el-button style="float: right; padding: 3px " type="text">选择
+                        <el-switch
+                          v-model="element.value2"
+                          active-color="#13ce66"
+                          inactive-color="#ff4949"
+                        />
+                      </el-button>
+                    </div>
+                    <i>  {{ '展示指标数量 ' + 10 }}</i>
+                    <p />
+                    <span>  {{ '筛选指标数量 ' + 10 }} </span>
+
+                  </el-card>
                 </div>
               </el-col>
+              <!-- <UserTroop /> -->
+              <div class="components-container board">
 
-              <div class="components-item" style="margin-left:100px ;">
-                <el-col :span="5">
-                  <Kanban :key="1" :list="list1" :group="group" class="kanban todo" header-text="可使用用户群" />
+                <el-col :span="6">
+                  <UserTroop :key="1" :list="list1" :group="group" class="kanban todo" header-text="可使用用户群" height="470px" />
                 </el-col>
-                <el-col :span="5">
-                  <Kanban :key="2" :list="list2" :group="group" class="kanban working" header-text="筛选用户群" />
-                  <Kanban :key="3" :list="list3" :group="group" class="kanban done" header-text="排除用户群" />
-                </el-col>
+                <el-col :span="6" :offset="1">
 
+                  <UserTroop :key="2" :list="list2" :group="group" class="kanban working" header-text="筛选用户群" complax-show="1" />
+                  <UserTroop :key="3" :list="list3" :group="group" class="kanban done" header-text="排除用户群" complax-show="1" />
+
+                </el-col>
               </div>
-
             </el-card>
 
           </el-col>
@@ -248,7 +281,14 @@
           </el-col>
 
         </el-row>
-
+        <div class="submit-view">
+          <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">
+            提交
+          </el-button>
+          <el-button v-loading="loading" type="warning" @click="draftForm">
+            保存
+          </el-button>
+        </div>
       </div>
     </el-form>
   </div>
@@ -260,10 +300,11 @@ import Sticky from '@/components/Sticky' // 粘性header组件
 import Warning from '../components/Warning'
 import { validURL } from '@/utils/validate'
 import MDinput from '@/components/MDinput'
-import DropdownMenu from '@/components/DropdownMenu'
+// import DropdownMenu from '@/components/DropdownMenu'
 import ElDragSelect from '@/components/DragSelect'
-import Kanban from '@/components/Kanban'
+// import Kanban from '@/components/Kanban'
 import DndList from '../components/DndList'
+import UserTroop from '../components/UserTroop'
 
 // import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from '../components/Dropdown'
 
@@ -287,7 +328,7 @@ const defaultForm = {
 }
 export default {
   name: 'CreateTask',
-  components: { MDinput, Sticky, Warning, DropdownMenu, ElDragSelect, Kanban, DndList },
+  components: { MDinput, Sticky, Warning, ElDragSelect, DndList, UserTroop },
   filters: {
 
   },
@@ -297,6 +338,19 @@ export default {
       default: false
     }},
   data() {
+    const generateData2 = _ => {
+      const data = []
+      const cities = ['上海', '北京', '广州', '深圳', '南京', '西安', '成都']
+      const pinyin = ['shanghai', 'beijing', 'guangzhou', 'shenzhen', 'nanjing', 'xian', 'chengdu']
+      cities.forEach((city, index) => {
+        data.push({
+          label: city,
+          key: index,
+          pinyin: pinyin[index]
+        })
+      })
+      return data
+    }
     const validateRequire = (rule, value, callback) => {
       if (value === '') {
         this.$message({
@@ -324,6 +378,11 @@ export default {
       }
     }
     return {
+      data2: generateData2(),
+      value3: [],
+      filterMethod(query, item) {
+        return item.pinyin.indexOf(query) > -1
+      },
       postForm: defaultForm,
       // postForm: Object.assign({}, defaultForm),
       loading: false,
@@ -347,13 +406,15 @@ export default {
         source_uri: [{ validator: validateSourceUri, trigger: 'blur' }]
       },
       tempRoute: {},
-      articleList: [
-        { title: '业务数据表', href: '' },
-        { title: '登录权限篇', href: '' }
+      dataSources: [
+        { id: '1', title: '业务数据表', href: '' },
+        { id: '2', title: '登录权限表', href: '' }
 
       ],
+
       dataShowTag: [],
       dataSourceTag: ['Apple'],
+
       dataSourceTagOptions: [{
         value: 'Apple',
         label: 'Apple'
@@ -417,22 +478,19 @@ export default {
       }],
       group: 'mission',
       list1: [
-        { name: 'Mission', id: 1 },
-        { name: 'Mission', id: 2 },
-        { name: 'Mission', id: 3 }
+        { name: '测试1', id: 1, num: 123 },
+        { name: '测试2', id: 2, num: 223 },
+        { name: '测试3', id: 3, num: 323 }
       ],
       list2: [
-        { name: 'Mission', id: 5 },
-        { name: 'Mission', id: 6 },
-        { name: 'Mission', id: 7 }
+        { name: '测试5', id: 5, num: 523 },
+        { name: '测试6', id: 6, num: 623 },
+        { name: '测试7', id: 7, num: 723 }
       ],
       list3: [
-        { name: 'Mission', id: 8 },
-        { name: 'Mission', id: 9 },
-        { name: 'Mission', id: 10 }
+
       ], list4: [
-        { name: 'Mission', id: 11 },
-        { name: 'Mission', id: 12 }
+
       ],
       pickerOptions: {
         disabledDate(time) {
@@ -558,13 +616,13 @@ export default {
 }
 
 </script>
-<style lang="scss" scoped>
+<style lang="scss" >
 @import "~@/styles/mixin.scss";
 
 .createPost-container {
   position: relative;
   .createPost-main-container {
-    padding: 40px 45px 20px 50px;
+    padding: 0px 45px 20px 50px;
     .postInfo-container {
       position: relative;
       @include clearfix;
@@ -575,12 +633,22 @@ export default {
       }
     }
   }
+  .sticky-steps{
+    background: white;
+
+  }
   .word-counter {
     width: 40px;
     position: absolute;
     right: 10px;
     top: 0px;
   }
+}
+.submit-view{
+  align-items: flex-start;
+  text-align: center;
+    margin-top: 20px;
+
 }
 .article-textarea ::v-deep {
   textarea {
@@ -599,7 +667,7 @@ export default {
   align-items: flex-start;
 }
 .kanban {
-  &.todo {
+ &.todo {
     .board-column-header {
       background: #4A9FF9;
     }
