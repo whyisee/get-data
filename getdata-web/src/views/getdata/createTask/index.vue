@@ -39,12 +39,12 @@
 
         <el-row>
           <el-col :span="24">
-            <el-form-item style="margin-bottom: 10px;" prop="title">
+            <el-form-item style="margin-bottom: 10px;" prop="taskName" error="123">
               <MDinput v-model="postForm.taskName" :maxlength="100" name="name" required>
                 取数任务名称
               </MDinput>
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px;" prop="title">
+            <el-form-item style="margin-bottom: 10px;" prop="remark">
               <MDinput v-model="postForm.remark" :maxlength="100" name="name" required>
                 说明
               </MDinput>
@@ -315,7 +315,7 @@ import { searchUser } from '@/api/getdata'
 
 const defaultForm = {
   status: 'draft',
-  title: '', // 文章题目
+  taskName: '', // 任务名称
   content: '', // 文章内容
   content_short: '', // 文章摘要
   source_uri: '', // 文章外链
@@ -352,6 +352,7 @@ export default {
       return data
     }
     const validateRequire = (rule, value, callback) => {
+      console.log(rule)
       if (value === '') {
         this.$message({
           message: rule.field + '为必传项',
@@ -401,7 +402,7 @@ export default {
       zipTypeOptions: ['zip', 'rar', '7z', 'gz'],
       rules: {
         image_uri: [{ validator: validateRequire }],
-        title: [{ validator: validateRequire }],
+        taskName: [{ validator: validateRequire }],
         content: [{ validator: validateRequire }],
         source_uri: [{ validator: validateSourceUri, trigger: 'blur' }]
       },

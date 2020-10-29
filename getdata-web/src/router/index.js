@@ -8,7 +8,6 @@ import Layout from '@/layout'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
- * Detail see: https://panjiachen.github.io/vue-element-admin-site/guide/essentials/router-and-nav.html
  *
  * hidden: true                   if set true, item will not show in the sidebar(default is false)
  * alwaysShow: true               if set true, will always show the root menu
@@ -51,7 +50,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: '个人主页',
+      meta: { title: '工作看板',
         icon: 'dashboard',
         affix: true }
     }]
@@ -67,13 +66,53 @@ export const constantRoutes = [
         path: 'table1',
         name: 'Table1',
         component: () => import('@/views/table/index'),
-        meta: { title: '数据源管理', icon: 'table' }
+        meta: { title: '数据源管理', icon: 'table' },
+        children: [
+          {
+            path: 'createDataSource',
+            name: 'createDataSource',
+            component: () => import('@/views/nested/menu2/index'),
+            meta: { title: '添加数据源' }
+          },
+          {
+            path: 'listDataSource',
+            name: 'listDataSource',
+            component: () => import('@/views/nested/menu2/index'),
+            meta: { title: '数据源列表' }
+          },
+          {
+            path: 'classTagManage',
+            name: 'classTagManage',
+            component: () => import('@/views/nested/menu2/index'),
+            meta: { title: '标签聚合分类' }
+          }
+        ]
       },
       {
         path: 'table2',
         name: 'Table2',
         component: () => import('@/views/table/index'),
-        meta: { title: '用户群管理', icon: 'table' }
+        meta: { title: '用户群管理', icon: 'table' },
+        children: [
+          {
+            path: 'createUserTroop',
+            name: 'createUserTroop',
+            component: () => import('@/views/nested/menu2/index'),
+            meta: { title: '添加用户群' }
+          },
+          {
+            path: 'listUserTroop',
+            name: 'listUserTroop',
+            component: () => import('@/views/nested/menu2/index'),
+            meta: { title: '用户群列表' }
+          },
+          {
+            path: 'complaxUserTroop',
+            name: 'complaxUserTroop',
+            component: () => import('@/views/nested/menu2/index'),
+            meta: { title: '用户群集合' }
+          }
+        ]
       },
       {
         path: 'getdata',
@@ -102,39 +141,10 @@ export const constantRoutes = [
         ]
 
       }
-      // {
-      //   path: 'table',
-      //   name: 'Table',
-      //   component: () => import('@/views/table/index'),
-      //   meta: { title: 'Table', icon: 'table' }
-      // },
-      // {
-      //   path: 'tableplus',
-      //   name: 'Tableplus',
-      //   component: () => import('@/views/table/complex-table'),
-      //   meta: { title: 'Tableplus', icon: 'table' }
-      // },
-      // {
-      //   path: 'tree',
-      //   name: 'Tree',
-      //   component: () => import('@/views/tree/index'),
-      //   meta: { title: 'Tree', icon: 'tree' }
-      // }
-    ]
-  },
 
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: '任务管理', icon: 'form' }
-      }
     ]
   }
+
 ]
 
 /**
@@ -143,7 +153,33 @@ export const constantRoutes = [
  */
 export const asyncRoutes = [
   {
-    path: '/nested',
+    path: '/form',
+    name: 'Form',
+    component: () => import('@/views/form/index'),
+    meta: { title: '任务管理', icon: 'form' },
+    children: [
+      {
+        path: 'getDataTask',
+        name: 'getDataTask',
+        component: () => import('@/views/nested/menu2/index'),
+        meta: { title: '取数任务' }
+      },
+      {
+        path: 'etlTask',
+        name: 'etlTask',
+        component: () => import('@/views/nested/menu2/index'),
+        meta: { title: 'ETL任务' }
+      },
+      {
+        path: 'rptTask',
+        name: 'rptTask',
+        component: () => import('@/views/nested/menu2/index'),
+        meta: { title: '报表任务' }
+      }
+    ]
+  },
+  {
+    path: '/doc',
     component: Layout,
     redirect: '/nested/menu1',
     name: 'Nested',
@@ -153,62 +189,52 @@ export const asyncRoutes = [
     },
     children: [
       {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
+        path: 'helpDoc',
+        name: 'helpDoc',
+        component: () => import('@/views/nested/menu2/index'),
+        meta: { title: '帮助文档' }
       },
       {
-        path: 'menu2',
+        path: 'shareDoc',
+        name: 'shareDoc',
         component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'menu2' }
+        meta: { title: '知识分享' }
+      },
+      {
+        path: 'fashWeb',
+        name: 'fashWeb',
+        component: () => import('@/views/nested/menu2/index'),
+        meta: { title: '优秀站点' }
       }
     ]
   },
 
   {
-    path: 'external-link',
     component: Layout,
+    path: 'sysManager',
+    name: 'sysManager',
+    meta: { title: '系统管理', icon: 'link' },
+
     children: [
       {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: '系统管理', icon: 'link' }
+        path: 'authManger',
+        name: 'authManger',
+        component: () => import('@/views/nested/menu2/index'),
+        meta: { title: '权限管理' }
+      },
+      {
+        path: 'webManager',
+        name: 'webManager',
+        component: () => import('@/views/nested/menu2/index'),
+        meta: { title: '页面管理' }
+      },
+      {
+        path: 'backManager',
+        name: 'backManager',
+        component: () => import('@/views/nested/menu2/index'),
+        meta: { title: '后台管理' }
       }
+
     ]
   },
 
