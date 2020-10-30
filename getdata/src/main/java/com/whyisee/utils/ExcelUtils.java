@@ -1,4 +1,6 @@
-package com.office;
+package com.whyisee.utils;
+
+import org.apache.poi.ss.usermodel.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,18 +9,9 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-
 import java.util.*;
 
 //import com.monitorjbl.xlsx.StreamingReader;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.DataFormat;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 //import com.itcast.poi.util.NumberUtils;
 
@@ -104,7 +97,7 @@ public class ExcelUtils {
             return ch - 'a' + 1;
         if (ch >= 'A' && ch <= 'Z')
             return ch - 'A' + 1;
-        throw new java.lang.IllegalArgumentException();
+        throw new IllegalArgumentException();
     }
 
     public String int2Str(int i) {
@@ -576,7 +569,7 @@ public class ExcelUtils {
                             db = new BigDecimal(value, java.math.MathContext.UNLIMITED);
                             cell.setCellValue(db.doubleValue());
                         } else if (style.equals("DATE")) {
-                            java.util.Date date = sFormat.parse(value);
+                            Date date = sFormat.parse(value);
                             cell.setCellValue(date);
                         }
                         cell.setCellStyle(styleMap.get(style));

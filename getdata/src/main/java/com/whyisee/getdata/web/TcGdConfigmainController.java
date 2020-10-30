@@ -1,14 +1,17 @@
 package com.whyisee.getdata.web;
 
 import com.alibaba.fastjson.JSONObject;
+import com.whyisee.getdata.configurer.ConfigFactory;
 import com.whyisee.getdata.core.Result;
 import com.whyisee.getdata.core.ResultGenerator;
+import com.whyisee.getdata.dao.ManageSqlTools;
 import com.whyisee.getdata.model.TcGdConfigmain;
 import com.whyisee.getdata.model.TcGdDatasource;
 import com.whyisee.getdata.service.TcGdConfigmainService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.whyisee.utils.JSONUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -20,18 +23,27 @@ import java.util.Map;
 @RestController
 @RequestMapping("/configmain")
 public class TcGdConfigmainController {
+
+    @Autowired
+    private ManageSqlTools manageSqlTools;
     @Resource
     private TcGdConfigmainService tcGdConfigmainService;
 
     @PostMapping
     public Result add(@RequestBody TcGdConfigmain tcGdConfigmain) {
+        String taskId= manageSqlTools.getSeqId(ConfigFactory.SEQ_COMMON_ID);
+        tcGdConfigmain.setTaskId(taskId);
         tcGdConfigmainService.save(tcGdConfigmain);
-        return ResultGenerator.genSuccessResult();
+        return ResultGenerator.genSuccessResult(taskId);
     }
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable String id) {
-        tcGdConfigmainService.deleteById(id);
+        // tcGdConfigmainService.deleteById(id);
+        // 修改状态删除
+        // 后期添加:权限验证, 删除状态验证
+        //
+        manageSqlTools.safeDelete(ConfigFactory.DEL_GETDATA_TASK+id);
         return ResultGenerator.genSuccessResult();
     }
 

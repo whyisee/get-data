@@ -1,5 +1,4 @@
-package com.office;
-
+import com.whyisee.utils.ExcelUtils;
 import org.apache.poi.ss.usermodel.Sheet;
 
 /**
@@ -15,7 +14,7 @@ public class ShowCreateTable {
     static ExcelUtils excelUtils=new ExcelUtils();
 
     public static void main(String[] args) throws Exception {
-        String filePath= "F:\\git\\WhyiseeBench\\springStart\\doc\\模型与接口.xlsx";
+        String filePath= "F:\\git\\myGit\\get-data\\getdata\\doc\\模型与接口.xlsx";
         //第几个sheet页
         Sheet sheet = excelUtils.getSheetByNum(filePath,5);
         genCreateTable(sheet,"mysql");

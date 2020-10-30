@@ -2,15 +2,12 @@ package com.whyisee.getdata.dao;
 
 import com.whyisee.utils.Page;
 import com.whyisee.utils.SQLParser;
-import org.hibernate.SQLQuery;
-import org.hibernate.transform.Transformers;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -33,8 +30,8 @@ import java.util.regex.Pattern;
 public class ManageSqlTools {
 
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    //@Autowired
+    //private JdbcTemplate jdbcTemplate;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -153,8 +150,34 @@ public class ManageSqlTools {
         rs=query.getResultList();
         return rs;
     }
+
+
     public String getSeqId(String seqSql){
+        /**
+         * getSeqId is  获取序列ID
+         *
+         * @author zoukh
+         * Created in:  2020/10/30 11:12
+         * @version 1.0
+         * @Modified By:
+         * @used in: ManageSqlTools
+         */
         return entityManager.createNativeQuery(seqSql).getResultList().get(0).toString();
+    }
+
+    @Transactional
+    public int safeDelete(String seqSql){
+        /**
+         * getSeqId is  修改状态删除
+         *
+         * @author zoukh
+         * Created in:  2020/10/30 11:12
+         * @version 1.0
+         * @Modified By:
+         * @used in: ManageSqlTools
+         */
+        // 需要参数 表名 , 条件列名, 条件值
+        return entityManager.createNativeQuery(seqSql).executeUpdate();
     }
 
 

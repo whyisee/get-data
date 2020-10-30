@@ -1,8 +1,7 @@
 package com.whyisee.getdata.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
+
 import com.whyisee.getdata.core.Result;
 import com.whyisee.getdata.core.ResultCode;
 import com.whyisee.getdata.dao.TcAuthUserMapper;
@@ -46,16 +45,7 @@ public class TcAuthUserServiceImpl extends AbstractService<TcAuthUser> implement
 
 
 
-    public String getToken(TcAuthUser user) {
-        String token = "";
-        try {
-            token = JWT.create()
-                    .withAudience(user.getLoginName().toString())          // 将 user id 保存到 token 里面
-                    .sign(Algorithm.HMAC256(user.getPassword()));   // 以 password 作为 token 的密钥
-        } catch (UnsupportedEncodingException ignore) {
-        }
-        return token;
-    }
+
     public boolean comparePassword(TcAuthUser user, TcAuthUser userInDataBase) {
         return MD5Utils.getMD5(user.getPassword())      // 将用户提交的密码转换为 hash
                 .equals(userInDataBase.getPassword()); // 数据库中的 password 已经是 hash，不用转换

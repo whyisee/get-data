@@ -9,7 +9,7 @@
       </el-select>
 
       <el-date-picker
-        v-model="createDate"
+        v-model="listQuery.createDate"
         align="right"
         type="datetime"
         format="yyyy-MM-dd HH:mm:ss"
@@ -296,7 +296,7 @@ export default {
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false
-        }, 1.5 * 1000)
+        }, 1 * 1000)
       })
     },
     handleFilter() {

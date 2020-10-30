@@ -39,7 +39,10 @@
 
         <el-row>
           <el-col :span="24">
-            <el-form-item style="margin-bottom: 10px;" prop="taskName" error="123">
+            <el-form-item label="任务编码" style="display:none">
+              <el-input v-model="postForm.taskId" />
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px;" prop="taskName" error="取数任务名称为必填项!">
               <MDinput v-model="postForm.taskName" :maxlength="100" name="name" required>
                 取数任务名称
               </MDinput>
@@ -60,10 +63,10 @@
               </div>
 
               <el-col :span="10">
-                <div v-for="element in dataSources" :key="element.id">
+                <div v-for="element in dataSources" :key="element.sourceId">
                   <el-card class="box-card" style="margin-top:10px;">
                     <div slot="header" class="clearfix">
-                      <span>数据源名称:</span>
+                      <span> {{ '数据源名称:' + element.sourceNameZh }}</span>
 
                       <el-button style="float: right; padding: 3px " type="text">选择
                         <el-switch
@@ -73,9 +76,13 @@
                         />
                       </el-button>
                     </div>
-                    <i>  {{ '展示指标数量 ' + 10 }}</i>
+                    <span>  {{ '展示指标数量:' + element.showTagNum }}</span>
                     <p />
-                    <span>  {{ '筛选指标数量 ' + 10 }} </span>
+                    <span>  {{ '筛选指标数量:' + element.condTagNum }} </span>
+                    <p />
+                    <span>  {{ '数据更新日期:' + element.updateDate }} </span>
+                    <p />
+                    <span>  {{ '数据源类型:' + element.sourceType }} </span>
 
                   </el-card>
                 </div>
@@ -83,7 +90,7 @@
               <!-- <UserTroop /> -->
               <div class="components-container board">
 
-                <el-col :span="6">
+                <el-col :span="6" :offset="1">
                   <UserTroop :key="1" :list="list1" :group="group" class="kanban todo" header-text="可使用用户群" height="470px" />
                 </el-col>
                 <el-col :span="6" :offset="1">
@@ -148,144 +155,154 @@
             </el-card>
           </el-col>
         </el-row>
+        <el-card class="box-card" style="margin-top:20px;">
 
-        <el-row style="margin-top:20px;">
-          <el-col :span="24">
-            <el-card class="box-card">
-              <div slot="header" class="clearfix">
-                <span>执行控制与结果获取</span>
-              </div>
-              <el-col :span="24">
-                <el-form-item label-width="120px" label="执行数据库:" class="postInfo-container-item">
-                  <el-select v-model="postForm.execType" :placeholder="$t('getdata.execType')" clearable class="filter-item" style="width: 200px">
-                    <el-option v-for="item in execTypeOptions" :key="item" :label="item" :value="item" />
-                  </el-select>
-                </el-form-item>
+          <el-row>
+            <div slot="header" class="clearfix">
+              <span>执行控制与结果获取</span>
+            </div>
+            <el-col :span="24">
+              <el-form-item label-width="120px" label="执行数据库:" class="postInfo-container-item">
+                <el-select v-model="postForm.execType" :placeholder="$t('getdata.execType')" clearable class="filter-item" style="width: 200px">
+                  <el-option v-for="item in execTypeOptions" :key="item" :label="item" :value="item" />
+                </el-select>
+              </el-form-item>
 
-              </el-col>
+            </el-col>
 
-              <el-col :span="8">
-                <el-form-item label-width="120px" label="执行周期:" class="postInfo-container-item">
-                  <el-select v-model="postForm.cycleType" :placeholder="$t('getdata.cycleType')" clearable class="filter-item" style="width: 200px">
-                    <el-option v-for="item in cycleTypeOptions" :key="item.key" :label="item.label" :value="item.key" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
+            <el-col :span="8">
+              <el-form-item label-width="120px" label="执行周期:" class="postInfo-container-item">
+                <el-select v-model="postForm.cycleType" :placeholder="$t('getdata.cycleType')" clearable class="filter-item" style="width: 200px">
+                  <el-option v-for="item in cycleTypeOptions" :key="item.key" :label="item.label" :value="item.key" />
+                </el-select>
+              </el-form-item>
+            </el-col>
 
-              <el-col :span="8">
-                <el-form-item label-width="120px" label="周期执行日:" class="postInfo-container-item">
-                  <el-input v-model="postForm.cycleValue" :placeholder="$t('getdata.cycleValue')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-                </el-form-item>
-              </el-col>
+            <el-col :span="8">
+              <el-form-item label-width="120px" label="周期执行日:" class="postInfo-container-item" style="display: none">
+                <el-input v-model="postForm.cycleValue" :placeholder="$t('getdata.cycleValue')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+              </el-form-item>
+            </el-col>
 
-              <el-col :span="8 ">
-                <el-form-item label-width="120px" label="周期结束时间:" class="postInfo-container-item">
-                  <el-date-picker
-                    v-model="postForm.cycleEndDate"
-                    align="right"
-                    type="datetime"
-                    format="yyyy-MM-dd HH:mm:ss"
-                    placeholder="周期结束时间"
-                    :picker-options="pickerOptions"
-                    style="width: 200px"
-                  />
-                </el-form-item>
-              </el-col>
+            <el-col :span="8 ">
+              <el-form-item label-width="120px" label="周期结束时间:" class="postInfo-container-item" style="display: none">
+                <el-date-picker
+                  v-model="postForm.cycleEndDate"
+                  align="right"
+                  type="datetime"
+                  format="yyyy-MM-dd HH:mm:ss"
+                  placeholder="周期结束时间"
+                  :picker-options="pickerOptions"
+                  style="width: 200px"
+                />
+              </el-form-item>
+            </el-col>
 
-              <el-col :span="24">
-                <el-form-item label-width="120px" label="结果保存方式:" class="postInfo-container-item">
-                  <el-checkbox-group
-                    v-model="saveTypes"
-                    :min="1"
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-form-item label-width="120px" label="结果保存方式:" class="postInfo-container-item">
+                <el-checkbox-group
+                  v-model="saveTypes"
+                  :min="1"
+                >
+                  <el-checkbox
+                    v-for="saveType in saveTypeOptions"
+                    :key="saveType"
+                    :label="saveType"
+                    :disabled="saveType === '下载'"
                   >
-                    <el-checkbox
-                      v-for="saveType in saveTypeOptions"
-                      :key="saveType"
-                      :label="saveType"
-                      :disabled="saveType === '下载'"
-                      @change="test"
-                    >
-                      {{ saveType }}
+                    {{ saveType }}
 
-                    </el-checkbox>
-                  </el-checkbox-group>
-                </el-form-item>
-              </el-col>
+                  </el-checkbox>
+                </el-checkbox-group>
+              </el-form-item>
+            </el-col>
+          </el-row>
 
-              <el-col :span="8 ">
-                <el-form-item label-width="120px" label="用户群失效日期:" class="postInfo-container-item" style="display: none">
-                  <el-date-picker
-                    v-model="createDate"
-                    align="right"
-                    type="datetime"
-                    format="yyyy-MM-dd HH:mm:ss"
-                    placeholder="创建时间"
-                    :picker-options="pickerOptions"
-                    style="width: 200px;"
-                  />
-                </el-form-item>
-              </el-col>
+          <el-row>
 
-              <el-col :span="12">
-                <el-form-item v-show="saveTypes.length === '3'" label-width="120px" label="对接接口:" class="postInfo-container-item">
-                  <el-select v-model="postForm.interType" :placeholder="$t('getdata.interType')" clearable class="filter-item" style="width: 200px">
-                    <el-option v-for="item in fileTypeOptions" :key="item" :label="item" :value="item" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
+            <el-col :span="8 ">
+              <el-form-item label-width="120px" label="用户群失效日期:" class="postInfo-container-item" style="display: none">
+                <el-date-picker
+                  v-model="createDate"
+                  align="right"
+                  type="datetime"
+                  format="yyyy-MM-dd HH:mm:ss"
+                  placeholder="创建时间"
+                  :picker-options="pickerOptions"
+                  style="width: 200px;"
+                />
+              </el-form-item>
+            </el-col>
 
-              <el-col :span="8">
-                <el-form-item label-width="120px" label="下载文件类型:" class="postInfo-container-item">
-                  <el-select v-model="postForm.fileType" :placeholder="$t('getdata.fileType')" clearable class="filter-item" style="width: 200px">
-                    <el-option v-for="item in fileTypeOptions" :key="item" :label="item" :value="item" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label-width="120px" label="文件分隔符:" class="postInfo-container-item">
-                  <el-select v-model="postForm.fileSeparator" :placeholder="$t('getdata.fileSeparator')" clearable class="filter-item" style="width: 200px">
-                    <el-option v-for="item in fileSeparatorOptions" :key="item" :label="item" :value="item" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
+            <el-col :span="8">
+              <el-form-item v-show="saveTypes.length === '3'" label-width="120px" label="对接接口:" class="postInfo-container-item">
+                <el-select v-model="postForm.interType" :placeholder="$t('getdata.interType')" clearable class="filter-item" style="width: 200px">
+                  <el-option v-for="item in fileTypeOptions" :key="item" :label="item" :value="item" />
+                </el-select>
+              </el-form-item>
+            </el-col>
 
-              <el-col :span="8">
-                <el-form-item label-width="120px" label="文件拆分方式:" class="postInfo-container-item">
-                  <el-select v-model="postForm.fileSplit" :placeholder="$t('getdata.fileSplit')" clearable class="filter-item" style="width: 200px">
-                    <el-option v-for="item in fileSplitOptions" :key="item.key" :label="item.label" :value="item.key" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
+          </el-row>
 
-              <el-col :span="12">
-                <el-form-item label-width="120px" label="文件条数/大小:" class="postInfo-container-item">
-                  <el-input v-model="postForm.cycleValue" :placeholder="$t('getdata.fileSize')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-                </el-form-item>
-              </el-col>
+          <el-row>
 
-              <el-col :span="8">
-                <el-form-item label-width="120px" label="压缩方式:" class="postInfo-container-item">
-                  <el-select v-model="postForm.zipType" :placeholder="$t('getdata.zipType')" clearable class="filter-item" style="width: 200px">
-                    <el-option v-for="item in zipTypeOptions" :key="item" :label="item" :value="item" />
-                  </el-select>
-                </el-form-item>
-              </el-col>
+            <el-col :span="8">
+              <el-form-item label-width="120px" label="文件拆分方式:" class="postInfo-container-item">
+                <el-select v-model="postForm.fileSplit" :placeholder="$t('getdata.fileSplit')" clearable class="filter-item" style="width: 200px">
+                  <el-option v-for="item in fileSplitOptions" :key="item.key" :label="item.label" :value="item.key" />
+                </el-select>
+              </el-form-item>
+            </el-col>
 
-              <el-col :span="8">
-                <el-form-item label-width="120px" label="解压密码:" class="postInfo-container-item">
-                  <el-input v-model="postForm.zipEncryption" :placeholder="$t('getdata.zipEncryption')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-                </el-form-item>
-              </el-col>
+            <el-col :span="8">
+              <el-form-item label-width="120px" label="文件条数/大小:" class="postInfo-container-item" style="display: none">
+                <el-input v-model="postForm.cycleValue" :placeholder="$t('getdata.fileSize')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+              </el-form-item>
+            </el-col>
+          </el-row>
 
-            </el-card>
-          </el-col>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label-width="120px" label="下载文件类型:" class="postInfo-container-item">
+                <el-select v-model="postForm.fileType" :placeholder="$t('getdata.fileType')" clearable class="filter-item" style="width: 200px">
+                  <el-option v-for="item in fileTypeOptions" :key="item" :label="item" :value="item" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label-width="120px" label="文件分隔符:" class="postInfo-container-item">
+                <el-select v-model="postForm.fileSeparator" :placeholder="$t('getdata.fileSeparator')" clearable class="filter-item" style="width: 200px">
+                  <el-option v-for="item in fileSeparatorOptions" :key="item" :label="item" :value="item" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
 
-        </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label-width="120px" label="压缩方式:" class="postInfo-container-item">
+                <el-select v-model="postForm.zipType" :placeholder="$t('getdata.zipType')" clearable class="filter-item" style="width: 200px">
+                  <el-option v-for="item in zipTypeOptions" :key="item" :label="item" :value="item" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="8">
+              <el-form-item label-width="120px" label="解压密码:" class="postInfo-container-item">
+                <el-input v-model="postForm.zipEncryption" :placeholder="$t('getdata.zipEncryption')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+              </el-form-item>
+            </el-col>
+
+          </el-row>
+        </el-card>
+
         <div class="submit-view">
           <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">
             提交
           </el-button>
-          <el-button v-loading="loading" type="warning" @click="draftForm">
+          <el-button v-loading="loading" type="warning" @click="submitForm">
             保存
           </el-button>
         </div>
@@ -298,39 +315,31 @@
 
 import Sticky from '@/components/Sticky' // 粘性header组件
 import Warning from '../components/Warning'
-import { validURL } from '@/utils/validate'
 import MDinput from '@/components/MDinput'
-// import DropdownMenu from '@/components/DropdownMenu'
 import ElDragSelect from '@/components/DragSelect'
-// import Kanban from '@/components/Kanban'
 import DndList from '../components/DndList'
 import UserTroop from '../components/UserTroop'
-
-// import { CommentDropdown, PlatformDropdown, SourceUrlDropdown } from '../components/Dropdown'
-
-// import { fetchArticle } from '@/api/getdata'
-import { searchUser } from '@/api/getdata'
+import { createTask, updateTask } from '@/api/getdata'
 
 // const saveTypeOptions = ['下载', '用户群', '接口']
 
 const defaultForm = {
-  status: 'draft',
+  taskId: '', // 任务编码
   taskName: '', // 任务名称
-  content: '', // 文章内容
-  content_short: '', // 文章摘要
-  source_uri: '', // 文章外链
-  image_uri: '', // 文章图片
-  display_time: undefined, // 前台展示时间
-  id: undefined,
-  platforms: ['a-platform'],
-  comment_disabled: false,
-  importance: 0
+  taskStatus: '0', // 任务状态 默认-草稿
+  remark: '', // 说明备注
+  execType: 'mysql', // 执行数据库-开发时默认mysql
+  cycleType: 'O', // 周期类型-默认-一次性执行
+  fileType: 'csv', // 下载文件类型,默认-csv
+  fileSeparator: ',', // 文件分隔符,默认-逗号
+  fileSplit: 'N', // 文件拆分方式,默认-不拆分
+  zipType: 'zip' // 压缩方式,默认-zip
+
 }
 export default {
   name: 'CreateTask',
   components: { MDinput, Sticky, Warning, ElDragSelect, DndList, UserTroop },
   filters: {
-
   },
   props: {
     isEdit: {
@@ -338,49 +347,19 @@ export default {
       default: false
     }},
   data() {
-    const generateData2 = _ => {
-      const data = []
-      const cities = ['上海', '北京', '广州', '深圳', '南京', '西安', '成都']
-      const pinyin = ['shanghai', 'beijing', 'guangzhou', 'shenzhen', 'nanjing', 'xian', 'chengdu']
-      cities.forEach((city, index) => {
-        data.push({
-          label: city,
-          key: index,
-          pinyin: pinyin[index]
-        })
-      })
-      return data
-    }
     const validateRequire = (rule, value, callback) => {
       console.log(rule)
       if (value === '') {
         this.$message({
-          message: rule.field + '为必传项',
+          message: rule.message,
           type: 'error'
         })
-        callback(new Error(rule.field + '为必传项'))
-      } else {
-        callback()
-      }
-    }
-    const validateSourceUri = (rule, value, callback) => {
-      if (value) {
-        if (validURL(value)) {
-          callback()
-        } else {
-          this.$message({
-            message: '外链url填写不正确',
-            type: 'error'
-          })
-          callback(new Error('外链url填写不正确'))
-        }
+        callback(new Error(rule.message))
       } else {
         callback()
       }
     }
     return {
-      data2: generateData2(),
-      value3: [],
       filterMethod(query, item) {
         return item.pinyin.indexOf(query) > -1
       },
@@ -401,10 +380,7 @@ export default {
       fileSplitOptions: [{ label: '不拆分', key: 'N' }, { label: '按条数拆分', key: 'L' }, { label: '按大小拆分', key: 'S' }],
       zipTypeOptions: ['zip', 'rar', '7z', 'gz'],
       rules: {
-        image_uri: [{ validator: validateRequire }],
-        taskName: [{ validator: validateRequire }],
-        content: [{ validator: validateRequire }],
-        source_uri: [{ validator: validateSourceUri, trigger: 'blur' }]
+        taskName: [{ validator: validateRequire, message: '取数任务名称为必填项!' }]
       },
       tempRoute: {},
       dataSources: [
@@ -559,31 +535,39 @@ export default {
       //   console.log(err)
       // })
     },
-    test() {
-      console.log('1')
-      // this.createDate.style = 'display="block"'
-    },
-    setTagsViewTitle() {
-      const title = this.lang === 'zh' ? '编辑文章' : 'Edit Article'
-      const route = Object.assign({}, this.tempRoute, { title: `${title}-${this.postForm.id}` })
-      this.$store.dispatch('tagsView/updateVisitedView', route)
-    },
-    setPageTitle() {
-      const title = 'Edit Article'
-      document.title = `${title} - ${this.postForm.id}`
-    },
+
     submitForm() {
-      console.log(this.postForm)
       this.$refs.postForm.validate(valid => {
         if (valid) {
+        //   createTask(this.listQuery).then(response => {
+          //     setTimeout(() => {
+          //       this.listLoading = false
+          //     }, 1 * 1000)
+          //   })
+
+          if (this.postForm.taskId === '') {
+            createTask(this.postForm).then(response => {
+              this.postForm.taskId = response.data
+              console.log(response)
+              setTimeout(() => {
+                this.listLoading = false
+              }, 1 * 1000)
+            })
+          } else {
+            updateTask(this.postForm).then(response => {
+              console.log(response)
+              setTimeout(() => {
+                this.listLoading = false
+              }, 1 * 1000)
+            })
+          }
           this.loading = true
           this.$notify({
             title: '成功',
-            message: '发布文章成功',
+            message: '保存取数任务成功',
             type: 'success',
             duration: 2000
           })
-          this.postForm.status = 'published'
           this.loading = false
         } else {
           console.log('error submit!!')
@@ -592,6 +576,7 @@ export default {
       })
     },
     draftForm() {
+      // createTask()
       if (this.postForm.content.length === 0 || this.postForm.title.length === 0) {
         this.$message({
           message: '请填写必要的标题和内容',
@@ -605,10 +590,9 @@ export default {
         showClose: true,
         duration: 1000
       })
-      this.postForm.status = 'draft'
     },
     getRemoteUserList(query) {
-      searchUser(query).then(response => {
+      createTask(query).then(response => {
         if (!response.data.items) return
         this.userListOptions = response.data.items.map(v => v.name)
       })

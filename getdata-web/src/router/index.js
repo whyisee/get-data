@@ -56,7 +56,7 @@ export const constantRoutes = [
     }]
   },
   {
-    path: '/example',
+    path: '/dataManager',
     component: Layout,
     redirect: '/example/table',
     name: 'Example',

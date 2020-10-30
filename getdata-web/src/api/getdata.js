@@ -7,3 +7,20 @@ export function getTaskList(data) {
     data: data
   })
 }
+
+export function createTask(data) {
+  return request({
+    url: '/configmain',
+    method: 'post',
+    data: data
+  })
+}
+
+export function updateTask(data) {
+  return request({
+    url: '/configmain/',
+    method: 'put',
+    data: data
+  })
+}
+

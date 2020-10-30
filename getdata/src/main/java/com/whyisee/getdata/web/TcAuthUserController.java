@@ -68,19 +68,5 @@ public class TcAuthUserController {
         return ResultGenerator.genSuccessResult(pageInfo);
     }
 
-    @PostMapping("/login")
-    public Object login(@RequestBody TcAuthUser user) {
-        TcAuthUser userInDataBase = tcAuthUserService.findByLoginName(user.getLoginName());
-        JSONObject jsonObject = new JSONObject();
-        if (userInDataBase == null) {
-            jsonObject.put("message", "用户不存在");
-        } else if (!tcAuthUserService.comparePassword(user, userInDataBase)) {
-            jsonObject.put("message", "密码不正确");
-        } else {
-            String token = tcAuthUserService.getToken(userInDataBase);
-            jsonObject.put("token", token);
-            jsonObject.put("user", userInDataBase);
-        }
-        return jsonObject;
-    }
+
 }

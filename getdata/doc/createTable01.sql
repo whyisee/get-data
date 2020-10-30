@@ -176,7 +176,7 @@ CREATE TABLE tc_gd_usertroop
 ,troop_key varchar(200) comment '主键'
 ,is_user_tag varchar(2) comment '是否使用其中标签'
 ,tag_flow_id varchar(10) comment '标签配置编码'
-,status varchar(2) comment '有效状态'
+,status varchar(2)  DEFAULT 1  comment '有效状态'
 ,remark varchar(200) comment '备注'
 ,create_persion varchar(200) comment '创建人'
 ,create_date varchar(20) comment '创建时间'

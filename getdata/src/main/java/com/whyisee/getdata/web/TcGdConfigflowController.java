@@ -22,6 +22,7 @@ public class TcGdConfigflowController {
 
     @PostMapping
     public Result add(@RequestBody TcGdConfigflow tcGdConfigflow) {
+
         tcGdConfigflowService.save(tcGdConfigflow);
         return ResultGenerator.genSuccessResult();
     }

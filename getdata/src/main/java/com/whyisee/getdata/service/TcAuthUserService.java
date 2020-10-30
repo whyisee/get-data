@@ -14,7 +14,6 @@ public interface TcAuthUserService extends Service<TcAuthUser> {
     public static final String LOGIN_IDENTITY_KEY = "GETDATA_LOGIN_IDENTITY";
 
     boolean comparePassword(TcAuthUser user, TcAuthUser userInDataBase);
-    String getToken(TcAuthUser user);
     TcAuthUser findByLoginName(String loginName);
     Result login(HttpServletRequest request, HttpServletResponse response, String username, String password, boolean ifRemember);
     Result<String> logout(HttpServletRequest request, HttpServletResponse response);
