@@ -69,31 +69,33 @@ CREATE TABLE tc_gd_configflow
 
 -- 配置结果表
 CREATE TABLE tc_gd_configmain
- (
- task_id varchar(10) comment '任务编码'
-,task_name varchar(200) comment '任务名称'
-,flow_id varchar(10) comment '任务流程编码'
-,exec_type varchar(10) comment '执行引擎'
-,exec_sql varchar(2000) comment '执行语句'
-,source_flow_id varchar(10) comment '数据源配置编码'
-,troop_flow_id varchar(10) comment '用户群配置编码'
-,cond_flow_id varchar(10) comment '筛选条件配置编码'
-,show_flow_id varchar(10) comment '展示配置编码'
-,cycle_type varchar(10) comment '周期类型'
-,cycle_value varchar(200) comment '周期执行项'
-,data_flow_id varchar(10) comment '结果配置编码'
-,data_file varchar(200) comment '最新结果文件'
-,data_num varchar(10) comment '最新结果数量'
-,task_status varchar(10) comment '最新任务执行状态'
-,begin_time varchar(10) comment '最新执行开始时间'
-,end_time varchar(10) comment '最新执行结束时间'
-,status varchar(2) comment '有效状态'
-,remark varchar(200) comment '备注'
-,create_persion varchar(200) comment '创建人'
-,create_date varchar(20) comment '创建时间'
-,update_persion varchar(200) comment '修改人'
-,update_date varchar(20) comment '修改时间'
- ) DEFAULT CHARSET=utf8, comment=' 配置结果表';
+(
+    task_id varchar(10) comment '任务编码'
+    ,task_name varchar(200) comment '任务名称'
+    ,flow_id varchar(10) comment '任务流程编码'
+    ,exec_type varchar(10) comment '执行引擎'
+    ,exec_sql varchar(2000) comment '执行语句'
+    ,source_flow_id varchar(10) comment '数据源配置编码'
+    ,troop_flow_id varchar(10) comment '用户群配置编码'
+    ,cond_flow_id varchar(10) comment '筛选条件配置编码'
+    ,show_flow_id varchar(10) comment '展示配置编码'
+    ,exec_flow_id varchar(10) comment '执行配置编码'
+    ,data_flow_id varchar(10) comment '结果配置编码'
+    ,cycle_type varchar(10) comment '周期类型'
+    ,cycle_value varchar(200) comment '周期执行项'
+    ,cycle_end_date varchar(20) comment '周期截止时间'
+    ,data_file varchar(200) comment '最新结果文件'
+    ,data_num varchar(10) comment '最新结果数量'
+    ,task_status varchar(10) comment '最新任务执行状态'
+    ,begin_time varchar(10) comment '最新执行开始时间'
+    ,end_time varchar(10) comment '最新执行结束时间'
+    ,status varchar(2) comment '有效状态'
+    ,remark varchar(200) comment '备注'
+    ,create_persion varchar(200) comment '创建人'
+    ,create_date varchar(20) comment '创建时间'
+    ,update_persion varchar(200) comment '修改人'
+    ,update_date varchar(20) comment '修改时间'
+) DEFAULT CHARSET=utf8, comment=' 配置结果表';
 
 -- 标签配置表
 CREATE TABLE tc_gd_tagconfig
@@ -182,99 +184,3 @@ CREATE TABLE tc_gd_usertroop
 ,update_date varchar(20) comment '修改时间'
  ) DEFAULT CHARSET=utf8, comment=' 用户群表';
 
-
--- 社团成员关系表
-CREATE TABLE if not exists tc_comm_member (
-   login_id	    varchar(20)
-    ,login_name	    varchar(20)
-    ,comm_id	    varchar(20)
-    ,comm_name	    varchar(200)
-    ,comm_worker_id	varchar(20)
-    ,comm_worker	varchar(200)
-    ,comm_remark	varchar(500)
-    ,comm_person_remark	varchar(500)
-    ,create_date  varchar(20)
-    ,is_create	varchar(2)
-    ,status	varchar(2)
-    ,PRIMARY KEY (login_id,comm_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 审核表
-CREATE TABLE if not exists tc_flow_appro (
-appro_id	varchar(20)
-,flow_id varchar(20)
-,appro_name	varchar(200)
-,create_login_name	varchar(20)
-,create_date	varchar(20)
-,appro_login_name	varchar(20)
-,appro_status	varchar(20)
-,appro_info	varchar(200)
-,appro_date	varchar(20)
-,appro_type	varchar(20)
-,status	varchar(2)
-,PRIMARY KEY (appro_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
--- 活动表
-CREATE TABLE if not exists tc_comm_activity (
-activity_id	varchar(20)
-,activity_name	varchar(200)
-,comm_id	varchar(20)
-,comm_name	varchar(200)
-,activity_date	varchar(20)
-,activity_addr	varchar(200)
-,activity_sign_date	varchar(20)
-,activity_info	varchar(500)
-,activity_persion_num	varchar(20)
-,activity_persion_now	varchar(20)
-    is_notcomm_can_sign    varchar(2) default '1' null,
-    is_notstudent_can_sign varchar(2) default '0' null,
-,create_persion_name	varchar(20)
-,create_date	varchar(20)
-,status	varchar(2)
-,PRIMARY KEY (activity_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- 活动成员关系表
-CREATE TABLE if not exists tc_act_member (
-login_id	varchar(20)
-,login_name	varchar(20)
-,activity_id	varchar(20)
-,activity_name	varchar(200)
-,sign_info	varchar(200)
-,create_date	varchar(20)
-,status	varchar(2)
-,PRIMARY KEY (login_id,activity_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
--- 权限控制
-CREATE TABLE if not exists td_b_rolefuncright (
-role_code	varchar(20)
-,role_name	varchar(20)
-,update_persion_id	varchar(20)
-,update_persion_name	varchar(20)
-,update_date	varchar(20)
-,menu_id	varchar(20)
-,menu_name	varchar(100)
-,menu_link	varchar(100)
-,menu_des	varchar(500)
-,menu_level varchar(20)
-,parent_menu_id varchar(20)
-,show_order int
-,remark	varchar(500)
-,status	varchar(2)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
--- 留言表
-CREATE TABLE if not exists tc_acct_message (
-msg_id	varchar(20)
-,login_name	varchar(20)
-,flow_id	varchar(20)
-,msg_info	varchar(500)
-,msg_date	varchar(20)
-,status	varchar(2)
-,PRIMARY KEY (msg_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
