@@ -9,9 +9,9 @@ import com.whyisee.getdata.model.TcAuthUser;
 import com.whyisee.getdata.service.TcAuthUserService;
 import com.whyisee.getdata.core.AbstractService;
 import com.whyisee.utils.CookieUtil;
-import com.whyisee.utils.JacksonUtil;
 import com.whyisee.utils.MD5Utils;
 
+import com.whyisee.utils.TokenUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
@@ -77,7 +77,7 @@ public class TcAuthUserServiceImpl extends AbstractService<TcAuthUser> implement
             return result;
         }
 
-        String loginToken = makeToken(user);
+        String loginToken = TokenUtils.makeToken(user);
 
         // do login
         CookieUtil.set(response, LOGIN_IDENTITY_KEY, loginToken, ifRemember);
@@ -90,6 +90,7 @@ public class TcAuthUserServiceImpl extends AbstractService<TcAuthUser> implement
         return result;
     }
 
+/*
     private String makeToken(TcAuthUser user){
         String tokenJson = JacksonUtil.writeValueAsString(user);
         String tokenHex = new BigInteger(tokenJson.getBytes()).toString(16);
@@ -104,6 +105,7 @@ public class TcAuthUserServiceImpl extends AbstractService<TcAuthUser> implement
         }
         return user;
     }
+*/
 
     public Result<String> logout(HttpServletRequest request, HttpServletResponse response){
         CookieUtil.remove(request, response, LOGIN_IDENTITY_KEY);
@@ -120,7 +122,7 @@ public class TcAuthUserServiceImpl extends AbstractService<TcAuthUser> implement
         if (cookieToken != null) {
             TcAuthUser cookieUser = null;
             try {
-                cookieUser = parseToken(cookieToken);
+                cookieUser = TokenUtils.parseToken(cookieToken);
             } catch (Exception e) {
                 logout(request, response);
             }

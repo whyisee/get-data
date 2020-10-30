@@ -1,6 +1,9 @@
 package com.whyisee.getdata.interceptor;
 
 
+import com.whyisee.getdata.core.ResultGenerator;
+import com.whyisee.getdata.model.TcAuthUser;
+import com.whyisee.utils.TokenUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -38,5 +41,28 @@ public class CookieInterceptor extends HandlerInterceptorAdapter {
 		
 		super.postHandle(request, response, handler, modelAndView);
 	}
+
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+		String token=request.getHeader("token");
+		//判断路径需要拦截
+		//....code
+		if(null==token||"".equals(token)){
+			ResultGenerator.genFailResult("未登陆!");
+			response.sendRedirect("/index");
+			return false;
+
+		}
+
+		//如果token有效
+		if(!TokenUtils.isExpire(token)){
+			TcAuthUser user = TokenUtils.parseToken(token);
+			//我们将解析的用户结果先放入session中
+			request.getSession().setAttribute("currentUser",user);
+		}
+
+		return true;
+	}
+
 	
 }

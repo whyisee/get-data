@@ -1,20 +1,24 @@
 package com.whyisee.getdata.web;
 
 import com.alibaba.fastjson.JSONObject;
+import com.whyisee.getdata.annotation.CurrentUser;
 import com.whyisee.getdata.configurer.ConfigFactory;
 import com.whyisee.getdata.core.Result;
 import com.whyisee.getdata.core.ResultGenerator;
 import com.whyisee.getdata.dao.ManageSqlTools;
+import com.whyisee.getdata.model.TcAuthUser;
 import com.whyisee.getdata.model.TcGdConfigmain;
 import com.whyisee.getdata.model.TcGdDatasource;
 import com.whyisee.getdata.service.TcGdConfigmainService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.whyisee.utils.DateUtils;
 import com.whyisee.utils.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 /**
@@ -30,9 +34,11 @@ public class TcGdConfigmainController {
     private TcGdConfigmainService tcGdConfigmainService;
 
     @PostMapping
-    public Result add(@RequestBody TcGdConfigmain tcGdConfigmain) {
+    public Result add(@RequestBody TcGdConfigmain tcGdConfigmain ,@CurrentUser TcAuthUser currentUser) {
         String taskId= manageSqlTools.getSeqId(ConfigFactory.SEQ_COMMON_ID);
         tcGdConfigmain.setTaskId(taskId);
+        tcGdConfigmain.setCreatePersion(currentUser.getLoginName());
+        tcGdConfigmain.setCreateDate(DateUtils.getDateTimeFormat(new Date()));
         tcGdConfigmainService.save(tcGdConfigmain);
         return ResultGenerator.genSuccessResult(taskId);
     }

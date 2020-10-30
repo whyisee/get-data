@@ -18,6 +18,5 @@ public interface TcAuthUserService extends Service<TcAuthUser> {
     Result login(HttpServletRequest request, HttpServletResponse response, String username, String password, boolean ifRemember);
     Result<String> logout(HttpServletRequest request, HttpServletResponse response);
     TcAuthUser ifLogin(HttpServletRequest request, HttpServletResponse response);
-    TcAuthUser parseToken(String tokenHex);
 
 }

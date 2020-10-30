@@ -7,11 +7,15 @@ import com.whyisee.getdata.model.TcAuthUser;
 import com.whyisee.getdata.service.TcAuthUserService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.whyisee.utils.TokenUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
+
+import static com.whyisee.utils.TokenUtils.parseToken;
+
 /**
 * Created by zoukh on 2020/10/24.
 */
@@ -46,7 +50,7 @@ public class TcAuthUserController {
     }
     @GetMapping("/info")
     public Result info(@RequestParam String token) {
-        TcAuthUser user = tcAuthUserService.parseToken(token);
+        TcAuthUser user = TokenUtils.parseToken(token);
         TcAuthUser tcAuthUser = tcAuthUserService.findById(user.getPersionId());
         return ResultGenerator.genSuccessResult(tcAuthUser);
     }

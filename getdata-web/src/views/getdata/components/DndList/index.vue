@@ -4,18 +4,21 @@
       <el-col :span="8">
         <div :style="{width:width1,height:height}" class="dndList-list">
           <h3>{{ list1Title }}</h3>
-          <div class="itxst">
+          <div class="">
             <div class="col">
 
-              <draggable :list="list1" :options="{group:{name: 'article',pull:'clone'}}" class="dragArea" :scroll="true" animation="30">
+              <draggable :list="list1" :options="{group:{name: 'article',pull:'clone'}}" class="dragArea" animation="30">
                 <transition-group>
+
                   <div v-for="(element,index) in list1" :key="element.id+'list1'+index" :class="element.id==1?'item forbid':'item'">
                     <div class="list-complete-item-handle2">
                       {{ element.id }} {{ element.name }} {{ element.title }}
                     </div>
                   </div>
                 </transition-group>
+
               </draggable>
+
             </div>
           </div>
         </div>
@@ -24,37 +27,39 @@
       <el-col :span="16">
         <div :style="{width:width3,height:height}" class="dndList-list">
           <h3>{{ list3Title }}</h3>
-          <div class="itxst">
+          <div class="">
             <div class="col">
-              <draggable :set-data="setData" :list="list3" group="article" class="dragArea" :scroll="true" animation="30">
-                <transition-group>
-                  <div v-for="(element,index) in list3" :key="element.id+'list3'+index" :class="element.id==1?'item forbid':'item'">
-                    <el-select v-model="element.unionType" :placeholder="$t('getdata.unionType')" clearable class="filter-item" style="width: 100px">
-                      <el-option v-for="item in unionTypeOptions" :key="item.key" :label="item.label" :value="item.key" />
-                    </el-select>
-                    {{ element.name }}
-                    <el-select v-model="element.operateType" :placeholder="$t('getdata.operateType')" clearable class="filter-item" style="width: 100px">
-                      <el-option v-for="item in operateTypeOptions" :key="item" :label="item" :value="item" />
-                    </el-select>
-                    {{ element.title }}
-                    <el-input v-model="element.value" :placeholder="$t('getdata.conditionValues')" style="width: 100px;" class="filter-item" />
-                    <span style="float: right ;margin-top: 0px;margin-right:5px;" @click="deleteEle(element,list3)">
-                      <i style="color:#ff4949" class="el-icon-delete" />
-                    </span>
-                  </div>
-                </transition-group>
+              <draggable :set-data="setData" :list="list3" group="article" class="dragArea" animation="30">
+
+                <div v-for="(element,index) in list3" :key="element.id+'list3'+index" :class="element.id==1?'item forbid':'item'">
+                  <el-select v-model="element.unionType" :placeholder="$t('getdata.unionType')" clearable class="filter-item" style="width: 100px">
+                    <el-option v-for="item in unionTypeOptions" :key="item.key" :label="item.label" :value="item.key" />
+                  </el-select>
+                  {{ element.name }}
+                  <el-select v-model="element.operateType" :placeholder="$t('getdata.operateType')" clearable class="filter-item" style="width: 100px">
+                    <el-option v-for="item in operateTypeOptions" :key="item" :label="item" :value="item" />
+                  </el-select>
+                  {{ element.title }}
+                  <el-input v-model="element.value" :placeholder="$t('getdata.conditionValues')" style="width: 100px;" class="filter-item" />
+                  <span style="float: right ;margin-top: 0px;margin-right:5px;" @click="deleteEle(element,list3)">
+                    <i style="color:#ff4949" class="el-icon-delete" />
+                  </span>
+                </div>
+
               </draggable>
             </div>
           </div>
         </div>
       </el-col>
+    </el-row>
+    <el-row>
 
       <el-col :span="8">
         <div :style="{width:width2,height:height}" class="dndList-list">
           <h3>{{ list2Title }}</h3>
           <div class="itxst">
             <div class="col">
-              <draggable :list="list2" group="article" class="dragArea" :scroll="true" animation="30">
+              <draggable :list="list2" :options="{group:{name: 'article',pull:'clone'}}" class="dragArea" :scroll="true" animation="30">
                 <transition-group>
                   <div v-for="(element,index) in list2" :key="element.id+'list2'+index" :class="element.id==1?'item forbid':'item'">
                     <div class="list-complete-item-handle2">
@@ -74,22 +79,20 @@
           <div class="itxst">
             <div class="col">
               <draggable :set-data="setData" :list="list4" group="article" class="dragArea" :scroll="true" animation="30">
-                <transition-group>
-                  <div v-for="(element,index) in list4" :key="element.id+'list4'+index" :class="element.id==1?'item forbid':'item'">
-                    <el-select v-model="element.unionType" :placeholder="$t('getdata.unionType')" clearable class="filter-item" style="width: 100px">
-                      <el-option v-for="item in unionTypeOptions" :key="item.key" :label="item.label" :value="item.key" />
-                    </el-select>
-                    {{ element.name }}
-                    <el-select v-model="element.operateType" :placeholder="$t('getdata.operateType')" clearable class="filter-item" style="width: 100px">
-                      <el-option v-for="item in operateTypeOptions" :key="item" :label="item" :value="item" />
-                    </el-select>
-                    {{ element.title }}
-                    <el-input v-model="element.value" :placeholder="$t('getdata.conditionValues')" style="width: 100px;" class="filter-item" />
-                    <span style="float: right ;margin-top: 0px;margin-right:5px;" @click="deleteEle(element,list4)">
-                      <i style="color:#ff4949" class="el-icon-delete" />
-                    </span>
-                  </div>
-                </transition-group>
+                <div v-for="(element,index) in list4" :key="element.id+'list4'+index" :class="element.id==1?'item forbid':'item'">
+                  <el-select v-model="element.unionType" :placeholder="$t('getdata.unionType')" clearable class="filter-item" style="width: 100px">
+                    <el-option v-for="item in unionTypeOptions" :key="item.key" :label="item.label" :value="item.key" />
+                  </el-select>
+                  {{ element.name }}
+                  <el-select v-model="element.operateType" :placeholder="$t('getdata.operateType')" clearable class="filter-item" style="width: 100px">
+                    <el-option v-for="item in operateTypeOptions" :key="item" :label="item" :value="item" />
+                  </el-select>
+                  {{ element.title }}
+                  <el-input v-model="element.value" :placeholder="$t('getdata.conditionValues')" style="width: 100px;" class="filter-item" />
+                  <span style="float: right ;margin-top: 0px;margin-right:5px;" @click="deleteEle(element,list4)">
+                    <i style="color:#ff4949" class="el-icon-delete" />
+                  </span>
+                </div>
               </draggable>
             </div>
           </div>
@@ -238,7 +241,9 @@ export default {
     .dragArea {
       margin-top: 0;
       min-height: 50px;
+      max-height: 300px;
       padding-bottom: 0;
+      overflow: auto
     }
   }
 }
@@ -315,4 +320,8 @@ export default {
           background-color: #fdfdfd;
           // cursor: move;
       }
+
+.flip-list-move {
+  transition: transform 0.5s;
+}
 </style>

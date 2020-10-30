@@ -4,9 +4,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.whyisee.getdata.annotation.CurrentUserHandlerMethodArgReslover;
 import com.whyisee.getdata.core.Result;
 import com.whyisee.getdata.core.ResultCode;
+import com.whyisee.getdata.core.ResultGenerator;
 import com.whyisee.getdata.core.ServiceException;
+import com.whyisee.getdata.model.TcAuthUser;
+import com.whyisee.utils.TokenUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -16,6 +20,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -101,6 +106,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         //registry.addMapping("/**");
+
         registry.addMapping("/**")
                 .allowCredentials(true)
                 .allowedHeaders("*")
@@ -109,6 +115,12 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 
 
 }
+
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers){
+        //注册@CurrentUser注解的实现类
+        argumentResolvers.add(new CurrentUserHandlerMethodArgReslover());
+    }
 
     @Override
     public void addResourceHandlers(
@@ -122,26 +134,45 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
         //接口签名认证拦截器，该签名认证比较简单，实际项目中可以使用Json Web Token或其他更好的方式替代。
         //System.out.println("===test===>"+env);
-        if (!"dev".equals(env)) { //开发环境忽略签名认证
+        //if (!"dev".equals(env)) { //开发环境忽略签名认证
             registry.addInterceptor(new HandlerInterceptorAdapter() {
                 @Override
                 public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+                    String token=request.getHeader("token");
+                    System.out.println("test==>"+request);
+                    Result result = new Result();
+
+                    //判断路径需要拦截
+                    //....code
+                    if(null==token||"".equals(token)){
+                        result.setCode(ResultCode.UNAUTHORIZED).setMessage("未登陆");
+                        responseResult(response, result);
+                        return false;
+
+                    }
+                    //如果token有效
+                    if(!TokenUtils.isExpire(token)){
+                        TcAuthUser user = TokenUtils.parseToken(token);
+                        //我们将解析的用户结果先放入session中
+                        request.getSession().setAttribute("currentUser",user);
+                    }
+
                     //验证签名
-                    boolean pass = validateSign(request);
+                    //boolean pass = validateSign(request);
+                    boolean pass = true;
                     if (pass) {
                         return true;
                     } else {
                         logger.warn("签名认证失败，请求接口：{}，请求IP：{}，请求参数：{}",
                                 request.getRequestURI(), getIpAddress(request), JSON.toJSONString(request.getParameterMap()));
 
-                        Result result = new Result();
                         result.setCode(ResultCode.UNAUTHORIZED).setMessage("签名认证失败");
                         responseResult(response, result);
                         return false;
                     }
                 }
-            });
-        }
+            }).addPathPatterns("/**").excludePathPatterns("/login").excludePathPatterns("/user/info");;
+       // }
     }
 
     private void responseResult(HttpServletResponse response, Result result) {

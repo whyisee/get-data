@@ -89,7 +89,7 @@ CREATE TABLE tc_gd_configmain
     ,task_status varchar(10) comment '最新任务执行状态'
     ,begin_time varchar(10) comment '最新执行开始时间'
     ,end_time varchar(10) comment '最新执行结束时间'
-    ,status varchar(2) comment '有效状态'
+    ,status varchar(2) default '1' comment '有效状态'
     ,remark varchar(200) comment '备注'
     ,create_persion varchar(200) comment '创建人'
     ,create_date varchar(20) comment '创建时间'
