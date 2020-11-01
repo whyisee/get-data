@@ -31,6 +31,7 @@ end;
 
 
 -- 创建数据源表
+
 CREATE TABLE tc_gd_datasource
  (
  source_id varchar(10) comment '数据源编码'
@@ -39,11 +40,14 @@ CREATE TABLE tc_gd_datasource
 ,source_type varchar(50) comment '分类'
 ,source_key varchar(50) comment '主键'
 ,source_alias varchar(10) comment '别名'
-,status varchar(2) comment '有效状态'
+,show_tag_num varchar(10) comment '展示指标数量'
+,cond_tag_num varchar(10) comment '筛选指标数量'
+,update_date varchar(20) comment '数据更新时间'
+,status varchar(2) default '1' comment '有效状态'
 ,remark varchar(200) comment '备注'
 ,create_persion varchar(200) comment '创建人'
 ,create_date varchar(20) comment '创建时间'
- ) comment=' 1.数据源表';
+ ) DEFAULT CHARSET=utf8, comment=' 1.数据源表';
 
 
 
@@ -166,6 +170,7 @@ CREATE TABLE tc_gd_usertroop
  (
  troop_id varchar(10) comment '用户群编码'
 ,troop_name varchar(200) comment '用户群名称'
+,troop_name_zh varchar(200) comment '用户群名称'
 ,troop_from varchar(200) comment '用户群来源'
 ,troop_type varchar(20) comment '用户群类别'
 ,troop_num varchar(10) comment '用户群数量'
@@ -176,7 +181,9 @@ CREATE TABLE tc_gd_usertroop
 ,troop_key varchar(200) comment '主键'
 ,is_user_tag varchar(2) comment '是否使用其中标签'
 ,tag_flow_id varchar(10) comment '标签配置编码'
-,status varchar(2)  DEFAULT 1  comment '有效状态'
+,show_tag_num varchar(10) comment '展示指标数量'
+,cond_tag_num varchar(10) comment '筛选指标数量'
+,status varchar(2)  default '1' comment '有效状态'
 ,remark varchar(200) comment '备注'
 ,create_persion varchar(200) comment '创建人'
 ,create_date varchar(20) comment '创建时间'

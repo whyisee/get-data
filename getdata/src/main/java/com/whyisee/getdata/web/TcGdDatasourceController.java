@@ -1,18 +1,20 @@
 package com.whyisee.getdata.web;
 
+import com.alibaba.fastjson.JSONObject;
 import com.whyisee.getdata.core.Result;
 import com.whyisee.getdata.core.ResultGenerator;
 import com.whyisee.getdata.model.TcGdDatasource;
 import com.whyisee.getdata.service.TcGdDatasourceService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.whyisee.utils.JSONUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
-
+import java.util.Map;
 /**
-* Created by CodeGenerator on 2020/10/20.
+* Created by zoukh on 2020/11/01.
 */
 @RestController
 @RequestMapping("/datasource")
@@ -53,8 +55,9 @@ public class TcGdDatasourceController {
     }
 
     @PostMapping("/search")
-    public Result search(@RequestBody TcGdDatasource tcGdDatasource) {
-        PageHelper.startPage(0, 0);
+    public Result search(@RequestBody  Map<String,Object> params) {
+        TcGdDatasource tcGdDatasource = JSONUtil.toBean((JSONObject.toJSONString(params)), TcGdDatasource.class);
+        PageHelper.startPage((int)(null == params.get("page")?1:params.get("page")), (int)(null == params.get("limit")?20:params.get("limit")));
         List<TcGdDatasource> list = tcGdDatasourceService.search(tcGdDatasource);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);

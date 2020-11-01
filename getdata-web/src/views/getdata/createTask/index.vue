@@ -63,40 +63,43 @@
               </div>
 
               <el-col :span="10">
-                <div v-for="element in dataSources" :key="element.sourceId">
-                  <el-card class="box-card" style="margin-top:10px;">
-                    <div slot="header" class="clearfix">
-                      <span> {{ '数据源名称:' + element.sourceNameZh }}</span>
+                <div class="data-source-list">
+                  <div v-for="element in dataSources" :key="element.sourceId">
+                    <el-card class="box-card" style="margin-top:10px;">
+                      <div slot="header" class="clearfix">
+                        <span> {{ '数据源名称:' + element.sourceNameZh }}</span>
 
-                      <el-button style="float: right; padding: 3px " type="text">选择
                         <el-switch
-                          v-model="element.value2"
+                          v-model="element.isSelected"
+                          style="float: right; "
                           active-color="#13ce66"
+                          active-value="true"
                           inactive-color="#ff4949"
                         />
-                      </el-button>
-                    </div>
-                    <span>  {{ '展示指标数量:' + element.showTagNum }}</span>
-                    <p />
-                    <span>  {{ '筛选指标数量:' + element.condTagNum }} </span>
-                    <p />
-                    <span>  {{ '数据更新日期:' + element.updateDate }} </span>
-                    <p />
-                    <span>  {{ '数据源类型:' + element.sourceType }} </span>
+                        <el-button style="float: right; padding: 3px " type="text">选择</el-button>
+                      </div>
+                      <span>  {{ '展示指标数量:' + element.showTagNum }}</span>
+                      <p />
+                      <span>  {{ '筛选指标数量:' + element.condTagNum }} </span>
+                      <p />
+                      <span>  {{ '数据更新日期:' + element.updateDate }} </span>
+                      <p />
+                      <span>  {{ '数据源类型:' + element.sourceType }} </span>
 
-                  </el-card>
+                    </el-card>
+                  </div>
                 </div>
               </el-col>
               <!-- <UserTroop /> -->
               <div class="components-container board">
 
                 <el-col :span="6" :offset="1">
-                  <UserTroop :key="1" :list="list1" :group="group" class="kanban todo" header-text="可使用用户群" height="470px" />
+                  <UserTroop :key="1" :list="userTroops" :group="group" class="kanban todo" header-text="可使用用户群" height="470px" />
                 </el-col>
                 <el-col :span="6" :offset="1">
 
-                  <UserTroop :key="2" :list="list2" :group="group" class="kanban working" header-text="筛选用户群" complax-show="1" />
-                  <UserTroop :key="3" :list="list3" :group="group" class="kanban done" header-text="排除用户群" complax-show="1" />
+                  <UserTroop :key="2" :list="userTroopsSelect" :group="group" class="kanban working" header-text="筛选用户群" complax-show="1" />
+                  <UserTroop :key="3" :list="userTroopsDel" :group="group" class="kanban done" header-text="排除用户群" complax-show="1" />
 
                 </el-col>
               </div>
@@ -112,7 +115,7 @@
                 <span>筛选条件</span>
               </div>
               <div class="editor-container">
-                <dnd-list :list1="list1" :list2="list2" :list3="list3" :list4="list4" list1-title="数据源指标列表:" list2-title="用户群指标列表" list3-title="已选择筛选条件" list4-title="已选择排除条件" />
+                <dnd-list :list1="dataSourceCondTags" :list2="userTroopCondTags" :list3="dataSourceCondTagsSelect" :list4="userTroopCondTagsSelect" list1-title="数据源指标列表:" list2-title="用户群指标列表" list3-title="已选择筛选条件" list4-title="已选择排除条件" />
               </div>
 
             </el-card>
@@ -317,10 +320,11 @@ import Sticky from '@/components/Sticky' // 粘性header组件
 import Warning from '../components/Warning'
 import MDinput from '@/components/MDinput'
 import ElDragSelect from '@/components/DragSelect'
-import DndList from '../components/DndList'
+import DndList from '../components/UserTagCondList'
 import UserTroop from '../components/UserTroop'
-import { createTask, updateTask } from '@/api/getdata'
-
+import { createTask, updateTask, getFlowId } from '@/api/getdata'
+import { createTaskInit } from '@/api/data-source-troop'
+import { getSourceTagList } from '@/api/user-tag'
 // const saveTypeOptions = ['下载', '用户群', '接口']
 
 const defaultForm = {
@@ -348,7 +352,6 @@ export default {
     }},
   data() {
     const validateRequire = (rule, value, callback) => {
-      console.log(rule)
       if (value === '') {
         this.$message({
           message: rule.message,
@@ -383,14 +386,17 @@ export default {
         taskName: [{ validator: validateRequire, message: '取数任务名称为必填项!' }]
       },
       tempRoute: {},
-      dataSources: [
-        { id: '1', title: '业务数据表', href: '' },
-        { id: '2', title: '登录权限表', href: '' }
-
-      ],
-
-      dataShowTag: [],
+      dataSources: [],
+      dataSourcesSelect: [],
+      userTroops: [],
+      userTroopsSelect: [],
+      userTroopsDel: [],
+      dataSourceCondTags: [],
+      userTroopCondTags: [],
+      dataSourceCondTagsSelect: [],
+      userTroopCondTagsSelect: [],
       dataSourceTag: ['Apple'],
+      dataShowTag: [],
 
       dataSourceTagOptions: [{
         value: 'Apple',
@@ -399,44 +405,6 @@ export default {
         value: 'Banana1',
         label: 'Banana1'
       },
-
-      // {
-      //   value: 'Banana2',
-      //   label: 'Banana2'
-      // }, {
-      //   value: 'Banana3',
-      //   label: 'Banana3'
-      // }, {
-      //   value: 'Banana4',
-      //   label: 'Banana4'
-      // }, {
-      //   value: 'Banana5',
-      //   label: 'Banana5'
-      // }, {
-      //   value: 'Banana6',
-      //   label: 'Banana6'
-      // }, {
-      //   value: 'Banana7',
-      //   label: 'Banana7'
-      // }, {
-      //   value: 'Banana8',
-      //   label: 'Banana8'
-      // }, {
-      //   value: 'Banana9',
-      //   label: 'Banana9'
-      // }, {
-      //   value: 'Banana10',
-      //   label: 'Banana10'
-      // }, {
-      //   value: 'Banana11',
-      //   label: 'Banana11'
-      // }, {
-      //   value: 'Banana12',
-      //   label: 'Banana12'
-      // }, {
-      //   value: 'Banana13',
-      //   label: 'Banana13'
-      // },
 
       {
         value: 'Orange',
@@ -454,21 +422,7 @@ export default {
         label: 'Orange1'
       }],
       group: 'mission',
-      list1: [
-        { name: '测试1', id: 1, num: 123 },
-        { name: '测试2', id: 2, num: 223 },
-        { name: '测试3', id: 3, num: 323 }
-      ],
-      list2: [
-        { name: '测试5', id: 5, num: 523 },
-        { name: '测试6', id: 6, num: 623 },
-        { name: '测试7', id: 7, num: 723 }
-      ],
-      list3: [
 
-      ], list4: [
-
-      ],
       pickerOptions: {
         disabledDate(time) {
           return time.getTime() > Date.now()
@@ -498,6 +452,18 @@ export default {
     }
   },
   watch: {
+    dataSources: {
+      handler: function(val, oldVal) {
+        this.dataSourcesSelect = []
+        for (const item of this.dataSources) {
+          if (item.isSelected === 'true') {
+            this.dataSourcesSelect = this.dataSourcesSelect.concat(item.sourceId)
+          }
+        }
+        this.dataSourceCondTagList()
+      },
+      deep: true
+    },
     saveTypes(valArr) {
       console.log(valArr)
       // this.formThead = this.formTheadOptions.filter(i => valArr.indexOf(i) >= 0)
@@ -505,19 +471,31 @@ export default {
     }
   },
   created() {
-    // this.fetchData(id)
-    // console.log(postForm)
+    this.postForm = defaultForm
+    this.init()
+    console.log(1111)
+    // beforeRouteEnter()
+    console.log(this.$route.query)
     if (this.isEdit) {
       const id = this.$route.params && this.$route.params.id
       this.fetchData(id)
     }
-    this.postForm = defaultForm
     // Why need to make a copy of this.$route here?
     // Because if you enter this page and quickly switch tag, may be in the execution of the setTagsViewTitle function, this.$route is no longer pointing to the current page
     // https://github.com/PanJiaChen/vue-element-admin/issues/1221
     // this.tempRoute = Object.assign({}, this.$route)
   },
+  mount() {
+    console.log(222)
+    console.log(this.$route.query)
+  },
   methods: {
+    beforeRouteEnter(to, from, next) {
+      next((vm) => {
+        vm.list = JSON.parse(localStorage.getItem('params')).detail
+        vm.projectStatus = JSON.parse(localStorage.getItem('params')).projectStatus
+      })
+    },
     fetchData(id) {
       this.postForm = defaultForm
       // fetchArticle(id).then(response => {
@@ -535,7 +513,37 @@ export default {
       //   console.log(err)
       // })
     },
+    init() {
+      this.listLoading = true
+      createTaskInit().then(response => {
+        // this.list = response.data.list
+        // this.total = response.data.total
+        // console.log(response)
+        this.dataSources = response[0].data.list
+        this.userTroops = response[1].data.list
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1 * 1000)
+      })
+    },
+    getFlowId() {
+      getFlowId().then(response => {
+        const { data } = response
+        console.log(data)
+        return data
+      })
+    },
 
+    dataSourceCondTagList() {
+      this.listLoading = true
+      getSourceTagList({}).then(response => {
+        this.dataSourceCondTags = response.data.list
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1 * 1000)
+      })
+    },
     submitForm() {
       this.$refs.postForm.validate(valid => {
         if (valid) {
@@ -575,22 +583,7 @@ export default {
         }
       })
     },
-    draftForm() {
-      // createTask()
-      if (this.postForm.content.length === 0 || this.postForm.title.length === 0) {
-        this.$message({
-          message: '请填写必要的标题和内容',
-          type: 'warning'
-        })
-        return
-      }
-      this.$message({
-        message: '保存成功',
-        type: 'success',
-        showClose: true,
-        duration: 1000
-      })
-    },
+
     getRemoteUserList(query) {
       createTask(query).then(response => {
         if (!response.data.items) return
@@ -634,6 +627,11 @@ export default {
   text-align: center;
     margin-top: 20px;
 
+}
+.data-source-list {
+  max-height :520px;
+  overflow:auto;
+  margin-top:10px
 }
 .article-textarea ::v-deep {
   textarea {

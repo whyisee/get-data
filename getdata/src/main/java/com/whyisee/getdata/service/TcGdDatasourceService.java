@@ -6,7 +6,7 @@ import java.util.List;
 
 
 /**
- * Created by CodeGenerator on 2020/10/20.
+ * Created by zoukh on 2020/11/01.
  */
 public interface TcGdDatasourceService extends Service<TcGdDatasource> {
     List<TcGdDatasource> search(TcGdDatasource model);

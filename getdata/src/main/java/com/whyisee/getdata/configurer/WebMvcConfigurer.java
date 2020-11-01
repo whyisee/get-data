@@ -17,8 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -35,10 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Spring MVC 配置
@@ -138,8 +137,18 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
             registry.addInterceptor(new HandlerInterceptorAdapter() {
                 @Override
                 public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-                    String token=request.getHeader("token");
-                    System.out.println("test==>"+request);
+                    String token=request.getHeader("x-token");
+
+                    if (request.getMethod().equals(RequestMethod.OPTIONS.name())) {
+
+                        response.setHeader("Access-control-Allow-Origin", "*");
+                        //response.setHeader("Access-Control-Allow-Headers", "Content-Type,Access-Token");
+                        response.setHeader("Access-Control-Allow-Methods", "*");
+                        response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"));
+                        response.setStatus(HttpStatus.OK.value());
+                        return false;
+                    }
+
                     Result result = new Result();
 
                     //判断路径需要拦截
@@ -171,7 +180,7 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
                         return false;
                     }
                 }
-            }).addPathPatterns("/**").excludePathPatterns("/login").excludePathPatterns("/user/info");;
+            }).addPathPatterns("/**").excludePathPatterns("/login").excludePathPatterns("/user/info").excludePathPatterns("/logout");
        // }
     }
 

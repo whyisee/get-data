@@ -7,6 +7,8 @@ import ${basePackage}.service.${modelNameUpperCamel}Service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.web.bind.annotation.*;
+import com.whyisee.utils.JSONUtil;
+import com.alibaba.fastjson.JSONObject;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -52,11 +54,12 @@ public class ${modelNameUpperCamel}Controller {
         return ResultGenerator.genSuccessResult(pageInfo);
     }
 
-    @RequestMapping(value="/search",method = {RequestMethod.GET})
-    public @ResponseBody
-    Result searchForGet(@RequestParam(defaultValue = "0") Integer page, @RequestParam(defaultValue = "0") Integer size, @RequestParam Map<String,Object> data) throws Exception {
-        PageHelper.startPage(page, size);
-        List<${modelNameUpperCamel}> list = ${modelNameLowerCamel}Service.findAll();
+
+    @PostMapping("/search")
+    public Result search(@RequestBody  Map< String, Object> params) {
+    ${modelNameUpperCamel} ${modelNameLowerCamel} = JSONUtil.toBean((JSONObject.toJSONString(params)), ${modelNameUpperCamel}.class);
+    PageHelper.startPage((int)(null == params.get("page")?1:params.get("page")), (int)(null == params.get("limit")?20:params.get("limit")));
+    List<${modelNameUpperCamel}> list = ${modelNameLowerCamel}Service.search(${modelNameLowerCamel});
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);
     }

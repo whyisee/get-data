@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 /**
@@ -18,5 +19,6 @@ import javax.annotation.Resource;
 public class ${modelNameUpperCamel}ServiceImpl extends AbstractService<${modelNameUpperCamel}> implements ${modelNameUpperCamel}Service {
     @Resource
     private ${modelNameUpperCamel}Mapper ${modelNameLowerCamel}Mapper;
+    public List<${modelNameUpperCamel}> search(${modelNameUpperCamel} model){return ${modelNameLowerCamel}Mapper.search(model);}
 
 }

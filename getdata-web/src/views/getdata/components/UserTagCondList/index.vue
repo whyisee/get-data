@@ -10,9 +10,9 @@
               <draggable :list="list1" :options="{group:{name: 'article',pull:'clone'}}" class="dragArea" animation="30">
                 <transition-group>
 
-                  <div v-for="(element,index) in list1" :key="element.id+'list1'+index" :class="element.id==1?'item forbid':'item'">
+                  <div v-for="(element,index) in list1" :key="element.tagId+'list1'+index" :class="element.tagId==1?'item forbid':'item'">
                     <div class="list-complete-item-handle2">
-                      {{ element.id }} {{ element.name }} {{ element.title }}
+                      {{ element.tagNameZh }}
                     </div>
                   </div>
                 </transition-group>
@@ -31,15 +31,14 @@
             <div class="col">
               <draggable :set-data="setData" :list="list3" group="article" class="dragArea" animation="30">
 
-                <div v-for="(element,index) in list3" :key="element.id+'list3'+index" :class="element.id==1?'item forbid':'item'">
+                <div v-for="(element,index) in list3" :key="element.tagId+'list3'+index" :class="element.tagId==1?'item forbid':'item'">
                   <el-select v-model="element.unionType" :placeholder="$t('getdata.unionType')" clearable class="filter-item" style="width: 100px">
                     <el-option v-for="item in unionTypeOptions" :key="item.key" :label="item.label" :value="item.key" />
                   </el-select>
-                  {{ element.name }}
+                  {{ element.tagNameZh }}
                   <el-select v-model="element.operateType" :placeholder="$t('getdata.operateType')" clearable class="filter-item" style="width: 100px">
                     <el-option v-for="item in operateTypeOptions" :key="item" :label="item" :value="item" />
                   </el-select>
-                  {{ element.title }}
                   <el-input v-model="element.value" :placeholder="$t('getdata.conditionValues')" style="width: 100px;" class="filter-item" />
                   <span style="float: right ;margin-top: 0px;margin-right:5px;" @click="deleteEle(element,list3)">
                     <i style="color:#ff4949" class="el-icon-delete" />
@@ -107,7 +106,7 @@
 import draggable from 'vuedraggable'
 
 export default {
-  name: 'DndList',
+  name: 'UserTagCondList',
   components: { draggable },
   props: {
     list1: {

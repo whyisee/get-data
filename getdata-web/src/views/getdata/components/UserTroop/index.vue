@@ -5,8 +5,8 @@
 
       <div style="float:right" :class="complaxShow == '0' ? 'display-none' :'' ">
         <el-radio-group v-model="complaxType" border="true" size="mini">
-          <el-radio-button label="交集" />
-          <el-radio-button label="并集" />
+          <el-radio-button key="N" label="交集" />
+          <el-radio-button key="U" label="并集" />
         </el-radio-group>
       </div>
     </div>
@@ -17,8 +17,8 @@
       :set-data="setData"
       :style="{height:height}"
     >
-      <div v-for="element in list" :key="element.id" class="board-item">
-        {{ element.name }} 用户数量: {{ element.num }}
+      <div v-for="element in list" :key="element.troopId" class="board-item">
+        {{ element.troopNameZh }} ({{ element.troopNum }})
       </div>
     </draggable>
   </div>
@@ -60,7 +60,7 @@ export default {
   },
   data() {
     return {
-      complaxType: ''
+      complaxType: 'N'
     }
   },
 

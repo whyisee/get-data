@@ -10,28 +10,37 @@
     <result column="source_name_zh" jdbcType="VARCHAR" property="sourceNameZh" />
     <result column="source_type" jdbcType="VARCHAR" property="sourceType" />
     <result column="source_key" jdbcType="VARCHAR" property="sourceKey" />
+    <result column="source_alias" jdbcType="VARCHAR" property="sourceAlias" />
+    <result column="show_tag_num" jdbcType="VARCHAR" property="showTagNum" />
+    <result column="cond_tag_num" jdbcType="VARCHAR" property="condTagNum" />
+    <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
     <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="create_persion" jdbcType="VARCHAR" property="createPersion" />
     <result column="create_date" jdbcType="VARCHAR" property="createDate" />
   </resultMap>
 
-    <sql id="Base_Column_List" >
-        source_id, source_name, source_name_zh, source_type, source_key, remark, create_persion, create_date
+    <sql id="Base_Column_List">
+        source_id, source_name, source_name_zh, source_type, source_key, source_alias, show_tag_num, cond_tag_num, update_date, remark, create_persion, create_date
     </sql>
-  <select id="search" resultMap="BaseResultMap" parameterType="com.whyisee.getdata.model.TcGdDatasource">
+  <select id="search" parameterType="com.whyisee.getdata.model.TcGdDatasource" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List" />
         FROM tc_gd_datasource
         WHERE 1=1
         and status='1'
-        <if test="sourceId != null">and source_id = #{sourceId}</if>
-        <if test="sourceName != null">and source_name = #{sourceName}</if>
-        <if test="sourceNameZh != null">and source_name_zh = #{sourceNameZh}</if>
-        <if test="sourceType != null">and source_type = #{sourceType}</if>
-        <if test="sourceKey != null">and source_key = #{sourceKey}</if>
-        <if test="remark != null">and remark = #{remark}</if>
-        <if test="createPersion != null">and create_persion = #{createPersion}</if>
-        <if test="createDate != null">and create_date >= #{createDate}</if>
+      <if test="sourceId != null and sourceId !=''"> and  source_id in ( #{sourceId}  ) </if>
+      <if test="sourceName != null and sourceName !=''"> and  source_name= #{sourceName} </if>
+      <if test="sourceNameZh != null and sourceNameZh !=''"> and  source_name_zh= #{sourceNameZh} </if>
+      <if test="sourceType != null and sourceType !=''"> and  source_type= #{sourceType} </if>
+      <if test="sourceKey != null and sourceKey !=''"> and  source_key= #{sourceKey} </if>
+      <if test="sourceAlias != null and sourceAlias !=''"> and  source_alias= #{sourceAlias} </if>
+      <if test="showTagNum != null and showTagNum !=''"> and  show_tag_num= #{showTagNum} </if>
+      <if test="condTagNum != null and condTagNum !=''"> and  cond_tag_num= #{condTagNum} </if>
+      <if test="updateDate != null and updateDate !=''"> and  update_date= #{updateDate} </if>
+      <if test="remark != null and remark !=''"> and  remark= #{remark} </if>
+      <if test="createPersion != null and createPersion !=''"> and  create_persion= #{createPersion} </if>
+      <if test="createDate != null and createDate !=''"> and  create_date= #{createDate} </if>
+
   </select>
 </mapper>

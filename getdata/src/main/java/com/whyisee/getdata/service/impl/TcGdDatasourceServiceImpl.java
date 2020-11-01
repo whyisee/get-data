@@ -12,14 +12,13 @@ import java.util.List;
 
 
 /**
- * Created by CodeGenerator on 2020/10/20.
+ * Created by zoukh on 2020/11/01.
  */
 @Service
 @Transactional
 public class TcGdDatasourceServiceImpl extends AbstractService<TcGdDatasource> implements TcGdDatasourceService {
     @Resource
     private TcGdDatasourceMapper tcGdDatasourceMapper;
-
     public List<TcGdDatasource> search(TcGdDatasource model){return tcGdDatasourceMapper.search(model);}
 
 }

@@ -8,15 +8,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 /**
- * Created by CodeGenerator on 2020/10/20.
+ * Created by zoukh on 2020/11/01.
  */
 @Service
 @Transactional
 public class TcGdTagconfigServiceImpl extends AbstractService<TcGdTagconfig> implements TcGdTagconfigService {
     @Resource
     private TcGdTagconfigMapper tcGdTagconfigMapper;
+    public List<TcGdTagconfig> search(TcGdTagconfig model){return tcGdTagconfigMapper.search(model);}
 
 }

@@ -7,6 +7,7 @@
     -->
     <result column="troop_id" jdbcType="VARCHAR" property="troopId" />
     <result column="troop_name" jdbcType="VARCHAR" property="troopName" />
+    <result column="troop_name_zh" jdbcType="VARCHAR" property="troopNameZh" />
     <result column="troop_from" jdbcType="VARCHAR" property="troopFrom" />
     <result column="troop_type" jdbcType="VARCHAR" property="troopType" />
     <result column="troop_num" jdbcType="VARCHAR" property="troopNum" />
@@ -17,6 +18,8 @@
     <result column="troop_key" jdbcType="VARCHAR" property="troopKey" />
     <result column="is_user_tag" jdbcType="VARCHAR" property="isUserTag" />
     <result column="tag_flow_id" jdbcType="VARCHAR" property="tagFlowId" />
+    <result column="show_tag_num" jdbcType="VARCHAR" property="showTagNum" />
+    <result column="cond_tag_num" jdbcType="VARCHAR" property="condTagNum" />
     <result column="status" jdbcType="VARCHAR" property="status" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
     <result column="create_persion" jdbcType="VARCHAR" property="createPersion" />
@@ -24,4 +27,41 @@
     <result column="update_persion" jdbcType="VARCHAR" property="updatePersion" />
     <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
   </resultMap>
+
+  <sql id="Base_Column_List">
+troop_id,troop_name,troop_name_zh,troop_from,troop_type,troop_num,troop_status,troop_begin_date
+,troop_end_date,source_file_name,troop_key,is_user_tag,tag_flow_id
+,show_tag_num,cond_tag_num,status,remark,create_persion,create_date,update_persion,update_date    </sql>
+  <select id="search" parameterType="com.whyisee.getdata.model.TcGdDatasource" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    FROM tc_gd_usertroop
+    WHERE 1=1
+    and status='1'
+    <if test="troopId != null and troopId !=''"> and  troop_id in  ( #{troopId} ) </if>
+    <if test="troopName != null and troopName !=''"> and  troop_name= #{troopName} </if>
+    <if test="troopNameZh != null and troopNameZh !=''"> and  troop_name_zh= #{troopNameZh} </if>
+    <if test="troopFrom != null and troopFrom !=''"> and  troop_from= #{troopFrom} </if>
+    <if test="troopType != null and troopType !=''"> and  troop_type= #{troopType} </if>
+    <if test="troopNum != null and troopNum !=''"> and  troop_num= #{troopNum} </if>
+    <if test="troopStatus != null and troopStatus !=''"> and  troop_status= #{troopStatus} </if>
+    <if test="troopBeginDate != null and troopBeginDate !=''"> and  troop_begin_date= #{troopBeginDate} </if>
+    <if test="troopEndDate != null and troopEndDate !=''"> and  troop_end_date= #{troopEndDate} </if>
+    <if test="sourceFileName != null and sourceFileName !=''"> and  source_file_name= #{sourceFileName} </if>
+    <if test="troopKey != null and troopKey !=''"> and  troop_key= #{troopKey} </if>
+    <if test="isUserTag != null and isUserTag !=''"> and  is_user_tag= #{isUserTag} </if>
+    <if test="tagFlowId != null and tagFlowId !=''"> and  tag_flow_id= #{tagFlowId} </if>
+    <if test="showTagNum != null and showTagNum !=''"> and  show_tag_num= #{showTagNum} </if>
+    <if test="condTagNum != null and condTagNum !=''"> and  cond_tag_num= #{condTagNum} </if>
+    <if test="status != null and status !=''"> and  status= #{status} </if>
+    <if test="remark != null and remark !=''"> and  remark= #{remark} </if>
+    <if test="createPersion != null and createPersion !=''"> and  create_persion= #{createPersion} </if>
+    <if test="createDate != null and createDate !=''"> and  create_date= #{createDate} </if>
+    <if test="updatePersion != null and updatePersion !=''"> and  update_persion= #{updatePersion} </if>
+    <if test="updateDate != null and updateDate !=''"> and  update_date= #{updateDate} </if>
+
+
+
+  </select>
+
 </mapper>

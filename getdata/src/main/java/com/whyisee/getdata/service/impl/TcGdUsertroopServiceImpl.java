@@ -8,15 +8,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 /**
- * Created by CodeGenerator on 2020/10/20.
+ * Created by zoukh on 2020/11/01.
  */
 @Service
 @Transactional
 public class TcGdUsertroopServiceImpl extends AbstractService<TcGdUsertroop> implements TcGdUsertroopService {
     @Resource
     private TcGdUsertroopMapper tcGdUsertroopMapper;
+    public List<TcGdUsertroop> search(TcGdUsertroop model){return tcGdUsertroopMapper.search(model);}
 
 }

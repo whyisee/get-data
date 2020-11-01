@@ -18,6 +18,12 @@ public class TcGdUsertroop {
     private String troopName;
 
     /**
+     * 用户群名称
+     */
+    @Column(name = "troop_name_zh")
+    private String troopNameZh;
+
+    /**
      * 用户群来源
      */
     @Column(name = "troop_from")
@@ -76,6 +82,18 @@ public class TcGdUsertroop {
      */
     @Column(name = "tag_flow_id")
     private String tagFlowId;
+
+    /**
+     * 展示指标数量
+     */
+    @Column(name = "show_tag_num")
+    private String showTagNum;
+
+    /**
+     * 筛选指标数量
+     */
+    @Column(name = "cond_tag_num")
+    private String condTagNum;
 
     /**
      * 有效状态
@@ -145,6 +163,24 @@ public class TcGdUsertroop {
      */
     public void setTroopName(String troopName) {
         this.troopName = troopName;
+    }
+
+    /**
+     * 获取用户群名称
+     *
+     * @return troop_name_zh - 用户群名称
+     */
+    public String getTroopNameZh() {
+        return troopNameZh;
+    }
+
+    /**
+     * 设置用户群名称
+     *
+     * @param troopNameZh 用户群名称
+     */
+    public void setTroopNameZh(String troopNameZh) {
+        this.troopNameZh = troopNameZh;
     }
 
     /**
@@ -325,6 +361,42 @@ public class TcGdUsertroop {
      */
     public void setTagFlowId(String tagFlowId) {
         this.tagFlowId = tagFlowId;
+    }
+
+    /**
+     * 获取展示指标数量
+     *
+     * @return show_tag_num - 展示指标数量
+     */
+    public String getShowTagNum() {
+        return showTagNum;
+    }
+
+    /**
+     * 设置展示指标数量
+     *
+     * @param showTagNum 展示指标数量
+     */
+    public void setShowTagNum(String showTagNum) {
+        this.showTagNum = showTagNum;
+    }
+
+    /**
+     * 获取筛选指标数量
+     *
+     * @return cond_tag_num - 筛选指标数量
+     */
+    public String getCondTagNum() {
+        return condTagNum;
+    }
+
+    /**
+     * 设置筛选指标数量
+     *
+     * @param condTagNum 筛选指标数量
+     */
+    public void setCondTagNum(String condTagNum) {
+        this.condTagNum = condTagNum;
     }
 
     /**

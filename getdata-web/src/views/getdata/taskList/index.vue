@@ -80,11 +80,17 @@
       </el-table-column>
       <el-table-column :label="$t('getdata.actions')" align="left" width="280" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button size="mini" type="success" @click="handleModifyStatus(row,'published')">
-            {{ $t('getdata.view') }}
+          <el-button size="mini" type="success">
+            <router-link :to="{path:'/dataManager/getdata/createTask',query: {taskId: row.taskId,isEdit:0}} ">
+              {{ $t('getdata.view') }}
+            </router-link>
+
           </el-button>
-          <el-button v-if="row.taskStatus=='0' || row.taskStatus=='4'" type="primary" size="mini" @click="handleUpdate(row)">
-            {{ $t('table.edit') }}
+          <el-button v-if="row.taskStatus=='0' || row.taskStatus=='4'" type="primary" size="mini">
+            <router-link :to="{path:'/dataManager/getdata/createTask',query: {taskId: row.taskId,isEdit:1}} ">
+              {{ $t('table.edit') }}
+
+            </router-link>
           </el-button>
           <el-button v-if="row.taskStatus=='0'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
             {{ $t('getdata.submit') }}
@@ -174,7 +180,7 @@
 </template>
 
 <script>
-import { fetchPv, createArticle, updateArticle, getTaskList } from '@/api/getdata'
+import { fetchPv, createArticle, updateArticle, getTaskList, deleteTask } from '@/api/getdata'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -398,6 +404,14 @@ export default {
         duration: 2000
       })
       this.list.splice(index, 1)
+      this.listLoading = true
+      console.log(row)
+      deleteTask(row).then(response => {
+        // Just to simulate the time of the request
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1 * 1000)
+      })
     },
     handleFetchPv(pv) {
       fetchPv(pv).then(response => {
