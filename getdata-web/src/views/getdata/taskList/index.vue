@@ -81,7 +81,7 @@
       <el-table-column :label="$t('getdata.actions')" align="left" width="280" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button size="mini" type="success">
-            <router-link :to="{path:'/dataManager/getdata/createTask',query: {taskId: row.taskId,isEdit:0}} ">
+            <router-link :to="{name:'CreateTask',params: {taskId: row.taskId,isEdit:0}} ">
               {{ $t('getdata.view') }}
             </router-link>
 

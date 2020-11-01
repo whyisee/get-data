@@ -476,6 +476,8 @@ export default {
     console.log(1111)
     // beforeRouteEnter()
     console.log(this.$route.query)
+
+    console.log(this.$route.query.taskId)
     if (this.isEdit) {
       const id = this.$route.params && this.$route.params.id
       this.fetchData(id)

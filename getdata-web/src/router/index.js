@@ -59,7 +59,7 @@ export const constantRoutes = [
     path: '/dataManager',
     component: Layout,
     redirect: '/example/table',
-    name: 'Example',
+    name: '/DataManager',
     meta: { title: '数据管理', icon: 'el-icon-s-help' },
     children: [
       {
