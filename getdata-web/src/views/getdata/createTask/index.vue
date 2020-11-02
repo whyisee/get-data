@@ -92,6 +92,8 @@
                       <span>  {{ '数据更新日期:' + element.updateDate }} </span>
                       <p />
                       <span>  {{ '数据源类型:' + element.sourceType }} </span>
+                      <p />
+                      <span :class="isDev%2 == 0 ? 'display-none' :'submit-view' ">  {{ '表名:' + element.sourceName }} </span>
 
                     </el-card>
                   </div>
@@ -101,7 +103,7 @@
               <div class="components-container board">
 
                 <el-col :span="6" :offset="1">
-                  <UserTroop :key="1" :list="userTroops" :group="group" class="kanban todo" header-text="可使用用户群" height="470px" />
+                  <UserTroop ref="UserTroops" :key="1" :list="userTroops" :group="group" class="kanban todo" header-text="可使用用户群" height="470px" />
                 </el-col>
                 <el-col :span="6" :offset="1">
 
@@ -121,8 +123,19 @@
               <div slot="header" class="clearfix">
                 <span>筛选条件</span>
               </div>
+              <div>
+                <el-button type="warning" round @click="isDev=isDev+1;$refs.UserTroops.isDev=isDev;$refs.CondTags.isDev=isDev">开发模式</el-button>
+                <el-button type="success" round :class="isDev%2 == 0 ? 'display-none' :'submit-view' " @click="formatSql()">格式化SQL</el-button>
+                <el-input
+                  v-model="postForm.execSql"
+                  type="textarea"
+                  :rows="8"
+                  :class="isDev%2 == 0 ? 'display-none' :'submit-view' "
+                  placeholder="请输入SQL"
+                />
+              </div>
               <div class="editor-container">
-                <dnd-list :list1="dataSourceCondTags" :list2="userTroopCondTags" :list3="dataSourceCondTagsSelect" :list4="userTroopCondTagsSelect" list1-title="数据源指标列表:" list2-title="用户群指标列表" list3-title="已选择筛选条件" list4-title="已选择排除条件" />
+                <dnd-list ref="CondTags" :list1="dataSourceCondTags" :list2="userTroopCondTags" :list3="dataSourceCondTagsSelect" :list4="userTroopCondTagsSelect" list1-title="数据源指标列表:" list2-title="用户群指标列表" list3-title="已选择筛选条件" list4-title="已选择排除条件" />
               </div>
 
             </el-card>
@@ -332,6 +345,8 @@ import UserTroop from '../components/UserTroop'
 import { createTask, updateTask, getFlowId, getTask, getConfigFlow } from '@/api/getdata'
 import { createTaskInit } from '@/api/data-source-troop'
 import { getSourceTagList } from '@/api/user-tag'
+import sqlFormatter from 'sql-formatter'
+
 // const saveTypeOptions = ['下载', '用户群', '接口']
 
 const defaultForm = {
@@ -370,6 +385,7 @@ export default {
       filterMethod(query, item) {
         return item.pinyin.indexOf(query) > -1
       },
+      isDev: 0,
       postForm: defaultForm,
       userTroopsSelect: [], // 筛选用户群
       userTroopsDel: [], // 排除用户群
@@ -521,12 +537,21 @@ export default {
 
           for (const item of this.userTroops) {
             if (userTroopsSelect.indexOf(item.troopId) !== -1) {
-              this.UserTroopsSelect = this.UserTroopsSelect.concat(item)
+              this.userTroopsSelect = this.userTroopsSelect.concat(item)
+              // const index = userTroopsSelect.indexOf(item)
+              // this.userTroops.splice(index, 1)
+
+              // this.userTroops.splice(item)
             }
             if (userTroopsDel.indexOf(item.troopId) !== -1) {
               this.userTroopsDel = this.userTroopsDel.concat(item)
+              // const index = userTroopsDel.indexOf(item)
+              // this.userTroops.splice(index, 1)
             }
           }
+          console.log(this.userTroops)
+          this.userTroops = this.userTroops.filter(t => userTroopsSelect.indexOf(t.troopId) === -1 && userTroopsDel.indexOf(t.troopId) === -1)
+          console.log(this.userTroops)
         })
       }).catch(err => {
         console.log(err)
@@ -600,6 +625,12 @@ export default {
           return false
         }
       })
+    }, formatSql() {
+      /* 获取文本编辑器内容*/
+      let sqlContent = ''
+      sqlContent = this.postForm.execSql
+      /* 将sql内容进行格式后放入编辑器中*/
+      this.postForm.execSql = sqlFormatter.format(sqlContent)
     },
 
     getRemoteUserList(query) {
