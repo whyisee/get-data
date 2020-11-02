@@ -58,7 +58,7 @@ public class TcGdTagconfigController {
     @PostMapping("/search")
     public Result search(@RequestBody  Map< String, Object> params) {
     TcGdTagconfig tcGdTagconfig = JSONUtil.toBean((JSONObject.toJSONString(params)), TcGdTagconfig.class);
-    PageHelper.startPage((int)(null == params.get("page")?1:params.get("page")), (int)(null == params.get("limit")?20:params.get("limit")));
+        PageHelper.startPage((int)params.getOrDefault("page",1), (int)params.getOrDefault("limit",20));
     List<TcGdTagconfig> list = tcGdTagconfigService.search(tcGdTagconfig);
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);

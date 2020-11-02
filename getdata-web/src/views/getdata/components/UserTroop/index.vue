@@ -5,8 +5,9 @@
 
       <div style="float:right" :class="complaxShow == '0' ? 'display-none' :'' ">
         <el-radio-group v-model="complaxType" border="true" size="mini">
-          <el-radio-button key="N" label="交集" />
-          <el-radio-button key="U" label="并集" />
+          <el-radio-button label="N">交集</el-radio-button>
+          <el-radio-button label="U">并集</el-radio-button>
+
         </el-radio-group>
       </div>
     </div>

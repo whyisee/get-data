@@ -38,3 +38,17 @@ export function getFlowId(data) {
   })
 }
 
+export function getTask(data) {
+  return request({
+    url: '/configmain/' + data,
+    method: 'get',
+    data: data
+  })
+}
+export function getConfigFlow(data) {
+  return request({
+    url: '/configflow/search',
+    method: 'post',
+    data: data
+  })
+}

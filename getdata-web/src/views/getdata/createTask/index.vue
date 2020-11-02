@@ -42,7 +42,13 @@
             <el-form-item label="任务编码" style="display:none">
               <el-input v-model="postForm.taskId" />
             </el-form-item>
-            <el-form-item style="margin-bottom: 10px;" prop="taskName" error="取数任务名称为必填项!">
+            <el-form-item label="数据源流程" style="display:none">
+              <el-input v-model="postForm.sourceFlowId" />
+            </el-form-item>
+            <el-form-item label="用户群流程" style="display:none">
+              <el-input v-model="postForm.troopFlowId" />
+            </el-form-item>
+            <el-form-item style="margin-bottom: 10px;" prop="taskName">
               <MDinput v-model="postForm.taskName" :maxlength="100" name="name" required>
                 取数任务名称
               </MDinput>
@@ -74,9 +80,10 @@
                           style="float: right; "
                           active-color="#13ce66"
                           active-value="true"
+                          active-text="选择"
+                          inactive-value="false"
                           inactive-color="#ff4949"
                         />
-                        <el-button style="float: right; padding: 3px " type="text">选择</el-button>
                       </div>
                       <span>  {{ '展示指标数量:' + element.showTagNum }}</span>
                       <p />
@@ -98,8 +105,8 @@
                 </el-col>
                 <el-col :span="6" :offset="1">
 
-                  <UserTroop :key="2" :list="userTroopsSelect" :group="group" class="kanban working" header-text="筛选用户群" complax-show="1" />
-                  <UserTroop :key="3" :list="userTroopsDel" :group="group" class="kanban done" header-text="排除用户群" complax-show="1" />
+                  <UserTroop ref="UserTroopsSelect" :key="2" :list="userTroopsSelect" :group="group" class="kanban working" header-text="筛选用户群" complax-show="1" />
+                  <UserTroop ref="UserTroopsDel" :key="3" :list="userTroopsDel" :group="group" class="kanban done" header-text="排除用户群" complax-show="1" />
 
                 </el-col>
               </div>
@@ -301,7 +308,7 @@
           </el-row>
         </el-card>
 
-        <div class="submit-view">
+        <div :class="isEdit == '0' ? 'display-none' :'submit-view' ">
           <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">
             提交
           </el-button>
@@ -322,7 +329,7 @@ import MDinput from '@/components/MDinput'
 import ElDragSelect from '@/components/DragSelect'
 import DndList from '../components/UserTagCondList'
 import UserTroop from '../components/UserTroop'
-import { createTask, updateTask, getFlowId } from '@/api/getdata'
+import { createTask, updateTask, getFlowId, getTask, getConfigFlow } from '@/api/getdata'
 import { createTaskInit } from '@/api/data-source-troop'
 import { getSourceTagList } from '@/api/user-tag'
 // const saveTypeOptions = ['下载', '用户群', '接口']
@@ -337,7 +344,8 @@ const defaultForm = {
   fileType: 'csv', // 下载文件类型,默认-csv
   fileSeparator: ',', // 文件分隔符,默认-逗号
   fileSplit: 'N', // 文件拆分方式,默认-不拆分
-  zipType: 'zip' // 压缩方式,默认-zip
+  zipType: 'zip', // 压缩方式,默认-zip
+  dataSourcesSelect: [] // 选择的数据源
 
 }
 export default {
@@ -345,11 +353,7 @@ export default {
   components: { MDinput, Sticky, Warning, ElDragSelect, DndList, UserTroop },
   filters: {
   },
-  props: {
-    isEdit: {
-      type: Boolean,
-      default: false
-    }},
+  props: {},
   data() {
     const validateRequire = (rule, value, callback) => {
       if (value === '') {
@@ -367,6 +371,8 @@ export default {
         return item.pinyin.indexOf(query) > -1
       },
       postForm: defaultForm,
+      userTroopsSelect: [], // 筛选用户群
+      userTroopsDel: [], // 排除用户群
       // postForm: Object.assign({}, defaultForm),
       loading: false,
       userListOptions: [],
@@ -382,15 +388,13 @@ export default {
       fileSeparatorOptions: [',', '|'],
       fileSplitOptions: [{ label: '不拆分', key: 'N' }, { label: '按条数拆分', key: 'L' }, { label: '按大小拆分', key: 'S' }],
       zipTypeOptions: ['zip', 'rar', '7z', 'gz'],
+      isEdit: '1',
       rules: {
         taskName: [{ validator: validateRequire, message: '取数任务名称为必填项!' }]
       },
       tempRoute: {},
       dataSources: [],
-      dataSourcesSelect: [],
       userTroops: [],
-      userTroopsSelect: [],
-      userTroopsDel: [],
       dataSourceCondTags: [],
       userTroopCondTags: [],
       dataSourceCondTagsSelect: [],
@@ -454,12 +458,13 @@ export default {
   watch: {
     dataSources: {
       handler: function(val, oldVal) {
-        this.dataSourcesSelect = []
+        this.postForm.dataSourcesSelect = []
         for (const item of this.dataSources) {
           if (item.isSelected === 'true') {
-            this.dataSourcesSelect = this.dataSourcesSelect.concat(item.sourceId)
+            this.postForm.dataSourcesSelect = this.postForm.dataSourcesSelect.concat(item)
           }
         }
+
         this.dataSourceCondTagList()
       },
       deep: true
@@ -473,23 +478,16 @@ export default {
   created() {
     this.postForm = defaultForm
     this.init()
-    console.log(1111)
-    // beforeRouteEnter()
-    console.log(this.$route.query)
 
-    console.log(this.$route.query.taskId)
-    if (this.isEdit) {
-      const id = this.$route.params && this.$route.params.id
-      this.fetchData(id)
+    if (JSON.stringify(this.$route.query) !== '{}') {
+      const taskId = this.$route.query.taskId
+      this.getTask(taskId)
+      this.isEdit = this.$route.query.isEdit
     }
     // Why need to make a copy of this.$route here?
     // Because if you enter this page and quickly switch tag, may be in the execution of the setTagsViewTitle function, this.$route is no longer pointing to the current page
     // https://github.com/PanJiaChen/vue-element-admin/issues/1221
     // this.tempRoute = Object.assign({}, this.$route)
-  },
-  mount() {
-    console.log(222)
-    console.log(this.$route.query)
   },
   methods: {
     beforeRouteEnter(to, from, next) {
@@ -498,29 +496,45 @@ export default {
         vm.projectStatus = JSON.parse(localStorage.getItem('params')).projectStatus
       })
     },
-    fetchData(id) {
-      this.postForm = defaultForm
-      // fetchArticle(id).then(response => {
-      //   this.postForm = response.data
-      //   // just for test
-      //   this.postForm.title += `   Article Id:${this.postForm.id}`
-      //   this.postForm.content_short += `   Article Id:${this.postForm.id}`
+    getTask(id) {
+      getTask(id).then(response => {
+        this.postForm = response.data
+        // 反显数据源
+        let data = { 'parentFlowId': id, 'flow_key': 'dataSourceConfig' }
+        getConfigFlow(data).then(response => {
+          const dataSourcesSelect = response.data.list[0].flowValue1
+          for (const item of this.dataSources) {
+            if (dataSourcesSelect.indexOf(item.sourceId) !== -1) {
+              item.isSelected = 'true'
+            }
+          }
+        })
 
-      //   // set tagsview title
-      //   this.setTagsViewTitle()
+        // 用户群
+        data = { 'parentFlowId': id, 'flow_key': 'userTroopConfig' }
+        getConfigFlow(data).then(response => {
+          const userTroopsSelect = response.data.list[0].flowValue1
+          const userTroopsDel = response.data.list[0].flowValue3
 
-      //   // set page title
-      //   this.setPageTitle()
-      // }).catch(err => {
-      //   console.log(err)
-      // })
+          this.$refs.UserTroopsSelect.complaxType = response.data.list[0].flowValue2
+          this.$refs.UserTroopsDel.complaxType = response.data.list[0].flowValue4
+
+          for (const item of this.userTroops) {
+            if (userTroopsSelect.indexOf(item.troopId) !== -1) {
+              this.UserTroopsSelect = this.UserTroopsSelect.concat(item)
+            }
+            if (userTroopsDel.indexOf(item.troopId) !== -1) {
+              this.userTroopsDel = this.userTroopsDel.concat(item)
+            }
+          }
+        })
+      }).catch(err => {
+        console.log(err)
+      })
     },
     init() {
       this.listLoading = true
       createTaskInit().then(response => {
-        // this.list = response.data.list
-        // this.total = response.data.total
-        // console.log(response)
         this.dataSources = response[0].data.list
         this.userTroops = response[1].data.list
         // Just to simulate the time of the request
@@ -549,23 +563,25 @@ export default {
     submitForm() {
       this.$refs.postForm.validate(valid => {
         if (valid) {
-        //   createTask(this.listQuery).then(response => {
-          //     setTimeout(() => {
-          //       this.listLoading = false
-          //     }, 1 * 1000)
-          //   })
+          // 保存用户群信息
+          this.postForm.userTroopsSelect = this.userTroopsSelect
+          this.postForm.userTroopsSelectCP = this.$refs.UserTroopsSelect.complaxType
+          this.postForm.userTroopsDel = this.userTroopsDel
+          this.postForm.userTroopsDelCP = this.$refs.UserTroopsDel.complaxType
+
+          // console.log(this.$refs.UserTroopSelect.complaxType)
 
           if (this.postForm.taskId === '') {
             createTask(this.postForm).then(response => {
               this.postForm.taskId = response.data
-              console.log(response)
               setTimeout(() => {
                 this.listLoading = false
               }, 1 * 1000)
             })
           } else {
             updateTask(this.postForm).then(response => {
-              console.log(response)
+              console.log(this.postForm)
+
               setTimeout(() => {
                 this.listLoading = false
               }, 1 * 1000)

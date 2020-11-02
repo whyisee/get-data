@@ -58,7 +58,7 @@ public class ${modelNameUpperCamel}Controller {
     @PostMapping("/search")
     public Result search(@RequestBody  Map< String, Object> params) {
     ${modelNameUpperCamel} ${modelNameLowerCamel} = JSONUtil.toBean((JSONObject.toJSONString(params)), ${modelNameUpperCamel}.class);
-    PageHelper.startPage((int)(null == params.get("page")?1:params.get("page")), (int)(null == params.get("limit")?20:params.get("limit")));
+    PageHelper.startPage((int)params.getOrDefault("page",1), (int)params.getOrDefault("limit",20));
     List<${modelNameUpperCamel}> list = ${modelNameLowerCamel}Service.search(${modelNameLowerCamel});
         PageInfo pageInfo = new PageInfo(list);
         return ResultGenerator.genSuccessResult(pageInfo);

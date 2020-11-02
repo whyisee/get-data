@@ -21,4 +21,34 @@
     <result column="create_persion" jdbcType="VARCHAR" property="createPersion" />
     <result column="create_date" jdbcType="VARCHAR" property="createDate" />
   </resultMap>
+
+  <sql id="Base_Column_List">
+  flow_id,flow_name,flow_type,parent_flow_id,flow_key,flow_value1
+  ,flow_value2,flow_value3,flow_value4,flow_value5
+  ,flow_sort,status,remark,create_persion,create_date
+  </sql>
+  <select id="search" parameterType="com.whyisee.getdata.model.TcGdConfigmain" resultMap="BaseResultMap">
+  select
+  <include refid="Base_Column_List" />
+  FROM tc_gd_configflow
+  WHERE 1=1
+  and status='1'
+    <if test="flowId != null and flowId !=''"> and  flow_id= #{flowId} </if>
+    <if test="flowName != null and flowName !=''"> and  flow_name= #{flowName} </if>
+    <if test="flowType != null and flowType !=''"> and  flow_type= #{flowType} </if>
+    <if test="parentFlowId != null and parentFlowId !=''"> and  parent_flow_id= #{parentFlowId} </if>
+    <if test="flowKey != null and flowKey !=''"> and  flow_key= #{flowKey} </if>
+    <if test="flowValue1 != null and flowValue1 !=''"> and  flow_value1= #{flowValue1} </if>
+    <if test="flowValue2 != null and flowValue2 !=''"> and  flow_value2= #{flowValue2} </if>
+    <if test="flowValue3 != null and flowValue3 !=''"> and  flow_value3= #{flowValue3} </if>
+    <if test="flowValue4 != null and flowValue4 !=''"> and  flow_value4= #{flowValue4} </if>
+    <if test="flowValue5 != null and flowValue5 !=''"> and  flow_value5= #{flowValue5} </if>
+    <if test="flowSort != null and flowSort !=''"> and  flow_sort= #{flowSort} </if>
+    <if test="status != null and status !=''"> and  status= #{status} </if>
+    <if test="remark != null and remark !=''"> and  remark= #{remark} </if>
+    <if test="createPersion != null and createPersion !=''"> and  create_persion= #{createPersion} </if>
+    <if test="createDate != null and createDate !=''"> and  create_date= #{createDate} </if>
+
+  </select>
+
 </mapper>
