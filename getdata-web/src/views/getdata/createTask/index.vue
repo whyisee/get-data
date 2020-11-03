@@ -85,9 +85,9 @@
                           inactive-color="#ff4949"
                         />
                       </div>
-                      <span>  {{ '展示指标数量:' + element.showTagNum }}</span>
+                      <span>  {{ '指标数量:' + element.showTagNum }}</span>
                       <p />
-                      <span>  {{ '筛选指标数量:' + element.condTagNum }} </span>
+                      <span>  {{ '主键:' + element.sourceKeyNameZh }} </span>
                       <p />
                       <span>  {{ '数据更新日期:' + element.updateDate }} </span>
                       <p />
@@ -151,25 +151,41 @@
               <div class="component-item">
                 <el-col :span="12">
                   <el-form-item label-width="90px" label="数据源指标:" class="postInfo-container-item">
-                    <el-drag-select v-model="dataSourceTag" style="width:400px;" multiple placeholder="数据源指标" filterable allow-create default-first-option>
-                      <el-option v-for="item in dataSourceTagOptions" :key="item.value" :label="item.label" :value="item.value" />
+                    <el-drag-select v-model="dataSourceTag" value-key="tagName" style="width:400px;" multiple placeholder="数据源指标" filterable default-first-option>
+                      <el-option v-for="item in dataSourceCondTags" :key="'dataSource.'+item.tagName" :label="item.tagNameZh" :value="item" />
                     </el-drag-select>
                   </el-form-item>
                 </el-col>
 
                 <el-col :span="12">
                   <el-form-item label-width="90px" label="用户群指标:" class="postInfo-container-item">
-                    <el-drag-select v-model="userTroopTag" style="width:400px;" multiple placeholder="用户群指标" filterable allow-create default-first-option>
-                      <el-option v-for="item in userTroopTagOptions" :key="item.value" :label="item.label" :value="item.value" />
+                    <el-drag-select v-model="userTroopTag" value-key="tagName" style="width:400px;" multiple placeholder="用户群指标" filterable default-first-option>
+                      <el-option v-for="item in userTroopCondTags" :key="'userTroop.'+item.tagName" :label="item.tagNameZh" :value="item" />
                     </el-drag-select>
                   </el-form-item>
                 </el-col>
                 <el-col :span="24">
 
                   <div style="margin-top:30px;margin-bottom:30px">
-                    <el-tag v-for="item of dataSourceTag.concat(userTroopTag)" :key="item" style="margin-right:15px;">
-                      {{ item }}
+                    <el-tag
+                      v-for="(item,indxe) of dataSourceTag.concat(userTroopTag).concat(userOtherTag)"
+                      :key="indxe+'.'+item.tagName"
+                      style="margin-right:15px;"
+                      @close="handleClose(tag)"
+                    >
+
+                      {{ item.tagNameZh }}
                     </el-tag>
+                    <el-input
+                      v-if="inputVisible"
+                      ref="saveTagInput"
+                      v-model="inputValue"
+                      class="input-new-tag"
+                      size="small"
+                      @keyup.enter.native="handleInputConfirm"
+                      @blur="handleInputConfirm"
+                    />
+                    <el-button v-else class="button-new-tag" size="small" @click="showInput">+ 自定义</el-button>
 
                   </div>
                 </el-col>
@@ -344,7 +360,7 @@ import DndList from '../components/UserTagCondList'
 import UserTroop from '../components/UserTroop'
 import { createTask, updateTask, getFlowId, getTask, getConfigFlow } from '@/api/getdata'
 import { createTaskInit } from '@/api/data-source-troop'
-import { getSourceTagList } from '@/api/user-tag'
+import { getSourceTagList, getTroopTagList } from '@/api/user-tag'
 import sqlFormatter from 'sql-formatter'
 
 // const saveTypeOptions = ['下载', '用户群', '接口']
@@ -415,34 +431,16 @@ export default {
       userTroopCondTags: [],
       dataSourceCondTagsSelect: [],
       userTroopCondTagsSelect: [],
-      dataSourceTag: ['Apple'],
+      dataSourceTag: [],
       dataShowTag: [],
 
-      dataSourceTagOptions: [{
-        value: 'Apple',
-        label: 'Apple'
-      }, {
-        value: 'Banana1',
-        label: 'Banana1'
-      },
-
-      {
-        value: 'Orange',
-        label: 'Orange'
-      }],
-      userTroopTag: ['Apple1'],
-      userTroopTagOptions: [{
-        value: 'Apple1',
-        label: 'Apple1'
-      }, {
-        value: 'Banana1',
-        label: 'Banana1'
-      }, {
-        value: 'Orange1',
-        label: 'Orange1'
-      }],
+      dataSourceTagOptions: [],
+      userTroopTag: [],
+      userTroopTagOptions: [],
+      userOtherTag: [],
       group: 'mission',
-
+      inputVisible: false,
+      inputValue: '',
       pickerOptions: {
         disabledDate(time) {
           return time.getTime() > Date.now()
@@ -485,6 +483,19 @@ export default {
       },
       deep: true
     },
+    userTroopsSelect: {
+      handler: function(val, oldVal) {
+        this.userTroopCondTags = []
+        // for (const item of this.dataSources) {
+        //   if (item.isSelected === 'true') {
+        //     this.postForm.dataSourcesSelect = this.postForm.dataSourcesSelect.concat(item)
+        //   }
+        // }
+
+        this.troopCondTagList()
+      }
+
+    },
     saveTypes(valArr) {
       console.log(valArr)
       // this.formThead = this.formTheadOptions.filter(i => valArr.indexOf(i) >= 0)
@@ -500,10 +511,6 @@ export default {
       this.getTask(taskId)
       this.isEdit = this.$route.query.isEdit
     }
-    // Why need to make a copy of this.$route here?
-    // Because if you enter this page and quickly switch tag, may be in the execution of the setTagsViewTitle function, this.$route is no longer pointing to the current page
-    // https://github.com/PanJiaChen/vue-element-admin/issues/1221
-    // this.tempRoute = Object.assign({}, this.$route)
   },
   methods: {
     beforeRouteEnter(to, from, next) {
@@ -538,15 +545,9 @@ export default {
           for (const item of this.userTroops) {
             if (userTroopsSelect.indexOf(item.troopId) !== -1) {
               this.userTroopsSelect = this.userTroopsSelect.concat(item)
-              // const index = userTroopsSelect.indexOf(item)
-              // this.userTroops.splice(index, 1)
-
-              // this.userTroops.splice(item)
             }
             if (userTroopsDel.indexOf(item.troopId) !== -1) {
               this.userTroopsDel = this.userTroopsDel.concat(item)
-              // const index = userTroopsDel.indexOf(item)
-              // this.userTroops.splice(index, 1)
             }
           }
           this.userTroops = this.userTroops.filter(t => userTroopsSelect.indexOf(t.troopId) === -1 && userTroopsDel.indexOf(t.troopId) === -1)
@@ -576,13 +577,27 @@ export default {
 
     dataSourceCondTagList() {
       this.listLoading = true
-      console.log(this.postForm.dataSourcesSelect)
       var tagFromId = '1'
       for (const item of this.postForm.dataSourcesSelect) {
         tagFromId = tagFromId + ',' + item.sourceId
       }
       getSourceTagList({ 'tagFromId': tagFromId }).then(response => {
         this.dataSourceCondTags = response.data.list
+        this.dataSourceTagOptions = response.data.list
+        setTimeout(() => {
+          this.listLoading = false
+        }, 1 * 1000)
+      })
+    },
+    troopCondTagList() {
+      this.listLoading = true
+      var tagFromId = '1'
+      for (const item of this.userTroopsSelect) {
+        tagFromId = tagFromId + ',' + item.troopId
+      }
+      getTroopTagList({ 'tagFromId': tagFromId }).then(response => {
+        this.userTroopCondTags = response.data.list
+        // this.userTroopCondTags = response.data.list
         setTimeout(() => {
           this.listLoading = false
         }, 1 * 1000)
@@ -634,6 +649,25 @@ export default {
       sqlContent = this.postForm.execSql
       /* 将sql内容进行格式后放入编辑器中*/
       this.postForm.execSql = sqlFormatter.format(sqlContent)
+    }, handleClose(tag) {
+      const item = { 'tagNameZh': tag, 'tagName': tag }
+      this.userOtherTag.splice(this.userOtherTag.indexOf(item), 1)
+    },
+    showInput() {
+      this.inputVisible = true
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
+    },
+    handleInputConfirm() {
+      const inputValue = this.inputValue
+      if (inputValue) {
+        const item = { 'tagNameZh': inputValue, 'tagName': inputValue }
+
+        this.userOtherTag.push(item)
+      }
+      this.inputVisible = false
+      this.inputValue = ''
     },
 
     getRemoteUserList(query) {

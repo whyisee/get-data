@@ -19,4 +19,29 @@
     <result column="create_persion" jdbcType="VARCHAR" property="createPersion" />
     <result column="create_date" jdbcType="VARCHAR" property="createDate" />
   </resultMap>
+
+  <sql id="Base_Column_List">
+    tag_id,tag_name,tag_name_zh,tag_from_id,tag_class_id,tag_data_type,tag_show_order,is_show,is_cond,status,remark,create_persion,create_date
+    </sql>
+
+  <select id="search" parameterType="com.whyisee.getdata.model.TcGdDatasource" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    FROM tc_gd_tagconfig_flow
+    WHERE 1=1
+    and status='1'
+    <if test="tagId != null and tagId !=''"> and  tag_id in ( ${tagId} ) </if>
+    <if test="tagName != null and tagName !=''"> and  tag_name= #{tagName} </if>
+    <if test="tagNameZh != null and tagNameZh !=''"> and  tag_name_zh= #{tagNameZh} </if>
+    <if test="tagFromId != null and tagFromId !=''"> and  tag_from_id in ( ${tagFromId} ) </if>
+    <if test="tagClassId != null and tagClassId !=''"> and  tag_class_id= #{tagClassId} </if>
+    <if test="tagDataType != null and tagDataType !=''"> and  tag_data_type= #{tagDataType} </if>
+    <if test="tagShowOrder != null and tagShowOrder !=''"> and  tag_show_order= #{tagShowOrder} </if>
+    <if test="isShow != null and isShow !=''"> and  is_show= #{isShow} </if>
+    <if test="isCond != null and isCond !=''"> and  is_cond= #{isCond} </if>
+    <if test="status != null and status !=''"> and  status= #{status} </if>
+    <if test="remark != null and remark !=''"> and  remark= #{remark} </if>
+    <if test="createPersion != null and createPersion !=''"> and  create_persion= #{createPersion} </if>
+    <if test="createDate != null and createDate !=''"> and  create_date= #{createDate} </if>
+  </select>
 </mapper>

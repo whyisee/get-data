@@ -10,7 +10,9 @@
     <result column="source_name_zh" jdbcType="VARCHAR" property="sourceNameZh" />
     <result column="source_type" jdbcType="VARCHAR" property="sourceType" />
     <result column="source_key" jdbcType="VARCHAR" property="sourceKey" />
-    <result column="source_alias" jdbcType="VARCHAR" property="sourceAlias" />
+      <result column="source_key_name_zh" jdbcType="VARCHAR" property="sourceKeyNameZh" />
+
+      <result column="source_alias" jdbcType="VARCHAR" property="sourceAlias" />
     <result column="show_tag_num" jdbcType="VARCHAR" property="showTagNum" />
     <result column="cond_tag_num" jdbcType="VARCHAR" property="condTagNum" />
     <result column="update_date" jdbcType="VARCHAR" property="updateDate" />
@@ -21,7 +23,7 @@
   </resultMap>
 
     <sql id="Base_Column_List">
-        source_id, source_name, source_name_zh, source_type, source_key, source_alias, show_tag_num, cond_tag_num, update_date, remark, create_persion, create_date
+        source_id, source_name, source_name_zh, source_type, source_key,source_key_name_zh, source_alias, show_tag_num, cond_tag_num, update_date, remark, create_persion, create_date
     </sql>
   <select id="search" parameterType="com.whyisee.getdata.model.TcGdDatasource" resultMap="BaseResultMap">
         select
@@ -34,6 +36,8 @@
       <if test="sourceNameZh != null and sourceNameZh !=''"> and  source_name_zh= #{sourceNameZh} </if>
       <if test="sourceType != null and sourceType !=''"> and  source_type= #{sourceType} </if>
       <if test="sourceKey != null and sourceKey !=''"> and  source_key= #{sourceKey} </if>
+      <if test="sourceKeyNameZh != null and sourceKeyNameZh !=''"> and  source_key_name_zh= #{sourceKeyNameZh} </if>
+
       <if test="sourceAlias != null and sourceAlias !=''"> and  source_alias= #{sourceAlias} </if>
       <if test="showTagNum != null and showTagNum !=''"> and  show_tag_num= #{showTagNum} </if>
       <if test="condTagNum != null and condTagNum !=''"> and  cond_tag_num= #{condTagNum} </if>

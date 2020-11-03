@@ -7,3 +7,11 @@ export function getSourceTagList(data) {
     data: data
   })
 }
+
+export function getTroopTagList(data) {
+  return request({
+    url: '/tagconfigflow/search',
+    method: 'post',
+    data: data
+  })
+}

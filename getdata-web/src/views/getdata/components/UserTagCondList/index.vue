@@ -54,14 +54,19 @@
       <el-col :span="8">
         <div :style="{width:width2,height:height}" class="dndList-list">
           <h3>{{ list2Title }}</h3>
-          <draggable :list="list2" :options="{group:{name: 'article',pull:'clone'}}" class="dragArea" :scroll="true" animation="30" :clone="clone">
+          <draggable :list="list2" :options="{group:{name: 'article',pull:'clone'}}" class="dragArea" animation="30" :clone="clone">
             <transition-group>
-              <div v-for="(element,index) in list2" :key="element.id+'list2'+index" :class="element.id==1?'item forbid':'item'">
+
+              <div v-for="(element,index) in list2" :key="element.tagId+'list2'+index" :class="element.tagId==1?'item forbid':'item'">
                 <div class="list-complete-item-handle2">
-                  {{ element.id }} {{ element.name }} {{ element.title }}
+                  <span :class="isDev%2 == 0 ? 'display-none' :'submit-view' ">  {{ '字段名:' + element.tagName +'|' }} </span>
+
+                  {{ element.tagNameZh }}
+
                 </div>
               </div>
             </transition-group>
+
           </draggable>
         </div>
       </el-col>

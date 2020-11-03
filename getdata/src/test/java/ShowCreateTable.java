@@ -16,7 +16,7 @@ public class ShowCreateTable {
     public static void main(String[] args) throws Exception {
         String filePath= "d:\\git\\myGit\\get-data\\getdata\\doc\\模型与接口.xlsx";
         //第几个sheet页
-        Sheet sheet = excelUtils.getSheetByNum(filePath,6);
+        Sheet sheet = excelUtils.getSheetByNum(filePath,3);
         genCreateTable(sheet,"mysql");
 
 

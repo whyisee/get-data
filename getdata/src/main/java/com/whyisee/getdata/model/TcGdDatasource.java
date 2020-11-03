@@ -35,6 +35,14 @@ public class TcGdDatasource {
     @Column(name = "source_key")
     private String sourceKey;
 
+
+
+    /**
+     * 主键中文名称
+     */
+    @Column(name = "source_key_name_zh")
+    private String sourceKeyNameZh;
+
     /**
      * 别名
      */
@@ -313,5 +321,14 @@ public class TcGdDatasource {
      */
     public void setCreateDate(String createDate) {
         this.createDate = createDate;
+    }
+
+
+    public String getSourceKeyNameZh() {
+        return sourceKeyNameZh;
+    }
+
+    public void setSourceKeyNameZh(String sourceKeyNameZh) {
+        this.sourceKeyNameZh = sourceKeyNameZh;
     }
 }
