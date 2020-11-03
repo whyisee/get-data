@@ -28,6 +28,13 @@ mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
+logging:
+  level:
+    com:
+      whyisee:
+        getdata:
+          dao: debug
+
 server:
   port: 8181
   servlet:

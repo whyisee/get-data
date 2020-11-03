@@ -164,7 +164,9 @@ export default {
     zipEncryption: '解压密码',
     operateType: '运算符',
     conditionValues: '条件值',
-    unionType: '关系'
+    unionType: '关系',
+    leftBracket: '括号',
+    rightBracket: '括号'
 
   },
   example: {

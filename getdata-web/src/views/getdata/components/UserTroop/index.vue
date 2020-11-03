@@ -19,8 +19,9 @@
       :style="{height:height}"
     >
       <div v-for="element in list" :key="element.troopId" class="board-item">
+        <span :class="isDev%2 == 0 ? 'display-none' :'submit-view' ">  {{ '表名:' + element.troopName +'|' }} </span>
+
         {{ element.troopNameZh }} ({{ element.troopNum }})
-        <span :class="isDev%2 == 0 ? 'display-none' :'submit-view' ">  {{ '|表名:' + element.troopName }} </span>
 
       </div>
     </draggable>

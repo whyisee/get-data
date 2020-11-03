@@ -151,7 +151,7 @@
               <div class="component-item">
                 <el-col :span="12">
                   <el-form-item label-width="90px" label="数据源指标:" class="postInfo-container-item">
-                    <el-drag-select v-model="dataSourceTag" style="width:400px;" multiple placeholder="数据源指标">
+                    <el-drag-select v-model="dataSourceTag" style="width:400px;" multiple placeholder="数据源指标" filterable allow-create default-first-option>
                       <el-option v-for="item in dataSourceTagOptions" :key="item.value" :label="item.label" :value="item.value" />
                     </el-drag-select>
                   </el-form-item>
@@ -159,7 +159,7 @@
 
                 <el-col :span="12">
                   <el-form-item label-width="90px" label="用户群指标:" class="postInfo-container-item">
-                    <el-drag-select v-model="userTroopTag" style="width:400px;" multiple placeholder="用户群指标">
+                    <el-drag-select v-model="userTroopTag" style="width:400px;" multiple placeholder="用户群指标" filterable allow-create default-first-option>
                       <el-option v-for="item in userTroopTagOptions" :key="item.value" :label="item.label" :value="item.value" />
                     </el-drag-select>
                   </el-form-item>
@@ -549,9 +549,7 @@ export default {
               // this.userTroops.splice(index, 1)
             }
           }
-          console.log(this.userTroops)
           this.userTroops = this.userTroops.filter(t => userTroopsSelect.indexOf(t.troopId) === -1 && userTroopsDel.indexOf(t.troopId) === -1)
-          console.log(this.userTroops)
         })
       }).catch(err => {
         console.log(err)
@@ -578,7 +576,12 @@ export default {
 
     dataSourceCondTagList() {
       this.listLoading = true
-      getSourceTagList({}).then(response => {
+      console.log(this.postForm.dataSourcesSelect)
+      var tagFromId = '1'
+      for (const item of this.postForm.dataSourcesSelect) {
+        tagFromId = tagFromId + ',' + item.sourceId
+      }
+      getSourceTagList({ 'tagFromId': tagFromId }).then(response => {
         this.dataSourceCondTags = response.data.list
         setTimeout(() => {
           this.listLoading = false

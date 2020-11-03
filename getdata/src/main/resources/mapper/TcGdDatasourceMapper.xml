@@ -29,7 +29,7 @@
         FROM tc_gd_datasource
         WHERE 1=1
         and status='1'
-      <if test="sourceId != null and sourceId !=''"> and  source_id in ( #{sourceId}  ) </if>
+      <if test="sourceId != null and sourceId !=''"> and  source_id in ( ${sourceId}  ) </if>
       <if test="sourceName != null and sourceName !=''"> and  source_name= #{sourceName} </if>
       <if test="sourceNameZh != null and sourceNameZh !=''"> and  source_name_zh= #{sourceNameZh} </if>
       <if test="sourceType != null and sourceType !=''"> and  source_type= #{sourceType} </if>

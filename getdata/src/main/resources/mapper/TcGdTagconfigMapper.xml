@@ -30,10 +30,10 @@
     FROM tc_gd_tagconfig
     WHERE 1=1
     and status='1'
-    <if test="tagId != null and tagId !=''"> and  tag_id in ( #{tagId} ) </if>
+    <if test="tagId != null and tagId !=''"> and  tag_id in ( ${tagId} ) </if>
     <if test="tagName != null and tagName !=''"> and  tag_name= #{tagName} </if>
     <if test="tagNameZh != null and tagNameZh !=''"> and  tag_name_zh= #{tagNameZh} </if>
-    <if test="tagFromId != null and tagFromId !=''"> and  tag_from_id in ( #{tagFromId} ) </if>
+    <if test="tagFromId != null and tagFromId !=''"> and  tag_from_id in ( ${tagFromId} ) </if>
     <if test="tagClassId != null and tagClassId !=''"> and  tag_class_id= #{tagClassId} </if>
     <if test="tagDataType != null and tagDataType !=''"> and  tag_data_type= #{tagDataType} </if>
     <if test="tagShowOrder != null and tagShowOrder !=''"> and  tag_show_order= #{tagShowOrder} </if>
