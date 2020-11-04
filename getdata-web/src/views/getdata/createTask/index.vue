@@ -48,6 +48,18 @@
             <el-form-item label="用户群流程" style="display:none">
               <el-input v-model="postForm.troopFlowId" />
             </el-form-item>
+            <el-form-item label="筛选条件流程" style="display:none">
+              <el-input v-model="postForm.condFlowId" />
+            </el-form-item>
+            <el-form-item label="展示指标流程" style="display:none">
+              <el-input v-model="postForm.showFlowId" />
+            </el-form-item>
+            <el-form-item label="执行配置流程" style="display:none">
+              <el-input v-model="postForm.execFlowId" />
+            </el-form-item>
+            <el-form-item label="结果配置流程" style="display:none">
+              <el-input v-model="postForm.dataFlowId" />
+            </el-form-item>
             <el-form-item style="margin-bottom: 10px;" prop="taskName">
               <MDinput v-model="postForm.taskName" :maxlength="100" name="name" required>
                 取数任务名称
@@ -135,7 +147,7 @@
                 />
               </div>
               <div class="editor-container">
-                <dnd-list ref="CondTags" :list1="dataSourceCondTags" :list2="userTroopCondTags" :list3="dataSourceCondTagsSelect" :list4="userTroopCondTagsSelect" list1-title="数据源指标列表:" list2-title="用户群指标列表" list3-title="已选择筛选条件" list4-title="已选择排除条件" />
+                <dnd-list ref="CondTags" :list1="dataSourceCondTags" :list2="userTroopCondTags" :list3="condTagsSelect" :list4="condTagsDel" list1-title="数据源指标列表:" list2-title="用户群指标列表" list3-title="已选择筛选条件" list4-title="已选择排除条件" />
               </div>
 
             </el-card>
@@ -168,13 +180,15 @@
 
                   <div style="margin-top:30px;margin-bottom:30px">
                     <el-tag
-                      v-for="(item,indxe) of dataSourceTag.concat(userTroopTag).concat(userOtherTag)"
-                      :key="indxe+'.'+item.tagName"
+                      v-for="(tag,indxe) of dataSourceTag.concat(userTroopTag).concat(userOtherTag)"
+                      :key="indxe+'.'+tag.tagName"
+                      closable
+                      :disable-transitions="false"
                       style="margin-right:15px;"
                       @close="handleClose(tag)"
                     >
 
-                      {{ item.tagNameZh }}
+                      {{ tag.tagNameZh }}
                     </el-tag>
                     <el-input
                       v-if="inputVisible"
@@ -218,13 +232,13 @@
             </el-col>
 
             <el-col :span="8">
-              <el-form-item label-width="120px" label="周期执行日:" class="postInfo-container-item" style="display: none">
+              <el-form-item label-width="120px" label="周期执行日:" :class="(postForm.cycleType == 'O'||postForm.cycleType == 'D') ? 'display-none' :'postInfo-container-item'">
                 <el-input v-model="postForm.cycleValue" :placeholder="$t('getdata.cycleValue')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
               </el-form-item>
             </el-col>
 
             <el-col :span="8 ">
-              <el-form-item label-width="120px" label="周期结束时间:" class="postInfo-container-item" style="display: none">
+              <el-form-item label-width="120px" label="周期结束时间:" :class="postForm.cycleType == 'O' ? 'display-none' :'postInfo-container-item' ">
                 <el-date-picker
                   v-model="postForm.cycleEndDate"
                   align="right"
@@ -236,8 +250,8 @@
                 />
               </el-form-item>
             </el-col>
-
           </el-row>
+
           <el-row>
             <el-col :span="24">
               <el-form-item label-width="120px" label="结果保存方式:" class="postInfo-container-item">
@@ -247,11 +261,11 @@
                 >
                   <el-checkbox
                     v-for="saveType in saveTypeOptions"
-                    :key="saveType"
-                    :label="saveType"
-                    :disabled="saveType === '下载'"
+                    :key="saveType.label"
+                    :label="saveType.key"
+                    :disabled="saveType.key === 'D'"
                   >
-                    {{ saveType }}
+                    {{ saveType.label }}
 
                   </el-checkbox>
                 </el-checkbox-group>
@@ -262,13 +276,13 @@
           <el-row>
 
             <el-col :span="8 ">
-              <el-form-item label-width="120px" label="用户群失效日期:" class="postInfo-container-item" style="display: none">
+              <el-form-item label-width="120px" label="用户群失效日期:" :class="saveTypes.indexOf('U')==-1 ? 'display-none' :'postInfo-container-item' ">
                 <el-date-picker
-                  v-model="createDate"
+                  v-model="postForm.troopEndDate"
                   align="right"
                   type="datetime"
                   format="yyyy-MM-dd HH:mm:ss"
-                  placeholder="创建时间"
+                  placeholder="用户群失效时间"
                   :picker-options="pickerOptions"
                   style="width: 200px;"
                 />
@@ -276,7 +290,7 @@
             </el-col>
 
             <el-col :span="8">
-              <el-form-item v-show="saveTypes.length === '3'" label-width="120px" label="对接接口:" class="postInfo-container-item">
+              <el-form-item label-width="120px" label="对接接口:" :class="saveTypes.indexOf('I')==-1 ? 'display-none' :'postInfo-container-item'">
                 <el-select v-model="postForm.interType" :placeholder="$t('getdata.interType')" clearable class="filter-item" style="width: 200px">
                   <el-option v-for="item in fileTypeOptions" :key="item" :label="item" :value="item" />
                 </el-select>
@@ -296,8 +310,8 @@
             </el-col>
 
             <el-col :span="8">
-              <el-form-item label-width="120px" label="文件条数/大小:" class="postInfo-container-item" style="display: none">
-                <el-input v-model="postForm.cycleValue" :placeholder="$t('getdata.fileSize')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+              <el-form-item label-width="120px" label="文件条数/大小:" :class="postForm.fileSplit === 'N' ? 'display-none' :'postInfo-container-item' ">
+                <el-input v-model="postForm.fileSplitValue" :placeholder="$t('getdata.fileSize')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -403,19 +417,21 @@ export default {
       },
       isDev: 0,
       postForm: defaultForm,
+      // this.postForm.dataConfig:{},
       userTroopsSelect: [], // 筛选用户群
       userTroopsDel: [], // 排除用户群
       // postForm: Object.assign({}, defaultForm),
       loading: false,
       userListOptions: [],
       execTypeOptions: ['mysql', 'hive'],
+      saveTypes: ['D'],
+
       cycleTypeOptions: [
         { label: '一次性执行', key: 'O' },
         { label: '每天执行', key: 'D' },
         { label: '每月执行', key: 'M' },
         { label: '每周执行', key: 'W' }],
-      saveTypes: ['下载'],
-      saveTypeOptions: ['下载', '用户群', '接口'],
+      saveTypeOptions: [{ key: 'D', label: '下载' }, { key: 'U', label: '用户群' }, { key: 'I', label: '接口' }],
       fileTypeOptions: ['csv', 'txt'],
       fileSeparatorOptions: [',', '|'],
       fileSplitOptions: [{ label: '不拆分', key: 'N' }, { label: '按条数拆分', key: 'L' }, { label: '按大小拆分', key: 'S' }],
@@ -429,8 +445,8 @@ export default {
       userTroops: [],
       dataSourceCondTags: [],
       userTroopCondTags: [],
-      dataSourceCondTagsSelect: [],
-      userTroopCondTagsSelect: [],
+      condTagsSelect: [],
+      condTagsDel: [],
       dataSourceTag: [],
       dataShowTag: [],
 
@@ -443,7 +459,7 @@ export default {
       inputValue: '',
       pickerOptions: {
         disabledDate(time) {
-          return time.getTime() > Date.now()
+          return time.getTime() < Date.now()
         },
         shortcuts: [{
           text: '今天',
@@ -486,20 +502,9 @@ export default {
     userTroopsSelect: {
       handler: function(val, oldVal) {
         this.userTroopCondTags = []
-        // for (const item of this.dataSources) {
-        //   if (item.isSelected === 'true') {
-        //     this.postForm.dataSourcesSelect = this.postForm.dataSourcesSelect.concat(item)
-        //   }
-        // }
-
         this.troopCondTagList()
       }
 
-    },
-    saveTypes(valArr) {
-      console.log(valArr)
-      // this.formThead = this.formTheadOptions.filter(i => valArr.indexOf(i) >= 0)
-      // this.key = this.key + 1// 为了保证table 每次都会重渲 In order to ensure the table will be re-rendered each time
     }
   },
   created() {
@@ -523,7 +528,7 @@ export default {
       getTask(id).then(response => {
         this.postForm = response.data
         // 反显数据源
-        let data = { 'parentFlowId': id, 'flow_key': 'dataSourceConfig' }
+        let data = { 'flowId': this.postForm.sourceFlowId, 'parentFlowId': id, 'flow_key': 'dataSourceConfig' }
         getConfigFlow(data).then(response => {
           const dataSourcesSelect = response.data.list[0].flowValue1
           for (const item of this.dataSources) {
@@ -534,23 +539,59 @@ export default {
         })
 
         // 用户群
-        data = { 'parentFlowId': id, 'flow_key': 'userTroopConfig' }
+        data = { 'flowId': this.postForm.troopFlowId, 'parentFlowId': id, 'flow_key': 'userTroopConfig' }
         getConfigFlow(data).then(response => {
           const userTroopsSelect = response.data.list[0].flowValue1
           const userTroopsDel = response.data.list[0].flowValue3
 
-          this.$refs.UserTroopsSelect.complaxType = response.data.list[0].flowValue2
-          this.$refs.UserTroopsDel.complaxType = response.data.list[0].flowValue4
+          this.userTroopsSelect = JSON.parse(response.data.list[0].flowValue5).userTroopsSelect
+          this.userTroopsDel = JSON.parse(response.data.list[0].flowValue5).userTroopsDel
 
-          for (const item of this.userTroops) {
-            if (userTroopsSelect.indexOf(item.troopId) !== -1) {
-              this.userTroopsSelect = this.userTroopsSelect.concat(item)
-            }
-            if (userTroopsDel.indexOf(item.troopId) !== -1) {
-              this.userTroopsDel = this.userTroopsDel.concat(item)
-            }
-          }
           this.userTroops = this.userTroops.filter(t => userTroopsSelect.indexOf(t.troopId) === -1 && userTroopsDel.indexOf(t.troopId) === -1)
+        })
+
+        // 筛选条件
+        data = { 'flowId': this.postForm.condFlowId, 'parentFlowId': id, 'flow_key': 'condTagConfig' }
+        getConfigFlow(data).then(response => {
+          this.condTagsSelect = JSON.parse(response.data.list[0].flowValue5).condTagsSelect
+          this.condTagsDel = JSON.parse(response.data.list[0].flowValue5).condTagsDel
+        })
+
+        // 展示指标
+        data = { 'flowId': this.postForm.showFlowId, 'parentFlowId': id, 'flow_key': 'showTagConfig' }
+        getConfigFlow(data).then(response => {
+          this.dataSourceTag = JSON.parse(response.data.list[0].flowValue5).dataSourceTag
+          this.userTroopTag = JSON.parse(response.data.list[0].flowValue5).userTroopTag
+          this.userOtherTag = JSON.parse(response.data.list[0].flowValue5).userOtherTag
+        })
+
+        // 执行配置
+
+        // 结果配置
+        data = { 'flowId': this.postForm.dataFlowId, 'parentFlowId': id, 'flow_key': 'dataFlowConfig' }
+        getConfigFlow(data).then(response => {
+          var dataConfig = JSON.parse(response.data.list[0].flowValue5).dataConfig
+          console.log(dataConfig.saveTypes)
+
+          this.saveTypes = dataConfig.saveTypes
+          // this.postForm.troopEndDate = dataConfig.troopEndDate
+          this.$set(this.postForm, 'troopEndDate', dataConfig.troopEndDate)
+          this.$set(this.postForm, 'interType', dataConfig.interType)
+          this.$set(this.postForm, 'fileSplit', dataConfig.fileSplit)
+          this.$set(this.postForm, 'fileSplitValue', dataConfig.fileSplitValue)
+          this.$set(this.postForm, 'fileType', dataConfig.fileType)
+          this.$set(this.postForm, 'fileSeparator', dataConfig.fileSeparator)
+          this.$set(this.postForm, 'zipType', dataConfig.zipType)
+          this.$set(this.postForm, 'zipEncryption', dataConfig.zipEncryption)
+
+          // this.postForm.interType = dataConfig.interType
+          // this.postForm.fileSplit = dataConfig.fileSplit
+          // this.postForm.fileSplitValue = dataConfig.fileSplitValue
+          // this.postForm.fileType = dataConfig.fileType
+          // this.postForm.fileSeparator = dataConfig.fileSeparator
+          // this.postForm.zipType = dataConfig.zipType
+          // this.postForm.zipEncryption = dataConfig.zipEncryption
+          console.log(this.postForm)
         })
       }).catch(err => {
         console.log(err)
@@ -581,7 +622,7 @@ export default {
       for (const item of this.postForm.dataSourcesSelect) {
         tagFromId = tagFromId + ',' + item.sourceId
       }
-      getSourceTagList({ 'tagFromId': tagFromId }).then(response => {
+      getSourceTagList({ 'tagFromId': tagFromId, 'limit': 10000 }).then(response => {
         this.dataSourceCondTags = response.data.list
         this.dataSourceTagOptions = response.data.list
         setTimeout(() => {
@@ -612,19 +653,61 @@ export default {
           this.postForm.userTroopsDel = this.userTroopsDel
           this.postForm.userTroopsDelCP = this.$refs.UserTroopsDel.complaxType
 
-          // console.log(this.$refs.UserTroopSelect.complaxType)
+          // 筛选条件
+          this.postForm.condTagsSelect = this.condTagsSelect
+          this.postForm.condTagsDel = this.condTagsDel
+
+          // 展示指标
+          this.postForm.dataSourceTag = this.dataSourceTag
+          this.postForm.userTroopTag = this.userTroopTag
+          this.postForm.userOtherTag = this.userOtherTag
+
+          // 执行配置
+          this.postForm.execConfig = {
+            'execType': this.postForm.execType,
+            'cycleType': this.postForm.cycleType,
+            'cycleValue': this.postForm.cycleValue,
+            'cycleEndDate': this.postForm.cycleEndDate
+          }
+
+          // 结果配置
+          this.postForm.dataConfig = {}
+          console.log(this.postForm.dataConfig)
+
+          this.postForm.dataConfig.saveTypes = this.saveTypes
+          this.postForm.dataConfig.troopEndDate = this.postForm.troopEndDate
+          this.postForm.dataConfig.interType = this.postForm.interType
+          this.postForm.dataConfig.fileSplit = this.postForm.fileSplit
+
+          this.postForm.dataConfig.fileSplitValue = this.postForm.fileSplitValue
+          this.postForm.dataConfig.fileType = this.postForm.fileType
+          this.postForm.dataConfig.fileSeparator = this.postForm.fileSeparator
+          this.postForm.dataConfig.zipType = this.postForm.zipType
+          this.postForm.dataConfig.zipEncryption = this.postForm.zipEncryption
 
           if (this.postForm.taskId === '') {
             createTask(this.postForm).then(response => {
-              this.postForm.taskId = response.data
+              this.postForm.taskId = response.data.taskId
+              this.postForm.sourceFlowId = response.data.sourceFlowId
+              this.postForm.troopFlowId = response.data.troopFlowId
+              this.postForm.condFlowId = response.data.condFlowId
+              this.postForm.showFlowId = response.data.showFlowId
+              this.postForm.execFlowId = response.data.execFlowId
+              this.postForm.dataFlowId = response.data.dataFlowId
+
               setTimeout(() => {
                 this.listLoading = false
               }, 1 * 1000)
             })
           } else {
             updateTask(this.postForm).then(response => {
-              console.log(this.postForm)
-
+              this.postForm.taskId = response.data.taskId
+              this.postForm.sourceFlowId = response.data.sourceFlowId
+              this.postForm.troopFlowId = response.data.troopFlowId
+              this.postForm.condFlowId = response.data.condFlowId
+              this.postForm.showFlowId = response.data.showFlowId
+              this.postForm.execFlowId = response.data.execFlowId
+              this.postForm.dataFlowId = response.data.dataFlowId
               setTimeout(() => {
                 this.listLoading = false
               }, 1 * 1000)
@@ -650,8 +733,15 @@ export default {
       /* 将sql内容进行格式后放入编辑器中*/
       this.postForm.execSql = sqlFormatter.format(sqlContent)
     }, handleClose(tag) {
-      const item = { 'tagNameZh': tag, 'tagName': tag }
-      this.userOtherTag.splice(this.userOtherTag.indexOf(item), 1)
+      if (this.userOtherTag.indexOf(tag) !== -1) {
+        this.userOtherTag.splice(this.userOtherTag.indexOf(tag), 1)
+      }
+      if (this.userTroopTag.indexOf(tag) !== -1) {
+        this.userTroopTag.splice(this.userTroopTag.indexOf(tag), 1)
+      }
+      if (this.dataSourceTag.indexOf(tag) !== -1) {
+        this.dataSourceTag.splice(this.dataSourceTag.indexOf(tag), 1)
+      }
     },
     showInput() {
       this.inputVisible = true

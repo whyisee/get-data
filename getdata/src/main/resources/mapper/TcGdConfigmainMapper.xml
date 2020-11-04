@@ -18,6 +18,8 @@
     <result column="data_flow_id" jdbcType="VARCHAR" property="dataFlowId" />
     <result column="cycle_type" jdbcType="VARCHAR" property="cycleType" />
     <result column="cycle_value" jdbcType="VARCHAR" property="cycleValue" />
+    <result column="cycle_end_date" jdbcType="VARCHAR" property="cycleEndDate" />
+
     <result column="data_file" jdbcType="VARCHAR" property="dataFile" />
     <result column="data_num" jdbcType="VARCHAR" property="dataNum" />
     <result column="task_status" jdbcType="VARCHAR" property="taskStatus" />
@@ -33,7 +35,7 @@
 
   <sql id="Base_Column_List">
   task_id,task_name,flow_id,exec_type,exec_sql,source_flow_id,troop_flow_id,cond_flow_id,show_flow_id
-  ,exec_flow_id,data_flow_id,cycle_type,cycle_value,data_file,data_num,task_status
+  ,exec_flow_id,data_flow_id,cycle_type,cycle_value,cycle_end_date,data_file,data_num,task_status
   ,begin_time,end_time,status,remark,create_persion,create_date,update_persion,update_date
   </sql>
   <select id="search" parameterType="com.whyisee.getdata.model.TcGdConfigmain" resultMap="BaseResultMap">
@@ -55,6 +57,8 @@
     <if test="    dataFlowId!= null and dataFlowId != '' ">and   data_flow_id  =    #{dataFlowId}   </if>
     <if test="    cycleType!= null and cycleType != '' ">and   cycle_type = #{cycleType}  </if>
     <if test="    cycleValue!= null and cycleValue != '' ">and   cycle_value   =#{cycleValue}  </if>
+    <if test="    cycleEndDate!= null and cycleEndDate != '' ">and   cycle_end_date   =#{cycleEndDate}  </if>
+
     <if test="    dataFile!= null and dataFile != '' ">and    data_file    =    #{dataFile}   </if>
     <if test="    dataNum!= null and dataNum != '' ">and    data_num  = #{dataNum} </if>
     <if test="    taskStatus!= null and taskStatus != '' ">and   task_status = #{taskStatus}  </if>

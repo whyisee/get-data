@@ -55,24 +55,10 @@ public class TcGdConfigmainController {
         String taskId= manageSqlTools.getSeqId(ConfigFactory.SEQ_COMMON_ID);
         String sourceFlowId= saveFlow(taskId,"dataSource",params ,"");
         String troopFlowId=saveFlow(taskId,"userTroop",params ,"");
-
-        //TcGdConfigflow tcGdConfigflow = new TcGdConfigflow();
-        //tcGdConfigflow.setFlowId(taskId);
-        //tcGdConfigflow.setFlowName("数据源配置");
-        //tcGdConfigflow.
-        //tcGdConfigflowService.save(tcGdConfigflow);
-        //String sourceFlowId= manageSqlTools.getSeqId(ConfigFactory.SEQ_COMMON_ID);
-
-        //params.getOrDefault()
-        System.out.println("===test===>"+params);
-        //String troopFlowId= manageSqlTools.getSeqId(ConfigFactory.SEQ_COMMON_ID);
-        String condFlowId= manageSqlTools.getSeqId(ConfigFactory.SEQ_COMMON_ID);
-        String showFlowId= manageSqlTools.getSeqId(ConfigFactory.SEQ_COMMON_ID);
-        String execFlowId= manageSqlTools.getSeqId(ConfigFactory.SEQ_COMMON_ID);
-        String dataFlowId= manageSqlTools.getSeqId(ConfigFactory.SEQ_COMMON_ID);
-
-
-
+        String condFlowId=saveFlow(taskId,"condTag",params ,"");
+        String showFlowId=saveFlow(taskId,"showTag",params ,"");
+        String execFlowId=saveFlow(taskId,"execFlow",params ,"");
+        String dataFlowId=saveFlow(taskId,"dataFlow",params ,"");
 
 
         tcGdConfigmain.setSourceFlowId(sourceFlowId);
@@ -85,7 +71,8 @@ public class TcGdConfigmainController {
         tcGdConfigmain.setCreatePersion(currentUser.getLoginName());
         tcGdConfigmain.setCreateDate(DateUtils.getDateTimeFormat(new Date()));
         tcGdConfigmainService.save(tcGdConfigmain);
-        return ResultGenerator.genSuccessResult(taskId);
+        //rs=
+        return ResultGenerator.genSuccessResult(tcGdConfigmain);
     }
 
     @DeleteMapping("/{id}")
@@ -114,9 +101,15 @@ public class TcGdConfigmainController {
 
         saveFlow(tcGdConfigmain.getTaskId(),"dataSource",params,tcGdConfigmain.getSourceFlowId());
         saveFlow(tcGdConfigmain.getTaskId(),"userTroop",params ,tcGdConfigmain.getTroopFlowId());
+        saveFlow(tcGdConfigmain.getTaskId(),"condTag",params ,tcGdConfigmain.getCondFlowId());
+        saveFlow(tcGdConfigmain.getTaskId(),"showTag",params ,tcGdConfigmain.getShowFlowId());
+        saveFlow(tcGdConfigmain.getTaskId(),"execFlow",params ,tcGdConfigmain.getExecFlowId());
+        saveFlow(tcGdConfigmain.getTaskId(),"dataFlow",params ,tcGdConfigmain.getDataFlowId());
+
+
 
         tcGdConfigmainService.update(tcGdConfigmain);
-        return ResultGenerator.genSuccessResult();
+        return ResultGenerator.genSuccessResult(tcGdConfigmain);
     }
 
     @GetMapping("/{id}")
@@ -179,6 +172,8 @@ public class TcGdConfigmainController {
         switch (flowType){
             case "dataSource" :
                 JSONArray dataSourcesSelect = jsonObject.getJSONArray("dataSourcesSelect");
+                flowValue5.append(" { \"dataSourcesSelect\": "+ dataSourcesSelect+"}");
+
                 for (int i = 0; i < dataSourcesSelect.size(); i++) {
                     if(i != 0){
                         flowValue1=flowValue1.append(",");
@@ -195,6 +190,9 @@ public class TcGdConfigmainController {
                 tcGdConfigflow.setFlowValue2(flowValue2.toString());
                 tcGdConfigflow.setFlowValue3(flowValue3.toString());
                 tcGdConfigflow.setFlowValue4(flowValue4.toString());
+                tcGdConfigflow.setFlowValue5(flowValue5.toString());
+
+
                 tcGdConfigflow.setFlowName("数据源配置");
                 tcGdConfigflow.setFlowType("getdata");
                 tcGdConfigflow.setFlowKey("dataSourceConfig");
@@ -203,6 +201,8 @@ public class TcGdConfigmainController {
             case "userTroop" :
                 JSONArray userTroopsSelect = jsonObject.getJSONArray("userTroopsSelect");
                 JSONArray userTroopsDel = jsonObject.getJSONArray("userTroopsDel");
+                flowValue5.append("{ \"userTroopsSelect\": "+ userTroopsSelect);
+                flowValue5.append(" ,\"userTroopsDel\": "+ userTroopsDel+"}");
                 for (int i = 0; i < userTroopsSelect.size(); i++) {
                     if (i != 0) {
                         flowValue1=flowValue1.append(",");
@@ -222,17 +222,62 @@ public class TcGdConfigmainController {
                 tcGdConfigflow.setFlowValue2(flowValue2.toString());
                 tcGdConfigflow.setFlowValue3(flowValue3.toString());
                 tcGdConfigflow.setFlowValue4(flowValue4.toString());
+                tcGdConfigflow.setFlowValue5(flowValue5.toString());
+
                 tcGdConfigflow.setFlowName("用户群配置");
                 tcGdConfigflow.setFlowType("getdata");
                 tcGdConfigflow.setFlowKey("userTroopConfig");
                 tcGdConfigflow.setFlowSort("1002");
+                break;
 
+            case "condTag":
+                JSONArray condTagsSelect = jsonObject.getJSONArray("condTagsSelect");
+                JSONArray condTagsDel = jsonObject.getJSONArray("condTagsDel");
+                flowValue5.append("{ \"condTagsSelect\": "+ condTagsSelect);
+                flowValue5.append(" ,\"condTagsDel\": "+ condTagsDel+"}");
+
+                tcGdConfigflow.setFlowValue5(flowValue5.toString());
+                tcGdConfigflow.setFlowName("数据源条件配置");
+                tcGdConfigflow.setFlowType("getdata");
+                tcGdConfigflow.setFlowKey("condTagConfig");
+                tcGdConfigflow.setFlowSort("1003");
+                break;
+            case"showTag":
+                JSONArray dataSourceTag = jsonObject.getJSONArray("dataSourceTag");
+                JSONArray userTroopTag = jsonObject.getJSONArray("userTroopTag");
+                JSONArray userOtherTag = jsonObject.getJSONArray("userOtherTag");
+                flowValue5.append("{ \"dataSourceTag\": "+ dataSourceTag);
+                flowValue5.append(" ,\"userTroopTag\": "+ userTroopTag);
+                flowValue5.append(" ,\"userOtherTag\": "+ userOtherTag+"}");
+
+                tcGdConfigflow.setFlowValue5(flowValue5.toString());
+                tcGdConfigflow.setFlowName("展示指标配置");
+                tcGdConfigflow.setFlowType("getdata");
+                tcGdConfigflow.setFlowKey("showTagConfig");
+                tcGdConfigflow.setFlowSort("1004");
+                break;
+            case "execFlow":
+                flowValue5.append("{ \"execConfig\": "+ jsonObject.get("execConfig")+"}");
+
+                tcGdConfigflow.setFlowValue5(flowValue5.toString());
+                tcGdConfigflow.setFlowName("执行配置");
+                tcGdConfigflow.setFlowType("getdata");
+                tcGdConfigflow.setFlowKey("execFlowConfig");
+                tcGdConfigflow.setFlowSort("1005");
+                break;
+
+            case "dataFlow":
+                flowValue5.append("{ \"dataConfig\": "+ jsonObject.get("dataConfig")+"}");
+                tcGdConfigflow.setFlowValue5(flowValue5.toString());
+                tcGdConfigflow.setFlowName("结果配置");
+                tcGdConfigflow.setFlowType("getdata");
+                tcGdConfigflow.setFlowKey("dataFlowConfig");
+                tcGdConfigflow.setFlowSort("1006");
                 break;
             default :
 
         }
         // 新增/更新
-        System.out.println("===test===>"+flowId);
         if(null==flowId||"".equals(flowId)) {
             flowId = manageSqlTools.getSeqId(ConfigFactory.SEQ_COMMON_ID);
             tcGdConfigflow.setFlowId(flowId);

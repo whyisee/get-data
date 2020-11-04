@@ -83,6 +83,11 @@ public class TcGdConfigmain {
     @Column(name = "cycle_value")
     private String cycleValue;
 
+
+
+
+    @Column(name = "cycle_end_date")
+    private String cycleEndDate;
     /**
      * 最新结果文件
      */
@@ -577,5 +582,13 @@ public class TcGdConfigmain {
      */
     public void setUpdateDate(String updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public String getCycleEndDate() {
+        return cycleEndDate;
+    }
+
+    public void setCycleEndDate(String cycleEndDate) {
+        this.cycleEndDate = cycleEndDate;
     }
 }

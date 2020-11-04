@@ -10,7 +10,7 @@
 
               <div v-for="(element,index) in list1" :key="element.tagId+'list1'+index" :class="element.tagId==1?'item forbid':'item'">
                 <div class="list-complete-item-handle2">
-                  <span :class="isDev%2 == 0 ? 'display-none' :'submit-view' ">  {{ '字段名:' + element.tagName +'|' }} </span>
+                  <span :class="isDev%2 == 0 ? 'display-none' :'submit-view' ">  {{ element.tagName +'|' }} </span>
 
                   {{ element.tagNameZh }}
 
@@ -59,7 +59,7 @@
 
               <div v-for="(element,index) in list2" :key="element.tagId+'list2'+index" :class="element.tagId==1?'item forbid':'item'">
                 <div class="list-complete-item-handle2">
-                  <span :class="isDev%2 == 0 ? 'display-none' :'submit-view' ">  {{ '字段名:' + element.tagName +'|' }} </span>
+                  <span :class="isDev%2 == 0 ? 'display-none' :'submit-view' ">  {{ element.tagName +'|' }} </span>
 
                   {{ element.tagNameZh }}
 
