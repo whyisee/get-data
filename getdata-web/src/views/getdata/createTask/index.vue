@@ -179,6 +179,23 @@
                 <el-col :span="24">
 
                   <div style="margin-top:30px;margin-bottom:30px">
+                    <el-popover
+                      placement="right"
+                      width="800"
+                      trigger="click"
+                    >
+                      <el-table :data="dataSourceTag.concat(userTroopTag).concat(userOtherTag)">
+                        <el-table-column width="150" property="tagNameZh" label="标签名称" />
+                        <el-table-column width="100" property="name" label="标签来源" />
+                        <el-table-column width="100" property="address" label="转义" />
+                        <el-table-column width="100" property="address" label="脱敏" />
+                        <el-table-column width="100" property="address" label="默认值" />
+                        <el-table-column width="100" property="address" label="单位转换" />
+                        <el-table-column width="100" property="address" label="函数" />
+                      </el-table>
+                      <el-button slot="reference">展示配置</el-button>
+                    </el-popover>
+
                     <el-tag
                       v-for="(tag,indxe) of dataSourceTag.concat(userTroopTag).concat(userOtherTag)"
                       :key="indxe+'.'+tag.tagName"
@@ -456,6 +473,7 @@ export default {
       userOtherTag: [],
       group: 'mission',
       inputVisible: false,
+      showTagConfigVisible: false,
       inputValue: '',
       pickerOptions: {
         disabledDate(time) {
@@ -482,6 +500,7 @@ export default {
           }
         }]
       },
+
       createDate: ''
     }
   },
@@ -749,10 +768,17 @@ export default {
         this.$refs.saveTagInput.$refs.input.focus()
       })
     },
+
+    showTagConfig() {
+      this.showTagConfigVisible = true
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
+    },
     handleInputConfirm() {
       const inputValue = this.inputValue
       if (inputValue) {
-        const item = { 'tagNameZh': inputValue, 'tagName': inputValue }
+        const item = { 'tagNameZh': inputValue, 'tagName': inputValue, 'tagValue': inputValue }
 
         this.userOtherTag.push(item)
       }

@@ -250,6 +250,33 @@ public class TcGdConfigmainController {
                 flowValue5.append(" ,\"userTroopTag\": "+ userTroopTag);
                 flowValue5.append(" ,\"userOtherTag\": "+ userOtherTag+"}");
 
+                //sql生成
+                StringBuffer tempSql1 = new StringBuffer(" select ");
+                StringBuffer tempSql2 = new StringBuffer(" select ");
+
+                for (int i = 0; i < dataSourceTag.size(); i++) {
+                    tempSql1=tempSql1.append(" '"+JSONUtil.getJSONFromString(dataSourceTag.get(i).toString()).get("tagNameZh")+"' ,");
+                    tempSql2=tempSql2.append(" TS"+JSONUtil.getJSONFromString(dataSourceTag.get(i).toString()).get("tagFromId")+"."
+                            +JSONUtil.getJSONFromString(dataSourceTag.get(i).toString()).get("tagName")+" ,");
+                }
+                for (int i = 0; i < userTroopTag.size(); i++) {
+                    tempSql1=tempSql1.append(" '"+JSONUtil.getJSONFromString(userTroopTag.get(i).toString()).get("tagNameZh")+"' ,");
+                    tempSql2=tempSql2.append(" TU"+JSONUtil.getJSONFromString(userTroopTag.get(i).toString()).get("tagFromId")+"."
+                            +JSONUtil.getJSONFromString(userTroopTag.get(i).toString()).get("tagName")+" ,");
+                }
+                for (int i = 0; i < userOtherTag.size(); i++) {
+                    tempSql1=tempSql1.append(" '"+JSONUtil.getJSONFromString(userOtherTag.get(i).toString()).get("tagNameZh")+"' ,");
+                    tempSql2=tempSql2.append(" '"+JSONUtil.getJSONFromString(userOtherTag.get(i).toString()).get("tagValue")+"' ,");
+                }
+
+
+                tempSql1.deleteCharAt(tempSql1.length() - 1);
+                tempSql2.deleteCharAt(tempSql2.length() - 1);
+
+                flowValue4=tempSql1.append(" from dual union all "+tempSql2);
+
+                tcGdConfigflow.setFlowValue4(flowValue4.toString());
+
                 tcGdConfigflow.setFlowValue5(flowValue5.toString());
                 tcGdConfigflow.setFlowName("展示指标配置");
                 tcGdConfigflow.setFlowType("getdata");
@@ -289,5 +316,11 @@ public class TcGdConfigmainController {
         }
 
         return flowId;
+    }
+
+    private String getExecSql(){
+
+
+        return null;
     }
 }

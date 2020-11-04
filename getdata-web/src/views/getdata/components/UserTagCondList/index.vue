@@ -260,16 +260,8 @@ export default {
       console.log(321)
     },
     deleteEle(ele, list) {
-      for (const item of list) {
-        if (item.id === ele.id) {
-          const index = list.indexOf(item)
-          list.splice(index, 1)
-          break
-        }
-      }
-      // if (this.isNotInList2(ele)) {
-      //   this.list2.unshift(ele)
-      // }
+      const index = list.findIndex(i => i === ele)
+      list.splice(index, 1)
     },
     pushEle(ele) {
       for (const item of this.list2) {
@@ -285,8 +277,6 @@ export default {
       }
     },
     setData(dataTransfer) {
-      // to avoid Firefox bug
-      // Detail see : https://github.com/RubaXa/Sortable/issues/1012
       dataTransfer.setData('Text', '')
     }
 
