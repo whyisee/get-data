@@ -549,12 +549,13 @@ export default {
         // 反显数据源
         let data = { 'flowId': this.postForm.sourceFlowId, 'parentFlowId': id, 'flow_key': 'dataSourceConfig' }
         getConfigFlow(data).then(response => {
-          const dataSourcesSelect = JSON.parse(response.data.list[0].flowValue5).dataSourcesSelect
-          const dataSourcesSelectId = dataSourcesSelect.map(obj => { return obj.sourceId })
-
-          for (const item of this.dataSources) {
-            if (dataSourcesSelectId.indexOf(item.sourceId) !== -1) {
-              item.isSelected = 'true'
+          if (response.data.list[0].flowValue5 !== '') {
+            const dataSourcesSelect = JSON.parse(response.data.list[0].flowValue5).dataSourcesSelect
+            const dataSourcesSelectId = dataSourcesSelect.map(obj => { return obj.sourceId })
+            for (const item of this.dataSources) {
+              if (dataSourcesSelectId.indexOf(item.sourceId) !== -1) {
+                item.isSelected = 'true'
+              }
             }
           }
         })
@@ -562,28 +563,37 @@ export default {
         // 用户群
         data = { 'flowId': this.postForm.troopFlowId, 'parentFlowId': id, 'flow_key': 'userTroopConfig' }
         getConfigFlow(data).then(response => {
-          const userTroopsSelect = response.data.list[0].flowValue1
-          const userTroopsDel = response.data.list[0].flowValue3
+          console.log(response.data.list[0].flowValue5)
+          if (response.data.list[0].flowValue5 !== '') {
+            this.userTroopsSelect = JSON.parse(response.data.list[0].flowValue5).userTroopsSelect
+            this.userTroopsDel = JSON.parse(response.data.list[0].flowValue5).userTroopsDel
+            const userTroopsSelect = this.userTroopsSelect.map(obj => { return obj.troopId })
+            const userTroopsDel = this.userTroopsDel.map(obj => { return obj.troopId })
+            console.log(response.data.list[0].flowValue5)
+            this.$refs.UserTroopsSelect.complaxType = JSON.parse(response.data.list[0].flowValue5).userTroopsSelectCP
+            this.$refs.UserTroopsDel.complaxType = JSON.parse(response.data.list[0].flowValue5).userTroopsDelCP
 
-          this.userTroopsSelect = JSON.parse(response.data.list[0].flowValue5).userTroopsSelect
-          this.userTroopsDel = JSON.parse(response.data.list[0].flowValue5).userTroopsDel
-
-          this.userTroops = this.userTroops.filter(t => userTroopsSelect.indexOf(t.troopId) === -1 && userTroopsDel.indexOf(t.troopId) === -1)
+            this.userTroops = this.userTroops.filter(t => userTroopsSelect.indexOf(t.troopId) === -1 && userTroopsDel.indexOf(t.troopId) === -1)
+          }
         })
 
         // 筛选条件
         data = { 'flowId': this.postForm.condFlowId, 'parentFlowId': id, 'flow_key': 'condTagConfig' }
         getConfigFlow(data).then(response => {
-          this.condTagsSelect = JSON.parse(response.data.list[0].flowValue5).condTagsSelect
-          this.condTagsDel = JSON.parse(response.data.list[0].flowValue5).condTagsDel
+          if (response.data.list[0].flowValue5 !== '') {
+            this.condTagsSelect = JSON.parse(response.data.list[0].flowValue5).condTagsSelect
+            this.condTagsDel = JSON.parse(response.data.list[0].flowValue5).condTagsDel
+          }
         })
 
         // 展示指标
         data = { 'flowId': this.postForm.showFlowId, 'parentFlowId': id, 'flow_key': 'showTagConfig' }
         getConfigFlow(data).then(response => {
-          this.dataSourceTag = JSON.parse(response.data.list[0].flowValue5).dataSourceTag
-          this.userTroopTag = JSON.parse(response.data.list[0].flowValue5).userTroopTag
-          this.userOtherTag = JSON.parse(response.data.list[0].flowValue5).userOtherTag
+          if (response.data.list[0].flowValue5 !== '') {
+            this.dataSourceTag = JSON.parse(response.data.list[0].flowValue5).dataSourceTag
+            this.userTroopTag = JSON.parse(response.data.list[0].flowValue5).userTroopTag
+            this.userOtherTag = JSON.parse(response.data.list[0].flowValue5).userOtherTag
+          }
         })
 
         // 执行配置
@@ -604,15 +614,6 @@ export default {
           this.$set(this.postForm, 'fileSeparator', dataConfig.fileSeparator)
           this.$set(this.postForm, 'zipType', dataConfig.zipType)
           this.$set(this.postForm, 'zipEncryption', dataConfig.zipEncryption)
-
-          // this.postForm.interType = dataConfig.interType
-          // this.postForm.fileSplit = dataConfig.fileSplit
-          // this.postForm.fileSplitValue = dataConfig.fileSplitValue
-          // this.postForm.fileType = dataConfig.fileType
-          // this.postForm.fileSeparator = dataConfig.fileSeparator
-          // this.postForm.zipType = dataConfig.zipType
-          // this.postForm.zipEncryption = dataConfig.zipEncryption
-          console.log(this.postForm)
         })
       }).catch(err => {
         console.log(err)
@@ -632,7 +633,6 @@ export default {
     getFlowId() {
       getFlowId().then(response => {
         const { data } = response
-        console.log(data)
         return data
       })
     },
