@@ -85,7 +85,7 @@
                   <div v-for="element in dataSources" :key="element.sourceId">
                     <el-card class="box-card" style="margin-top:10px;">
                       <div slot="header" class="clearfix">
-                        <span> {{ '数据源名称:' + element.sourceNameZh }}</span>
+                        <span> {{ '数据源:' + element.sourceNameZh }}</span>
 
                         <el-switch
                           v-model="element.isSelected"
@@ -549,9 +549,11 @@ export default {
         // 反显数据源
         let data = { 'flowId': this.postForm.sourceFlowId, 'parentFlowId': id, 'flow_key': 'dataSourceConfig' }
         getConfigFlow(data).then(response => {
-          const dataSourcesSelect = response.data.list[0].flowValue1
+          const dataSourcesSelect = JSON.parse(response.data.list[0].flowValue5).dataSourcesSelect
+          const dataSourcesSelectId = dataSourcesSelect.map(obj => { return obj.sourceId })
+
           for (const item of this.dataSources) {
-            if (dataSourcesSelect.indexOf(item.sourceId) !== -1) {
+            if (dataSourcesSelectId.indexOf(item.sourceId) !== -1) {
               item.isSelected = 'true'
             }
           }

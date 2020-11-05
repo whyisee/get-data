@@ -164,9 +164,9 @@ public class TcGdConfigmainController {
         StringBuffer flowValue1 = new StringBuffer();
         StringBuffer flowValue2 = new StringBuffer();
         StringBuffer flowValue3 = new StringBuffer();
-        StringBuffer flowValue4 = new StringBuffer();
-        StringBuffer flowValue5 = new StringBuffer();
-
+        StringBuffer flowValue4 = new StringBuffer(); //每步的sql
+        StringBuffer flowValue5 = new StringBuffer(); //原始json--先暂时使用保存时候解析成sql,后期可以单独开发解析程序
+        String mainSourceKey="";
         JSONObject jsonObject =JSONUtil.getJSONFromString((JSONObject.toJSONString(params)));
 
         switch (flowType){
@@ -175,16 +175,18 @@ public class TcGdConfigmainController {
                 flowValue5.append(" { \"dataSourcesSelect\": "+ dataSourcesSelect+"}");
 
                 for (int i = 0; i < dataSourcesSelect.size(); i++) {
-                    if(i != 0){
-                        flowValue1=flowValue1.append(",");
-                        flowValue2=flowValue2.append(",");
-                        flowValue3=flowValue3.append(",");
-                        flowValue4=flowValue4.append(",");
+                    if(i == 0){
+
+                        flowValue4=flowValue4.append(" from "+JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceName")
+                                + " TS" +JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceId"));
+                        mainSourceKey=" TS" +JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceId")
+                                + "." + JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceKey");
+                    }else {
+                        flowValue4 = flowValue4.append(" \n left outer join  " + JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceName")
+                                + " TS" + JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceId")
+                                + " on " + mainSourceKey + " = " + " TS" + JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceId")
+                                + "." + JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceKey"));
                     }
-                    flowValue1=flowValue1.append(JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceId"));
-                    flowValue2=flowValue2.append(JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceName"));
-                    flowValue3=flowValue3.append(JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceNameZh"));
-                    flowValue4=flowValue4.append(JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceAlias"));
                 }
                 tcGdConfigflow.setFlowValue1(flowValue1.toString());
                 tcGdConfigflow.setFlowValue2(flowValue2.toString());
@@ -273,7 +275,7 @@ public class TcGdConfigmainController {
                 tempSql1.deleteCharAt(tempSql1.length() - 1);
                 tempSql2.deleteCharAt(tempSql2.length() - 1);
 
-                flowValue4=tempSql1.append(" from dual union all "+tempSql2);
+                flowValue4=tempSql1.append(" from dual \n union all "+tempSql2);
 
                 tcGdConfigflow.setFlowValue4(flowValue4.toString());
 
