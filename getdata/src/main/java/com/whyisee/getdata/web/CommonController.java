@@ -6,6 +6,7 @@ import com.whyisee.getdata.configurer.ConfigFactory;
 import com.whyisee.getdata.core.Result;
 import com.whyisee.getdata.core.ResultGenerator;
 import com.whyisee.getdata.dao.ManageSqlTools;
+import com.whyisee.getdata.dao.MysqlTableMapper;
 import com.whyisee.getdata.model.TcGdConfigflow;
 import com.whyisee.getdata.model.TcGdConfigmain;
 import com.whyisee.getdata.model.TcGdDatasource;
@@ -43,6 +44,9 @@ public class CommonController {
     private ManageSqlTools manageSqlTools;
     @Resource
     private TcGdConfigmainService tcGdConfigmainService;
+
+    @Resource
+    MysqlTableMapper  tableDao;
 
 /*    @GetMapping("/seq")
     public Result getCommonSeq(String seqName) {
@@ -90,4 +94,17 @@ public class CommonController {
         List tcGdDatasource = manageSqlTools.queryList(parser,param);
         return ResultGenerator.genSuccessResult(tcGdDatasource);
     }
+
+    @RequestMapping("/list")
+    public @ResponseBody Result list(String id) {
+
+        return ResultGenerator.genSuccessResult(tableDao.listTable());
+    }
+    @RequestMapping("/columns")
+    public @ResponseBody Result info(String tableName) {
+
+        return ResultGenerator.genSuccessResult(tableDao.listTableColumn(tableName));
+
+    }
+
 }

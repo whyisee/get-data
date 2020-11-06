@@ -62,7 +62,7 @@ public class TcGdConfigmainController {
         String showFlowId=saveFlow(taskId,"showTag",params ,"");
         String execFlowId=saveFlow(taskId,"execFlow",params ,"");
         String dataFlowId=saveFlow(taskId,"dataFlow",params ,"");
-
+        String execSql="";
 
         tcGdConfigmain.setSourceFlowId(sourceFlowId);
         tcGdConfigmain.setTroopFlowId(troopFlowId);
@@ -74,6 +74,14 @@ public class TcGdConfigmainController {
         tcGdConfigmain.setCreatePersion(currentUser.getLoginName());
         tcGdConfigmain.setCreateDate(DateUtils.getDateTimeFormat(new Date()));
         tcGdConfigmainService.save(tcGdConfigmain);
+        if(null==tcGdConfigmain.getExecSql()||"".equals(tcGdConfigmain.getExecSql())) {
+            execSql = getExecSql(taskId);
+        }
+        if(!"".equals(execSql)){
+            tcGdConfigmain.setExecSql(execSql);
+        }
+        tcGdConfigmainService.update(tcGdConfigmain);
+        tcGdConfigmain.setExecSql("");
         //rs=
         return ResultGenerator.genSuccessResult(tcGdConfigmain);
     }
@@ -100,7 +108,6 @@ public class TcGdConfigmainController {
          * @used in: TcGdConfigmainController
          */
         TcGdConfigmain tcGdConfigmain = JSONUtil.toBean((JSONObject.toJSONString(params)), TcGdConfigmain.class);
-        System.out.println("===test===>"+params);
 
         saveFlow(tcGdConfigmain.getTaskId(),"dataSource",params,tcGdConfigmain.getSourceFlowId());
         saveFlow(tcGdConfigmain.getTaskId(),"userTroop",params ,tcGdConfigmain.getTroopFlowId());
@@ -108,16 +115,27 @@ public class TcGdConfigmainController {
         saveFlow(tcGdConfigmain.getTaskId(),"showTag",params ,tcGdConfigmain.getShowFlowId());
         saveFlow(tcGdConfigmain.getTaskId(),"execFlow",params ,tcGdConfigmain.getExecFlowId());
         saveFlow(tcGdConfigmain.getTaskId(),"dataFlow",params ,tcGdConfigmain.getDataFlowId());
-
-
+        String execSql="";
 
         tcGdConfigmainService.update(tcGdConfigmain);
+
+        if(null==tcGdConfigmain.getExecSql()||"".equals(tcGdConfigmain.getExecSql())) {
+            execSql = getExecSql(tcGdConfigmain.getTaskId());
+        }
+        if(!"".equals(execSql)){
+            tcGdConfigmain.setExecSql(execSql);
+        }
+        tcGdConfigmainService.update(tcGdConfigmain);
+        tcGdConfigmain.setExecSql("");
+
         return ResultGenerator.genSuccessResult(tcGdConfigmain);
     }
 
     @GetMapping("/{id}")
     public Result detail(@PathVariable String id) {
         TcGdConfigmain tcGdConfigmain = tcGdConfigmainService.findById(id);
+        tcGdConfigmain.setExecSql("");
+
         return ResultGenerator.genSuccessResult(tcGdConfigmain);
     }
 
@@ -180,15 +198,15 @@ public class TcGdConfigmainController {
                 for (int i = 0; i < dataSourcesSelect.size(); i++) {
                     if(i == 0){
 
-                        flowValue4=flowValue4.append(" from "+JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceName")
-                                + " TS" +JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceId"));
-                        mainSourceKey=" TS" +JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceId")
+                        flowValue4=flowValue4.append("\n from "+JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceName")
+                                + " T" +JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceId"));
+                        mainSourceKey=" T" +JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceId")
                                 + "." + JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceKey");
                         setMainSourceKey(mainSourceKey);
                     }else {
                         flowValue4 = flowValue4.append("\n left outer join  " + JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceName")
-                                + " TS" + JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceId")
-                                + " on " + mainSourceKey + " = " + " TS" + JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceId")
+                                + " T" + JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceId")
+                                + " on " + mainSourceKey + " = " + " T" + JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceId")
                                 + "." + JSONUtil.getJSONFromString(dataSourcesSelect.get(i).toString()).get("sourceKey"));
                     }
                 }
@@ -218,30 +236,30 @@ public class TcGdConfigmainController {
                                     + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey"));
                     }else {
                             tempSql1.append("\n left outer join " + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopName")
-                                    + " TU" + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopId")
+                                    + " T" + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopId")
                                     + " on " + mainSourceKey + " = " + " T" + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopId")
                                     + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey"));
                     }
                     // 交集
                     if("N".equals(params.get("userTroopsSelectCP"))&& i == 0){
                         tempSql2.append("\n and  (" + " T" + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopId")
-                                + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey") +" != null ");
+                                + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey") +" is not  null ");
                     }else if("N".equals(params.get("userTroopsSelectCP"))&& i != 0){
                         tempSql2.append(" and " + (" T" + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopId")
-                                + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey") + " != null "));
+                                + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey") + " is not null "));
                     }
 
                     // 并集
                     if("U".equals(params.get("userTroopsSelectCP"))&& i == 0){
                         tempSql2.append("\n and  (" + " T" + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopId")
-                                + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey") + " != null ");
+                                + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey") + " is not null ");
                     }else if("U".equals(params.get("userTroopsSelectCP"))&& i != 0){
                         tempSql2.append(" or " + (" T" + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopId")
-                                + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey") + " != null "));
+                                + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey") + " is not null "));
                     }
 
                 }
-                if (tempSql2.length()!=0 ) {
+                if (userTroopsSelect.size()!=0 ) {
                     tempSql2.append(" ) ");
                 }
 
@@ -259,27 +277,31 @@ public class TcGdConfigmainController {
                                 + "." + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopKey"));
                     }
                     // 交集
-                    if("N".equals(params.get("userTroopsSelectCP"))&& i == 0){
-                        tempSql2.append(" and  not (" + " T" + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopId")
-                                + "." + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopKey") +" != null ");
-                    }else if("N".equals(params.get("userTroopsSelectCP"))&& i != 0){
+                    if("N".equals(params.get("userTroopsDelCP"))&& i == 0){
+                        tempSql2.append("\n and  not (" + " T" + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopId")
+                                + "." + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopKey") +" is not null ");
+                    }else if("N".equals(params.get("userTroopsDelCP"))&& i != 0){
                         tempSql2.append(" and " + (" T" + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopId")
-                                + "." + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopKey") + " != null "));
+                                + "." + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopKey") + " is not null "));
                     }
 
                     // 并集
                     if("U".equals(params.get("userTroopsDelCP"))&& i == 0){
                         tempSql2.append(" \n and  not (" + " T" + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopId")
-                                + "." + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopKey") + " != null ");
+                                + "." + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopKey") + " is not null ");
                     }else if("U".equals(params.get("userTroopsDelCP"))&& i != 0){
                         tempSql2.append(" or " + (" T" + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopId")
-                                + "." + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopKey") + " != null "));
+                                + "." + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopKey") + " is not null "));
                     }
                 }
-
-                if (tempSql1.length()!=0 ){
-                    flowValue4.append(tempSql1+" \n where 1=1  "+tempSql2 + ")");
+                if (userTroopsSelect.size()!=0 ) {
+                    tempSql2.append(" ) ");
                 }
+
+
+                // if (tempSql1.length()!=0 ){
+                    flowValue4.append(tempSql1+" \n where 1=1  "+tempSql2 );
+               // }
                 tcGdConfigflow.setFlowName("用户群配置");
                 tcGdConfigflow.setFlowKey("userTroopConfig");
                 tcGdConfigflow.setFlowSort("1002");
@@ -293,10 +315,29 @@ public class TcGdConfigmainController {
 
 
                 for (int i = 0; i < condTagsSelect.size(); i++) {
-                    flowValue4.append(JSONUtil.getJSONFromString(condTagsSelect.get(i).toString()).get("unionType")
-                         + " "   + JSONUtil.getJSONFromString(condTagsSelect.get(i).toString()).get("leftBracket")
-                            + ""
+                    flowValue4.append("\n" +JSONUtil.getJSONFromString(condTagsSelect.get(i).toString()).get("unionType")
+                            + " "   + JSONUtil.getJSONFromString(condTagsSelect.get(i).toString()).getOrDefault("leftBracket","")
+                            + "T"+JSONUtil.getJSONFromString(condTagsSelect.get(i).toString()).get("tagFromId")
+                            + "."+JSONUtil.getJSONFromString(condTagsSelect.get(i).toString()).get("tagName")
+                            + " "+JSONUtil.getJSONFromString(condTagsSelect.get(i).toString()).get("operateType")
+                            + " "+JSONUtil.getJSONFromString(condTagsSelect.get(i).toString()).getOrDefault("value","")
+                            + " "+JSONUtil.getJSONFromString(condTagsSelect.get(i).toString()).getOrDefault("rightBracket","")
                     );
+                }
+
+                // 排除条件,
+                for (int i = 0; i < condTagsDel.size(); i++) {
+                    flowValue4.append("\n" + (i == 0 ? " and not ( ":JSONUtil.getJSONFromString(condTagsDel.get(i).toString()).get("unionType"))
+                            + " "   + JSONUtil.getJSONFromString(condTagsDel.get(i).toString()).getOrDefault("leftBracket","")
+                            + "T"+JSONUtil.getJSONFromString(condTagsDel.get(i).toString()).get("tagFromId")
+                            + "."+JSONUtil.getJSONFromString(condTagsDel.get(i).toString()).get("tagName")
+                            + " "+JSONUtil.getJSONFromString(condTagsDel.get(i).toString()).get("operateType")
+                            + " "+JSONUtil.getJSONFromString(condTagsDel.get(i).toString()).getOrDefault("value","")
+                            + " "+JSONUtil.getJSONFromString(condTagsDel.get(i).toString()).getOrDefault("rightBracket","")
+                    );
+                }
+                if (condTagsDel.size()!=0 ) {
+                    flowValue4.append(" ) ");
                 }
 
                 tcGdConfigflow.setFlowName("数据源条件配置");
@@ -312,8 +353,8 @@ public class TcGdConfigmainController {
                 flowValue5.append(" ,\"userOtherTag\": "+ userOtherTag+"}");
 
                 //sql生成
-                 tempSql1 = new StringBuffer(" select ");
-                 tempSql2 = new StringBuffer(" select ");
+                 tempSql1 = new StringBuffer("select ");
+                 tempSql2 = new StringBuffer("select ");
 
                 for (int i = 0; i < dataSourceTag.size(); i++) {
                     tempSql1=tempSql1.append(" '"+JSONUtil.getJSONFromString(dataSourceTag.get(i).toString()).get("tagNameZh")+"' ,");
@@ -379,10 +420,21 @@ public class TcGdConfigmainController {
         return flowId;
     }
 
-    private String getExecSql(){
+    private String getExecSql(String taskId){
+        TcGdConfigmain tcGdConfigmain = tcGdConfigmainService.findById(taskId);
+        String showSql= tcGdConfigflowService.findById(tcGdConfigmain.getShowFlowId()).getFlowValue4();
+        String fromSql= tcGdConfigflowService.findById(tcGdConfigmain.getSourceFlowId()).getFlowValue4();
+        String joinSql= tcGdConfigflowService.findById(tcGdConfigmain.getTroopFlowId()).getFlowValue4();
+        String condSql= tcGdConfigflowService.findById(tcGdConfigmain.getCondFlowId()).getFlowValue4();
+        String execSql="";
 
+        if(null==fromSql||"".equals(fromSql)||null==showSql||"".equals(showSql)){
+            execSql="";
+        }else {
+            execSql=showSql+fromSql+joinSql+condSql;
+        }
 
-        return null;
+        return execSql;
     }
 
     public String getMainSourceKey() {
