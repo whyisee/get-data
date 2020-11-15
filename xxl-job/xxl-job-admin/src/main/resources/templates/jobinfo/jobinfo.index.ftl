@@ -391,6 +391,7 @@ exit 0
 		</div>
 	</div>
 </div>
+<div id="mountNode"></div>
 
 <#-- trigger -->
 <div class="modal fade" id="jobTriggerModal" tabindex="-1" role="dialog"  aria-hidden="true">
@@ -426,6 +427,7 @@ exit 0
         </div>
     </div>
 </div>
+<script src="https://gw.alipayobjects.com/os/lib/antv/g6/3.8.4/dist/g6.min.js"></script>
 
 <@netCommon.commonScript />
 <!-- DataTables -->

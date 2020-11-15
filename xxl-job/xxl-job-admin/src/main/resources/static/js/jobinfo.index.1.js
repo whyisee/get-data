@@ -1,5 +1,183 @@
 $(function() {
 
+	//图
+	const data = {
+		nodes: [
+			{
+				id: '0',
+				label: '0',
+			},
+			{
+				id: '1',
+				label: '1',
+			},
+			{
+				id: '2',
+				label: '2',
+			},
+			{
+				id: '3',
+				label: '3',
+			},
+			{
+				id: '4',
+				label: '4',
+			},
+			{
+				id: '5',
+				label: '5',
+			},
+			{
+				id: '6',
+				label: '6',
+			},
+			{
+				id: '7',
+				label: '7',
+			},
+			{
+				id: '8',
+				label: '8',
+			},
+			{
+				id: '9',
+				label: '9',
+			},
+		],
+		edges: [
+			{
+				source: '0',
+				target: '1',
+			},
+			{
+				source: '0',
+				target: '2',
+			},
+			{
+				source: '1',
+				target: '4',
+			},
+			{
+				source: '0',
+				target: '3',
+			},
+			{
+				source: '3',
+				target: '4',
+			},
+			{
+				source: '4',
+				target: '5',
+			},
+			{
+				source: '4',
+				target: '6',
+			},
+			{
+				source: '5',
+				target: '7',
+			},
+			{
+				source: '5',
+				target: '8',
+			},
+			{
+				source: '8',
+				target: '9',
+			},
+			{
+				source: '2',
+				target: '9',
+			},
+			{
+				source: '3',
+				target: '9',
+			},
+		],
+	};
+	const width = document.getElementById('mountNode').scrollWidth;
+	const height = document.getElementById('mountNode').scrollHeight || 500;
+	const graph = new G6.Graph({
+		container: 'mountNode',
+		width,
+		height,
+		fitView: true,
+		modes: {
+			default: ['drag-canvas', 'drag-node'],
+		},
+		layout: {
+			type: 'dagre',
+			rankdir: 'LR',
+			align: 'UL',
+			controlPoints: true,
+			nodesepFunc: () => 1,
+			ranksepFunc: () => 1,
+		},
+		defaultNode: {
+			size: [30, 20],
+			type: 'rect',
+			style: {
+				lineWidth: 2,
+				stroke: '#5B8FF9',
+				fill: '#C6E5FF',
+			},
+		},
+		defaultEdge: {
+			type: 'polyline',
+			size: 1,
+			color: '#e2e2e2',
+			style: {
+				endArrow: {
+					path: 'M 0,0 L 8,4 L 8,-4 Z',
+					fill: '#e2e2e2',
+				},
+				radius: 20,
+			},
+		},
+	});
+	G6.registerBehavior('activate-node', {
+		getDefaultCfg() {
+			return {
+				multiple: true
+			};
+		},
+		getEvents() {
+			return {
+				'node:click': 'onNodeClick',
+				'canvas:click': 'onCanvasClick'
+			};
+		},
+		onNodeClick(e) {
+			const graph = this.graph;
+			const item = e.item;
+			if (item.hasState('active')) {
+				graph.setItemState(item, 'active', false);
+				return;
+			}
+			// this 上即可取到配置，如果不允许多个 'active'，先取消其他节点的 'active' 状态
+			if (!this.multiple) {
+				this.removeNodesState();
+			}
+			// 置点击的节点状态 'active' 为 true
+			graph.setItemState(item, 'active', true);
+		},
+		onCanvasClick(e) {
+			// shouldUpdate 可以由用户复写，返回 true 时取消所有节点的 'active' 状态，即将 'active' 状态置为 false
+			if (this.shouldUpdate(e)) {
+				removeNodesState();
+			}
+		},
+		removeNodesState() {
+			graph.findAllByState('node', 'active').forEach(node => {
+				graph.setItemState(node, 'active', false);
+			});
+		}
+	});
+
+
+	graph.data(data); // 读取 Step 2 中的数据源到图上
+	graph.render(); // 渲染图
+
 	// init date tables
 	var jobTable = $("#job_list").dataTable({
 		"deferRender": true,

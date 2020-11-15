@@ -159,6 +159,12 @@ export const asyncRoutes = [
     meta: { title: '任务管理', icon: 'form' },
     children: [
       {
+        name: 'xxl-job',
+        path: 'http://localhost:8080/xxl-job-admin/',
+        // component: () => import('@/views/nested/menu2/index'),
+        meta: { title: 'xxl-job' }
+      },
+      {
         path: 'getDataTask',
         name: 'getDataTask',
         component: () => import('@/views/nested/menu2/index'),

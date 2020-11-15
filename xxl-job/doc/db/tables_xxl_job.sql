@@ -117,3 +117,14 @@ INSERT INTO `xxl_job_lock` ( `lock_name`) VALUES ( 'schedule_lock');
 
 commit;
 
+
+# - 增加路由表
+
+CREATE TABLE `xxl_job_info_route`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `work_id` int(11) NOT NULL COMMENT 'flow/task id',
+  `begin_id` int(11) NOT NULL COMMENT '起点',
+   `end_id` int(11) NOT NULL COMMENT '终点',
+   `status` varchar(2) NOT NULL COMMENT '状态',
+     PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

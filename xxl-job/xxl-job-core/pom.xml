@@ -77,7 +77,7 @@
 		<repository>
 			<id>internal.repo</id>
 			<name>Internal repo</name>
-			<url>file://F:\maven\ssss\repository</url>
+			<url>file://D:\maven\repository</url>
 		</repository>
 	</distributionManagement>
 </project>

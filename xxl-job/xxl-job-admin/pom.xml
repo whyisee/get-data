@@ -22,7 +22,12 @@
 	</dependencyManagement>
 
 	<dependencies>
-
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
 		<!-- starter-web：spring-webmvc + autoconfigure + logback + yaml + tomcat -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -77,7 +82,7 @@
 	<repositories>
 		<repository>
 			<id>local-repos</id>
-			<url>file://F:\maven\ssss\repository</url>
+			<url>file://D:\maven\repository</url>
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
@@ -86,7 +91,7 @@
 	<distributionManagement>
 		<repository>
 			<id>local-repos</id>
-			<url>file://F:\maven\ssss\repository</url>
+			<url>file://D:\maven\repository</url>
 
 		</repository>
 	</distributionManagement>

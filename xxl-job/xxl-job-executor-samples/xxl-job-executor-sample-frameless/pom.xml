@@ -35,7 +35,7 @@
     <repositories>
         <repository>
             <id>local-repos</id>
-            <url>file://F:\maven\ssss\repository</url>
+            <url>file://D:\maven\repository</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
