@@ -89,9 +89,9 @@ export const constantRoutes = [
         ]
       },
       {
-        path: 'table2',
-        name: 'Table2',
-        component: () => import('@/views/table/index'),
+        path: 'usertroop',
+        name: 'UserTroop',
+        component: () => import('@/views/getdata/index'),
         meta: { title: '用户群管理', icon: 'table' },
         children: [
           {
@@ -103,7 +103,7 @@ export const constantRoutes = [
           {
             path: 'listUserTroop',
             name: 'listUserTroop',
-            component: () => import('@/views/nested/menu2/index'),
+            component: () => import('@/views/getdata/userTroop/userTroopList/index'),
             meta: { title: '用户群列表' }
           },
           {
