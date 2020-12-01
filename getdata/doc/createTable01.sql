@@ -1,6 +1,6 @@
 -- 创建数据库
-create database if not exists shetuan;
-use shetuan;
+create database if not exists getdata;
+use getdata;
 
 -- 创建序列
 drop table if exists sequence;
