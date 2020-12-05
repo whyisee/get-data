@@ -1,10 +1,10 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.userTroopId" :placeholder="$t('getdata.taskId')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input v-model="listQuery.taskName" :placeholder="$t('getdata.taskName')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.troopId" :placeholder="$t('getdata.troopId')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.troopNameZh" :placeholder="$t('getdata.troopNameZh')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
 
-      <el-select v-model="listQuery.taskStatus" :placeholder="$t('getdata.taskStatus')" clearable class="filter-item" style="width: 130px">
+      <el-select v-model="listQuery.troopStatus" :placeholder="$t('getdata.troopStatus')" clearable class="filter-item" style="width: 130px">
         <el-option v-for="item in taskStatusOptions" :key="item.key" :label="item.display_name" :value="item.key" />
       </el-select>
 
@@ -27,9 +27,7 @@
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         {{ $t('table.export') }}
       </el-button>
-      <!-- <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        {{ $t('table.reviewer') }}
-      </el-checkbox> -->
+
     </div>
 
     <el-table
@@ -42,23 +40,23 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column :label="$t('getdata.taskId')" prop="taskId" sortable="custom" align="center" width="200" :class-name="getSortClass('taskId')">
+      <el-table-column :label="$t('getdata.troopId')" prop="taskId" sortable="custom" align="center" width="200" :class-name="getSortClass('taskId')">
         <template slot-scope="{row}">
-          <span>{{ row.taskId }}</span>
+          <span>{{ row.troopId }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('getdata.taskName')" width="200" align="center">
+      <el-table-column :label="$t('getdata.troopNameZh')" width="200" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.taskName }}</span>
+          <span>{{ row.troopNameZh }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('getdata.taskStatus')" width="130">
+      <el-table-column :label="$t('getdata.troopStatus')" width="130">
         <template slot-scope="{row}">
-          <span>{{ row.taskStatus | typeFilter }}</span>
+          <span>{{ row.troopStatus | typeFilter }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column v-if="showReviewer" :label="$t('getdata.createPersion')" width="110px" align="center">
+      <el-table-column :label="$t('getdata.createPersion')" width="110px" align="center">
         <template slot-scope="{row}">
           <span style="color:red;">{{ row.createPersion }}</span>
         </template>
@@ -68,43 +66,14 @@
           <span style="color:red;">{{ row.createDate }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('getdata.endTime')" class-name="status-col" width="180">
+      <el-table-column :label="$t('getdata.troopEndDate')" class-name="status-col" width="180">
         <template slot-scope="{row}">
-          <span style="color:red;">{{ row.endTime }}</span>
+          <span style="color:red;">{{ row.troopEndDate }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('getdata.dataNum')" width="99" align="center">
+      <el-table-column :label="$t('getdata.troopNum')" width="99" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.dataNum }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('getdata.actions')" align="left" width="280" class-name="small-padding fixed-width">
-        <template slot-scope="{row,$index}">
-          <el-button size="mini" type="success">
-            <router-link :to="{path:'/dataManager/getdata/createTask',query: {taskId: row.taskId,isEdit:0}} ">
-              {{ $t('getdata.view') }}
-            </router-link>
-
-          </el-button>
-          <el-button v-if="row.taskStatus=='0' || row.taskStatus=='4'" type="primary" size="mini">
-            <router-link :to="{path:'/dataManager/getdata/createTask',query: {taskId: row.taskId,isEdit:1}} ">
-              {{ $t('table.edit') }}
-
-            </router-link>
-          </el-button>
-          <el-button v-if="row.taskStatus=='0'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
-            {{ $t('getdata.submit') }}
-          </el-button>
-          <el-button v-if="row.taskStatus=='1' || row.taskStatus=='2'" size="mini" @click="handleModifyStatus(row,'draft')">
-            {{ $t('getdata.cancel') }}
-          </el-button>
-          <el-button v-if="row.taskStatus=='0' || row.taskStatus=='3'|| row.taskStatus=='4'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            {{ $t('table.delete') }}
-          </el-button>
-          <el-button v-if="row.taskStatus=='20'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            {{ $t('table.download') }}
-          </el-button>
-
+          <span>{{ row.troopNum }}</span>
         </template>
       </el-table-column>
 
@@ -125,7 +94,9 @@
 </template>
 
 <script>
-import { getTaskList, deleteTask } from '@/api/getdata'
+import { deleteTask } from '@/api/getdata'
+import { getUserTroopList } from '@/api/data-source-troop'
+
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -240,7 +211,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      getTaskList(this.listQuery).then(response => {
+      getUserTroopList(this.listQuery).then(response => {
         this.list = response.data.list
         this.total = response.data.total
 
@@ -327,8 +298,8 @@ export default {
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['任务编码', '任务名称', '任务状态', '创建时间', '完成时间']
-        const filterVal = ['taskId', 'taskName', 'taskStatus', 'createDate', 'endTime']
+        const tHeader = ['用户群编码', '用户群名称', '用户群状态', '创建人', '创建时间', '用户群失效时间', '用户群数量']
+        const filterVal = ['troopId', 'troopNameZh', 'ttroopStatus', 'createPersion', 'createDate', 'troopEndDate', 'troopNum']
         const data = this.formatJson(filterVal)
         excel.export_json_to_excel({
           header: tHeader,

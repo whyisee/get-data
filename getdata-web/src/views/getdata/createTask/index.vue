@@ -19,7 +19,7 @@
 
       </sticky>
     </div>
-    <el-form ref="postForm" :model="postForm" :rules="rules" class="form-container">
+    <el-form ref="postForm" :model="postForm" :rules="rules">
 
       <!-- <sticky :z-index="200" :class-name="'sub-navbar '+postForm.status">
 

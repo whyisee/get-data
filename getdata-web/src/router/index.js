@@ -97,7 +97,7 @@ export const constantRoutes = [
           {
             path: 'createUserTroop',
             name: 'createUserTroop',
-            component: () => import('@/views/nested/menu2/index'),
+            component: () => import('@/views/getdata/userTroop/createUserTroop/index'),
             meta: { title: '添加用户群' }
           },
           {

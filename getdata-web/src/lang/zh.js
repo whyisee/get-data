@@ -166,7 +166,12 @@ export default {
     conditionValues: '条件值',
     unionType: '关系',
     leftBracket: '括号',
-    rightBracket: '括号'
+    rightBracket: '括号',
+    troopId: '用户群编码',
+    troopNameZh: '用户群名称',
+    troopStatus: '用户群状态',
+    troopEndDate: '用户群失效时间',
+    troopNum: '用户数量'
 
   },
   example: {
