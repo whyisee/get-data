@@ -11,3 +11,6 @@ INSERT INTO `tc_gd_configmain` VALUES ('11119', '测试9', '1233', '12', '12', '
 INSERT INTO `tc_gd_configmain` VALUES ('111110', '测试10', '1233', '12', '12', '12', '12', '12', '12', '12', '12', 'd', '1,2', '', 'file', '123', '0', '20201025', '20201025', '1', '1233', 'admin', '20201025', NULL, NULL);
 INSERT INTO `tc_gd_configmain` VALUES ('111111', '测试11', '1233', '12', '12', '12', '12', '12', '12', '12', '12', 'd', '1,2', '', 'file', '123', '0', '20201025', '20201025', '1', '1233', 'admin', '20201025', NULL, NULL);
 INSERT INTO `tc_gd_configmain` VALUES ('11118', '测试8', '1233', '12', '12', '12', '12', '12', '12', '12', '12', 'd', '1,2', '', 'file', '123', '0', '20201025', '20201025', '1', '1233', 'admin', '20201025', NULL, NULL);
+
+
+INSERT INTO `tc_auth_user` VALUES ('1000000', 'admin', 'admin', 'admin', '1', NULL, NULL, NULL, 'e10adc3949ba59abbe56e057f20f883e', '1', NULL, 'admin', NULL, NULL, NULL, NULL, NULL, '1', NULL, NULL, NULL, NULL, NULL);
