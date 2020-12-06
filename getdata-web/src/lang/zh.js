@@ -171,7 +171,8 @@ export default {
     troopNameZh: '用户群名称',
     troopStatus: '用户群状态',
     troopEndDate: '用户群失效时间',
-    troopNum: '用户数量'
+    troopNum: '用户数量',
+    createType: '数据来源类型'
 
   },
   example: {

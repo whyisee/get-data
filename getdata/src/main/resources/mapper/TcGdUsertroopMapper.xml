@@ -40,7 +40,7 @@ troop_id,troop_name,troop_name_zh,troop_from,troop_type,troop_num,troop_status,t
     and status='1'
     <if test="troopId != null and troopId !=''"> and  troop_id in  ( #{troopId} ) </if>
     <if test="troopName != null and troopName !=''"> and  troop_name= #{troopName} </if>
-    <if test="troopNameZh != null and troopNameZh !=''"> and  troop_name_zh= #{troopNameZh} </if>
+    <if test="troopNameZh != null and troopNameZh !=''"> and  troop_name_zh like  concat('%',#{troopNameZh},'%')</if>
     <if test="troopFrom != null and troopFrom !=''"> and  troop_from= #{troopFrom} </if>
     <if test="troopType != null and troopType !=''"> and  troop_type= #{troopType} </if>
     <if test="troopNum != null and troopNum !=''"> and  troop_num= #{troopNum} </if>

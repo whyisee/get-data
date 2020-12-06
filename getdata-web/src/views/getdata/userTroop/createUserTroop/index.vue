@@ -11,6 +11,13 @@
               </MDinput>
             </el-form-item>
           </el-col>
+          <el-col :span="24">
+            <el-form-item label="数据来源类型:" class="postInfo-container-item">
+              <el-select v-model="postForm.createType" :placeholder="$t('getdata.createType')" clearable class="filter-item" style="width: 200px">
+                <el-option v-for="item in createTypeOptions" :key="item.key" :label="item.label" :value="item.key" />
+              </el-select>
+            </el-form-item>
+            </el-form-itemlabel="执行周期:"></el-col>
         </el-row>
       </div>
     </el-form>
@@ -56,7 +63,12 @@ export default {
       postForm: defaultForm,
       rules: {
         troopNameZh: [{ validator: validateRequire, message: '用户群名称为必填项!' }]
-      }
+      },
+      createTypeOptions: [
+        { label: '文件导入', key: 'file' },
+        { label: '自助取数', key: 'getdata' },
+        { label: '文件接口', key: 'interface' },
+        { label: '关联数据源', key: 'datasouce' }]
     }
   }
 }
