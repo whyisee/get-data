@@ -76,7 +76,38 @@
           <span>{{ row.troopNum }}</span>
         </template>
       </el-table-column>
+      <el-table-column :label="$t('getdata.actions')" align="left" width="280" class-name="small-padding fixed-width">
+        <template slot-scope="{row,$index}">
+          <el-button size="mini" type="success">
+            <router-link :to="{path:'/dataManager/getdata/createTask',query: {taskId: row.taskId,isEdit:0}} ">
+              {{ $t('getdata.view') }}
+            </router-link>
 
+          </el-button>
+          <el-button type="primary" size="mini">
+            <router-link :to="{path:'/dataManager/getdata/createTask',query: {taskId: row.taskId,isEdit:1}} ">
+              {{ $t('table.edit') }}
+
+            </router-link>
+          </el-button>
+          <el-button v-if="row.taskStatus=='0'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
+            {{ $t('getdata.submit') }}
+          </el-button>
+          <el-button v-if="row.taskStatus=='1' || row.taskStatus=='2'" size="mini" @click="handleModifyStatus(row,'draft')">
+            {{ $t('getdata.cancel') }}
+          </el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(row,$index)">
+            {{ $t('table.delete') }}
+          </el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(row,$index)">
+            {{ $t('table.download') }}
+          </el-button>
+          <!-- <el-button size="mini" type="primary" @click="handleDelete(row,$index)">
+            {{ $t('getdata.copy') }}
+          </el-button> -->
+
+        </template>
+      </el-table-column>
     </el-table>
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
