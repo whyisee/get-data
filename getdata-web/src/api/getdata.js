@@ -31,6 +31,13 @@ export function deleteTask(data) {
   })
 }
 
+export function downloadTask(data) {
+  return request({
+    url: '/file/download' + '?fileName='+data.taskId,
+    method: 'get'
+  })
+}
+
 export function getFlowId(data) {
   return request({
     url: '/common/seq',

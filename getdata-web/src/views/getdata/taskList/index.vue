@@ -101,6 +101,7 @@
           <el-button v-if="row.taskStatus=='0' || row.taskStatus=='3'|| row.taskStatus=='4'" size="mini" type="danger" @click="handleDelete(row,$index)">
             {{ $t('table.delete') }}
           </el-button>
+          
           <el-button v-if="row.taskStatus=='20'" size="mini" type="danger" @click="handleDelete(row,$index)">
             {{ $t('table.download') }}
           </el-button>
@@ -163,7 +164,9 @@
 </template>
 
 <script>
-import { getTaskList, deleteTask } from '@/api/getdata'
+import { getTaskList, deleteTask,downloadTask } from '@/api/getdata'
+
+
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -354,7 +357,8 @@ export default {
       this.list.splice(index, 1)
       this.listLoading = true
       console.log(row)
-      deleteTask(row).then(response => {
+      // http://10.0.2.52:8089/getdata/file/download?fileName=test
+      downloadTask(row).then(response => {
         // Just to simulate the time of the request
         setTimeout(() => {
           this.listLoading = false

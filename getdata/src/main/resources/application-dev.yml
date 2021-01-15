@@ -5,9 +5,9 @@ spring:
     enabled: true
     cache: false
   datasource:
-    url: jdbc:mysql://localhost:3306/getdata?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
-    username: root
-    password: root123
+    url: jdbc:mysql://172.16.70.20:3306/engineering?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
+    username: rd_user
+    password: NTHXDF7czYwi
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     show-sql: true
@@ -36,7 +36,7 @@ logging:
           dao: debug
 
 server:
-  port: 8181
+  port: 8089
   servlet:
     context-path: /getdata
     session:
@@ -45,8 +45,9 @@ server:
 
 file:
   upload:
-    url: "F:\\data\\test"
+    url: "/"
     maxFileSize: "1MB"
     maxRequestSize: "10MB"
   download:
-    url: "F:\\data\\test"
+ #   url: "/data/get_data/"
+    url: "D:\\Users\\zoukehui\\data\\"

@@ -360,23 +360,31 @@ public class TcGdConfigmainController {
                     tempSql1=tempSql1.append(" '"+JSONUtil.getJSONFromString(dataSourceTag.get(i).toString()).get("tagNameZh")+"' ,");
                     tempSql2=tempSql2.append(" T"+JSONUtil.getJSONFromString(dataSourceTag.get(i).toString()).get("tagFromId")+"."
                             +JSONUtil.getJSONFromString(dataSourceTag.get(i).toString()).get("tagName")+" ,");
+                    flowValue3.append(JSONUtil.getJSONFromString(dataSourceTag.get(i).toString()).get("tagNameZh")+" ,");
+
                 }
                 for (int i = 0; i < userTroopTag.size(); i++) {
                     tempSql1=tempSql1.append(" '"+JSONUtil.getJSONFromString(userTroopTag.get(i).toString()).get("tagNameZh")+"' ,");
                     tempSql2=tempSql2.append(" T"+JSONUtil.getJSONFromString(userTroopTag.get(i).toString()).get("tagFromId")+"."
                             +JSONUtil.getJSONFromString(userTroopTag.get(i).toString()).get("tagName")+" ,");
+                    flowValue3.append(JSONUtil.getJSONFromString(userTroopTag.get(i).toString()).get("tagNameZh")+" ,");
+
                 }
                 for (int i = 0; i < userOtherTag.size(); i++) {
                     tempSql1=tempSql1.append(" '"+JSONUtil.getJSONFromString(userOtherTag.get(i).toString()).get("tagNameZh")+"' ,");
                     tempSql2=tempSql2.append(" '"+JSONUtil.getJSONFromString(userOtherTag.get(i).toString()).get("tagValue")+"' ,");
+                    flowValue3.append(JSONUtil.getJSONFromString(userOtherTag.get(i).toString()).get("tagNameZh")+" ,");
+
                 }
 
 
                 tempSql1.deleteCharAt(tempSql1.length() - 1);
                 tempSql2.deleteCharAt(tempSql2.length() - 1);
-
-                flowValue4=tempSql1.append(" from dual \n union all \n "+tempSql2);
-
+                // 字段类型问题,去掉表头
+                //flowValue4=tempSql1.append(" from dual \n union all \n "+tempSql2);
+                // 增加表头单独字段
+                flowValue4=tempSql2;
+                flowValue3.deleteCharAt(flowValue3.length() - 1);
 
                 tcGdConfigflow.setFlowName("展示指标配置");
                 tcGdConfigflow.setFlowKey("showTagConfig");

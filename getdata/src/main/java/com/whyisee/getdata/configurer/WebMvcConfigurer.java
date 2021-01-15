@@ -153,12 +153,12 @@ public class WebMvcConfigurer extends WebMvcConfigurerAdapter {
 
                     //判断路径需要拦截
                     //....code
-                    if(null==token||"".equals(token)){
-                        result.setCode(ResultCode.UNAUTHORIZED).setMessage("未登陆");
-                        responseResult(response, result);
-                        return false;
-
-                    }
+//                    if(null==token||"".equals(token)){
+//                        result.setCode(ResultCode.UNAUTHORIZED).setMessage("未登陆");
+//                        responseResult(response, result);
+//                        return false;
+//
+//                    }
                     //如果token有效
                     if(!TokenUtils.isExpire(token)){
                         TcAuthUser user = TokenUtils.parseToken(token);
