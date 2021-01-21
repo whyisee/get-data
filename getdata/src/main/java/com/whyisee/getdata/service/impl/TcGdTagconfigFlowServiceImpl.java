@@ -20,5 +20,6 @@ public class TcGdTagconfigFlowServiceImpl extends AbstractService<TcGdTagconfigF
     @Resource
     private TcGdTagconfigFlowMapper tcGdTagconfigFlowMapper;
     public List<TcGdTagconfigFlow> search(TcGdTagconfigFlow model){return tcGdTagconfigFlowMapper.search(model);}
+    public void deleteAllCon(TcGdTagconfigFlow model){ tcGdTagconfigFlowMapper.delete(model);}
 
 }

@@ -7,7 +7,6 @@
     -->
     <result column="task_id" jdbcType="VARCHAR" property="taskId" />
     <result column="task_name" jdbcType="VARCHAR" property="taskName" />
-    <result column="flow_id" jdbcType="VARCHAR" property="flowId" />
     <result column="exec_type" jdbcType="VARCHAR" property="execType" />
     <result column="exec_sql" jdbcType="VARCHAR" property="execSql" />
     <result column="source_flow_id" jdbcType="VARCHAR" property="sourceFlowId" />
@@ -17,8 +16,7 @@
     <result column="exec_flow_id" jdbcType="VARCHAR" property="execFlowId" />
     <result column="data_flow_id" jdbcType="VARCHAR" property="dataFlowId" />
     <result column="cycle_type" jdbcType="VARCHAR" property="cycleType" />
-    <result column="cycle_value" jdbcType="VARCHAR" property="cycleValue" />
-    <result column="cycle_end_date" jdbcType="VARCHAR" property="cycleEndDate" />
+    <result column="exec_time" jdbcType="VARCHAR" property="execTime" />
 
     <result column="data_file" jdbcType="VARCHAR" property="dataFile" />
     <result column="data_num" jdbcType="VARCHAR" property="dataNum" />
@@ -34,8 +32,8 @@
   </resultMap>
 
   <sql id="Base_Column_List">
-  task_id,task_name,flow_id,exec_type,exec_sql,source_flow_id,troop_flow_id,cond_flow_id,show_flow_id
-  ,exec_flow_id,data_flow_id,cycle_type,cycle_value,cycle_end_date,data_file,data_num,task_status
+  task_id,task_name,exec_type,exec_sql,source_flow_id,troop_flow_id,cond_flow_id,show_flow_id
+  ,exec_flow_id,data_flow_id,cycle_type,exec_time,data_file,data_num,task_status
   ,begin_time,end_time,status,remark,create_persion,create_date,update_persion,update_date
   </sql>
   <select id="search" parameterType="com.whyisee.getdata.model.TcGdConfigmain" resultMap="BaseResultMap">
@@ -46,7 +44,6 @@
     and status='1'
     <if test="    taskId!= null and taskId != '' ">and   task_id  =  #{taskId}  </if>
     <if test="    taskName!= null and taskName != '' ">and    task_name like  concat('%',#{taskName},'%')   </if>
-    <if test="    flowId!= null and flowId != '' ">and    flow_id = #{flowId}</if>
     <if test="    execType!= null and execType != '' ">and   exec_type  = #{execType} </if>
     <if test="    execSql!= null and execSql != '' ">and    exec_sql   =    #{execSql}  </if>
     <if test="    sourceFlowId!= null and sourceFlowId != '' ">and   source_flow_id =#{sourceFlowId}  </if>
@@ -56,8 +53,7 @@
     <if test="    execFlowId!= null and execFlowId != '' ">and    exec_flow_id=    #{execFlowId}    </if>
     <if test="    dataFlowId!= null and dataFlowId != '' ">and   data_flow_id  =    #{dataFlowId}   </if>
     <if test="    cycleType!= null and cycleType != '' ">and   cycle_type = #{cycleType}  </if>
-    <if test="    cycleValue!= null and cycleValue != '' ">and   cycle_value   =#{cycleValue}  </if>
-    <if test="    cycleEndDate!= null and cycleEndDate != '' ">and   cycle_end_date   =#{cycleEndDate}  </if>
+    <if test="    cycleEndDate!= null and execTime != '' ">and   exec_time   =#{execTime}  </if>
 
     <if test="    dataFile!= null and dataFile != '' ">and    data_file    =    #{dataFile}   </if>
     <if test="    dataNum!= null and dataNum != '' ">and    data_num  = #{dataNum} </if>

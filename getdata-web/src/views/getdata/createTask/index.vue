@@ -239,7 +239,8 @@
               </el-form-item>
 
             </el-col>
-
+          </el-row>
+          <el-row>
             <el-col :span="8">
               <el-form-item label-width="120px" label="执行周期:" class="postInfo-container-item">
                 <el-select v-model="postForm.cycleType" :placeholder="$t('getdata.cycleType')" clearable class="filter-item" style="width: 200px">
@@ -247,24 +248,56 @@
                 </el-select>
               </el-form-item>
             </el-col>
+            <el-col :span="8 ">
+              <el-form-item label-width="120px" label="执行时间:" class="postInfo-container-item">
+                <el-time-picker
+                  v-model="postForm.execTime"
+                  align="right"
+                  type="time"
+                  format="HH:mm:ss"
+                  value-format="HH:mm:ss"
 
-            <el-col :span="8">
-              <el-form-item label-width="120px" label="周期执行日:" :class="(postForm.cycleType == 'O'||postForm.cycleType == 'D') ? 'display-none' :'postInfo-container-item'">
-                <el-input v-model="postForm.cycleValue" :placeholder="$t('getdata.cycleValue')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+                  placeholder="执行时间"
+                  :picker-options="pickerOptions"
+                  style="width: 200px"
+                />
               </el-form-item>
             </el-col>
+          </el-row>
+          <el-row>
 
             <el-col :span="8 ">
-              <el-form-item label-width="120px" label="周期结束时间:" :class="postForm.cycleType == 'O' ? 'display-none' :'postInfo-container-item' ">
+              <el-form-item label-width="120px" label="周期开始日期:" :class="postForm.cycleType == 'O' ? 'display-none' :'postInfo-container-item' ">
+                <el-date-picker
+                  v-model="postForm.cycleBeginDate"
+                  align="right"
+                  type="datetime"
+                  format="yyyy-MM-dd"
+                  value-format="yyyy-MM-dd"
+
+                  placeholder="周期开始日期"
+                  :picker-options="pickerOptions"
+                  style="width: 200px"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="8 ">
+              <el-form-item label-width="120px" label="周期结束日期:" :class="postForm.cycleType == 'O' ? 'display-none' :'postInfo-container-item' ">
                 <el-date-picker
                   v-model="postForm.cycleEndDate"
                   align="right"
                   type="datetime"
-                  format="yyyy-MM-dd HH:mm:ss"
-                  placeholder="周期结束时间"
+                  format="yyyy-MM-dd"
+                  value-format="yyyy-MM-dd"
+
+                  placeholder="周期结束日期"
                   :picker-options="pickerOptions"
                   style="width: 200px"
                 />
+              </el-form-item></el-col>
+            <el-col :span="8">
+              <el-form-item label-width="120px" label="周期执行日:" :class="(postForm.cycleType == 'O'||postForm.cycleType == 'D') ? 'display-none' :'postInfo-container-item'">
+                <el-input v-model="postForm.cycleValue" :placeholder="$t('getdata.cycleValue')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
               </el-form-item>
             </el-col>
           </el-row>
@@ -298,7 +331,8 @@
                   v-model="postForm.troopEndDate"
                   align="right"
                   type="datetime"
-                  format="yyyy-MM-dd HH:mm:ss"
+                  format="yyyy-MM-dd"
+                  value-format="yyyy-MM-dd"
                   placeholder="用户群失效时间"
                   :picker-options="pickerOptions"
                   style="width: 200px;"
@@ -309,11 +343,18 @@
             <el-col :span="8">
               <el-form-item label-width="120px" label="对接接口:" :class="saveTypes.indexOf('I')==-1 ? 'display-none' :'postInfo-container-item'">
                 <el-select v-model="postForm.interType" :placeholder="$t('getdata.interType')" clearable class="filter-item" style="width: 200px">
-                  <el-option v-for="item in fileTypeOptions" :key="item" :label="item" :value="item" />
+                  <el-option v-for="item in interfaceOptions" :key="item.key" :label="item.label" :value="item.key" />
+
                 </el-select>
               </el-form-item>
             </el-col>
 
+            <el-col :span="8">
+              <el-form-item label-width="120px" label="收件人:" :class="saveTypes.indexOf('M')==-1 ? 'display-none' :'postInfo-container-item'">
+                <el-input v-model="postForm.receivers" :placeholder="$t('getdata.receivers')" style="width: 200px;" class="filter-item" />
+
+              </el-form-item>
+            </el-col>
           </el-row>
 
           <el-row>
@@ -369,10 +410,10 @@
         </el-card>
 
         <div :class="isEdit == '0' ? 'display-none' :'submit-view' ">
-          <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm">
+          <el-button v-loading="loading" style="margin-left: 10px;" type="success" @click="submitForm('1')">
             提交
           </el-button>
-          <el-button v-loading="loading" type="warning" @click="submitForm">
+          <el-button v-loading="loading" type="warning" @click="submitForm('0')">
             保存
           </el-button>
         </div>
@@ -401,7 +442,7 @@ const defaultForm = {
   taskName: '', // 任务名称
   taskStatus: '0', // 任务状态 默认-草稿
   remark: '', // 说明备注
-  execType: 'mysql', // 执行数据库-开发时默认mysql
+  execType: 'clickhouse', // 执行数据库-开发时默认mysql
   cycleType: 'O', // 周期类型-默认-一次性执行
   fileType: 'csv', // 下载文件类型,默认-csv
   fileSeparator: ',', // 文件分隔符,默认-逗号
@@ -440,7 +481,7 @@ export default {
       // postForm: Object.assign({}, defaultForm),
       loading: false,
       userListOptions: [],
-      execTypeOptions: ['mysql', 'hive'],
+      execTypeOptions: ['clickhouse', 'mysql', 'hive'],
       saveTypes: ['D'],
 
       cycleTypeOptions: [
@@ -448,8 +489,10 @@ export default {
         { label: '每天执行', key: 'D' },
         { label: '每月执行', key: 'M' },
         { label: '每周执行', key: 'W' }],
-      saveTypeOptions: [{ key: 'D', label: '下载' }, { key: 'U', label: '用户群' }, { key: 'I', label: '接口' }],
+      saveTypeOptions: [{ key: 'D', label: '下载' }, { key: 'U', label: '用户群' }, { key: 'I', label: '接口' }, { key: 'M', label: '邮件' }],
       fileTypeOptions: ['csv', 'txt'],
+      interfaceOptions: [{ key: 'A', label: 'AS系统' }, { key: 'B', label: '黑鸟' }],
+
       fileSeparatorOptions: [',', '|'],
       fileSplitOptions: [{ label: '不拆分', key: 'N' }, { label: '按条数拆分', key: 'L' }, { label: '按大小拆分', key: 'S' }],
       zipTypeOptions: ['zip', 'rar', '7z', 'gz'],
@@ -477,7 +520,7 @@ export default {
       inputValue: '',
       pickerOptions: {
         disabledDate(time) {
-          return time.getTime() < Date.now()
+          return time.getTime() < Date.now() - 3600 * 1000 * 24
         },
         shortcuts: [{
           text: '今天',
@@ -597,12 +640,25 @@ export default {
         })
 
         // 执行配置
+        data = { 'flowId': this.postForm.execFlowId, 'parentFlowId': id, 'flow_key': 'execFlowConfig' }
+        getConfigFlow(data).then(response => {
+          if (response.data.list[0].flowValue5 !== '') {
+            var execFlowConfig = JSON.parse(response.data.list[0].flowValue5).execConfig
+            console.log(execFlowConfig)
+            this.$set(this.postForm, 'cycleType', execFlowConfig.cycleType)
+            this.$set(this.postForm, 'execType', execFlowConfig.execType)
+            this.$set(this.postForm, 'execTime', execFlowConfig.execTime)
+            this.$set(this.postForm, 'cycleEndDate', execFlowConfig.cycleEndDate)
+            this.$set(this.postForm, 'cycleBeginDate', execFlowConfig.cycleBeginDate)
+            this.$set(this.postForm, 'cycleValue', execFlowConfig.cycleValue)
+          }
+        })
 
         // 结果配置
         data = { 'flowId': this.postForm.dataFlowId, 'parentFlowId': id, 'flow_key': 'dataFlowConfig' }
         getConfigFlow(data).then(response => {
           var dataConfig = JSON.parse(response.data.list[0].flowValue5).dataConfig
-          console.log(dataConfig.saveTypes)
+          // console.log(dataConfig.saveTypes)
 
           this.saveTypes = dataConfig.saveTypes
           // this.postForm.troopEndDate = dataConfig.troopEndDate
@@ -614,6 +670,7 @@ export default {
           this.$set(this.postForm, 'fileSeparator', dataConfig.fileSeparator)
           this.$set(this.postForm, 'zipType', dataConfig.zipType)
           this.$set(this.postForm, 'zipEncryption', dataConfig.zipEncryption)
+          this.$set(this.postForm, 'receivers', dataConfig.receivers)
         })
       }).catch(err => {
         console.log(err)
@@ -665,9 +722,10 @@ export default {
         }, 1 * 1000)
       })
     },
-    submitForm() {
+    submitForm(obj) {
       this.$refs.postForm.validate(valid => {
         if (valid) {
+          this.postForm.taskStatus = obj
           // 保存用户群信息
           this.postForm.userTroopsSelect = this.userTroopsSelect
           this.postForm.userTroopsSelectCP = this.$refs.UserTroopsSelect.complaxType
@@ -686,8 +744,10 @@ export default {
           // 执行配置
           this.postForm.execConfig = {
             'execType': this.postForm.execType,
+            'execTime': this.postForm.execTime,
             'cycleType': this.postForm.cycleType,
             'cycleValue': this.postForm.cycleValue,
+            'cycleBeginDate': this.postForm.cycleBeginDate,
             'cycleEndDate': this.postForm.cycleEndDate
           }
 
@@ -699,6 +759,7 @@ export default {
           this.postForm.dataConfig.troopEndDate = this.postForm.troopEndDate
           this.postForm.dataConfig.interType = this.postForm.interType
           this.postForm.dataConfig.fileSplit = this.postForm.fileSplit
+          this.postForm.dataConfig.receivers = this.postForm.receivers
 
           this.postForm.dataConfig.fileSplitValue = this.postForm.fileSplitValue
           this.postForm.dataConfig.fileType = this.postForm.fileType

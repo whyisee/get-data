@@ -133,16 +133,16 @@ import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 const taskStatusOptions = [
-  { key: '0', display_name: '草稿' },
-  { key: '1', display_name: '已提交' },
-  { key: '2', display_name: '执行中' },
-  { key: '3', display_name: '已完成' },
-  { key: '4', display_name: '异常' },
-  { key: '10', display_name: '审批中' },
-  { key: '11', display_name: '未通过' },
-  { key: '20', display_name: '可下载' }
+  { key: '1', display_name: '未处理' },
+  { key: '2', display_name: '处理中' },
+  { key: '3', display_name: '处理失败' },
+  { key: '4', display_name: '未生效' },
+  { key: '5', display_name: '生效中' },
+  { key: '6', display_name: '已失效' }
 
 ]
+// 未处理,处理中, 处理失败, 未生效,生效中,已失效
+// 1,2,3,4,5,6
 
 // arr to obj, such as { CN : "China", US : "USA" }
 const taskStatusKeyValue = taskStatusOptions.reduce((acc, cur) => {

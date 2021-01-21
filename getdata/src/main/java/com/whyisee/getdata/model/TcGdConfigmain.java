@@ -17,11 +17,6 @@ public class TcGdConfigmain {
     @Column(name = "task_name")
     private String taskName;
 
-    /**
-     * 任务流程编码
-     */
-    @Column(name = "flow_id")
-    private String flowId;
 
     /**
      * 执行引擎
@@ -77,17 +72,10 @@ public class TcGdConfigmain {
     @Column(name = "cycle_type")
     private String cycleType;
 
-    /**
-     * 周期执行项
-     */
-    @Column(name = "cycle_value")
-    private String cycleValue;
 
 
-
-
-    @Column(name = "cycle_end_date")
-    private String cycleEndDate;
+    @Column(name = "exec_time")
+    private String execTime;
     /**
      * 最新结果文件
      */
@@ -188,23 +176,6 @@ public class TcGdConfigmain {
         this.taskName = taskName;
     }
 
-    /**
-     * 获取任务流程编码
-     *
-     * @return flow_id - 任务流程编码
-     */
-    public String getFlowId() {
-        return flowId;
-    }
-
-    /**
-     * 设置任务流程编码
-     *
-     * @param flowId 任务流程编码
-     */
-    public void setFlowId(String flowId) {
-        this.flowId = flowId;
-    }
 
     /**
      * 获取执行引擎
@@ -368,23 +339,6 @@ public class TcGdConfigmain {
         this.cycleType = cycleType;
     }
 
-    /**
-     * 获取周期执行项
-     *
-     * @return cycle_value - 周期执行项
-     */
-    public String getCycleValue() {
-        return cycleValue;
-    }
-
-    /**
-     * 设置周期执行项
-     *
-     * @param cycleValue 周期执行项
-     */
-    public void setCycleValue(String cycleValue) {
-        this.cycleValue = cycleValue;
-    }
 
     /**
      * 获取最新结果文件
@@ -585,10 +539,10 @@ public class TcGdConfigmain {
     }
 
     public String getCycleEndDate() {
-        return cycleEndDate;
+        return execTime;
     }
 
-    public void setCycleEndDate(String cycleEndDate) {
-        this.cycleEndDate = cycleEndDate;
+    public void setCycleEndDate(String execTime) {
+        this.execTime = execTime;
     }
 }

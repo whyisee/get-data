@@ -7,20 +7,22 @@ import com.whyisee.getdata.configurer.ConfigFactory;
 import com.whyisee.getdata.core.Result;
 import com.whyisee.getdata.core.ResultGenerator;
 import com.whyisee.getdata.dao.ManageSqlTools;
-import com.whyisee.getdata.model.TcAuthUser;
-import com.whyisee.getdata.model.TcGdConfigflow;
-import com.whyisee.getdata.model.TcGdConfigmain;
-import com.whyisee.getdata.model.TcGdDatasource;
+import com.whyisee.getdata.model.*;
 import com.whyisee.getdata.service.TcGdConfigflowService;
 import com.whyisee.getdata.service.TcGdConfigmainService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.whyisee.getdata.service.TcGdTagconfigFlowService;
+import com.whyisee.getdata.service.TcGdUsertroopService;
 import com.whyisee.utils.DateUtils;
 import com.whyisee.utils.JSONUtil;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +40,11 @@ public class TcGdConfigmainController {
     @Resource
     private TcGdConfigflowService tcGdConfigflowService;
 
+    @Resource
+    private TcGdTagconfigFlowService tcGdTagconfigFlowService;
 
+    @Resource
+    private TcGdUsertroopService tcGdUsertroopService;
 
     private  String mainSourceKey = "";
 
@@ -56,12 +62,12 @@ public class TcGdConfigmainController {
 
         //需增加获取多个序列id方法 SELECT NEXTVAL('seq_common_id') from tc_gd_configflow limit 5;
         String taskId= manageSqlTools.getSeqId(ConfigFactory.SEQ_COMMON_ID);
-        String sourceFlowId= saveFlow(taskId,"dataSource",params ,"");
-        String troopFlowId=saveFlow(taskId,"userTroop",params ,"");
-        String condFlowId=saveFlow(taskId,"condTag",params ,"");
-        String showFlowId=saveFlow(taskId,"showTag",params ,"");
-        String execFlowId=saveFlow(taskId,"execFlow",params ,"");
-        String dataFlowId=saveFlow(taskId,"dataFlow",params ,"");
+        String sourceFlowId= saveFlow(taskId,"dataSource",params ,"",currentUser);
+        String troopFlowId=saveFlow(taskId,"userTroop",params ,"",currentUser);
+        String condFlowId=saveFlow(taskId,"condTag",params ,"",currentUser);
+        String showFlowId=saveFlow(taskId,"showTag",params ,"",currentUser);
+        String execFlowId=saveFlow(taskId,"execFlow",params ,"",currentUser);
+        String dataFlowId=saveFlow(taskId,"dataFlow",params ,"",currentUser);
         String execSql="";
 
         tcGdConfigmain.setSourceFlowId(sourceFlowId);
@@ -109,12 +115,12 @@ public class TcGdConfigmainController {
          */
         TcGdConfigmain tcGdConfigmain = JSONUtil.toBean((JSONObject.toJSONString(params)), TcGdConfigmain.class);
 
-        saveFlow(tcGdConfigmain.getTaskId(),"dataSource",params,tcGdConfigmain.getSourceFlowId());
-        saveFlow(tcGdConfigmain.getTaskId(),"userTroop",params ,tcGdConfigmain.getTroopFlowId());
-        saveFlow(tcGdConfigmain.getTaskId(),"condTag",params ,tcGdConfigmain.getCondFlowId());
-        saveFlow(tcGdConfigmain.getTaskId(),"showTag",params ,tcGdConfigmain.getShowFlowId());
-        saveFlow(tcGdConfigmain.getTaskId(),"execFlow",params ,tcGdConfigmain.getExecFlowId());
-        saveFlow(tcGdConfigmain.getTaskId(),"dataFlow",params ,tcGdConfigmain.getDataFlowId());
+        saveFlow(tcGdConfigmain.getTaskId(),"dataSource",params,tcGdConfigmain.getSourceFlowId(),currentUser);
+        saveFlow(tcGdConfigmain.getTaskId(),"userTroop",params ,tcGdConfigmain.getTroopFlowId(),currentUser);
+        saveFlow(tcGdConfigmain.getTaskId(),"condTag",params ,tcGdConfigmain.getCondFlowId(),currentUser);
+        saveFlow(tcGdConfigmain.getTaskId(),"showTag",params ,tcGdConfigmain.getShowFlowId(),currentUser);
+        saveFlow(tcGdConfigmain.getTaskId(),"execFlow",params ,tcGdConfigmain.getExecFlowId(),currentUser);
+        saveFlow(tcGdConfigmain.getTaskId(),"dataFlow",params ,tcGdConfigmain.getDataFlowId(),currentUser);
         String execSql="";
 
         tcGdConfigmainService.update(tcGdConfigmain);
@@ -165,7 +171,7 @@ public class TcGdConfigmainController {
     }
 
 
-    private String saveFlow(String taskId,String flowType,Map<String,Object> params,String flowId){
+    private String saveFlow(String taskId,String flowType,Map<String,Object> params,String flowId,TcAuthUser currentUser)  {
         /**
          * saveFlow is  保存流程配置方法,使代码简洁
          *
@@ -179,8 +185,9 @@ public class TcGdConfigmainController {
 
         tcGdConfigflow.setParentFlowId(taskId);
         tcGdConfigflow.setStatus("1");
-        tcGdConfigflow.setCreatePersion("admin");
+        tcGdConfigflow.setCreatePersion(currentUser.getLoginName());
         tcGdConfigflow.setCreateDate(DateUtils.getDateTimeFormat(new Date()));
+
 
         StringBuffer flowValue1 = new StringBuffer();
         StringBuffer flowValue2 = new StringBuffer();
@@ -189,6 +196,7 @@ public class TcGdConfigmainController {
         StringBuffer flowValue5 = new StringBuffer(); //原始json--先暂时使用保存时候解析成sql,后期可以单独开发解析程序
         String mainSourceKey=getMainSourceKey();
         JSONObject jsonObject =JSONUtil.getJSONFromString((JSONObject.toJSONString(params)));
+        String createPerson = currentUser.getLoginName();
 
         switch (flowType){
             case "dataSource" :
@@ -226,6 +234,7 @@ public class TcGdConfigmainController {
 
                 StringBuffer tempSql1 = new StringBuffer("");
                 StringBuffer tempSql2 = new StringBuffer("");
+                jsonObject.getJSONObject("result");
 
 
                 for (int i = 0; i < userTroopsSelect.size(); i++) {
@@ -243,19 +252,19 @@ public class TcGdConfigmainController {
                     // 交集
                     if("N".equals(params.get("userTroopsSelectCP"))&& i == 0){
                         tempSql2.append("\n and  (" + " T" + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopId")
-                                + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey") +" is not  null ");
+                                + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey") +"  <> '' ");
                     }else if("N".equals(params.get("userTroopsSelectCP"))&& i != 0){
                         tempSql2.append(" and " + (" T" + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopId")
-                                + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey") + " is not null "));
+                                + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey") + "  <> '' "));
                     }
 
                     // 并集
                     if("U".equals(params.get("userTroopsSelectCP"))&& i == 0){
                         tempSql2.append("\n and  (" + " T" + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopId")
-                                + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey") + " is not null ");
+                                + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey") + "  <> '' ");
                     }else if("U".equals(params.get("userTroopsSelectCP"))&& i != 0){
                         tempSql2.append(" or " + (" T" + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopId")
-                                + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey") + " is not null "));
+                                + "." + JSONUtil.getJSONFromString(userTroopsSelect.get(i).toString()).get("troopKey") + "  <> '' "));
                     }
 
                 }
@@ -279,22 +288,22 @@ public class TcGdConfigmainController {
                     // 交集
                     if("N".equals(params.get("userTroopsDelCP"))&& i == 0){
                         tempSql2.append("\n and  not (" + " T" + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopId")
-                                + "." + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopKey") +" is not null ");
+                                + "." + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopKey") +"  <> '' ");
                     }else if("N".equals(params.get("userTroopsDelCP"))&& i != 0){
                         tempSql2.append(" and " + (" T" + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopId")
-                                + "." + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopKey") + " is not null "));
+                                + "." + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopKey") + "  <> '' "));
                     }
 
                     // 并集
                     if("U".equals(params.get("userTroopsDelCP"))&& i == 0){
                         tempSql2.append(" \n and  not (" + " T" + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopId")
-                                + "." + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopKey") + " is not null ");
+                                + "." + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopKey") + " <> '' ");
                     }else if("U".equals(params.get("userTroopsDelCP"))&& i != 0){
                         tempSql2.append(" or " + (" T" + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopId")
-                                + "." + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopKey") + " is not null "));
+                                + "." + JSONUtil.getJSONFromString(userTroopsDel.get(i).toString()).get("troopKey") + "  <> '' "));
                     }
                 }
-                if (userTroopsSelect.size()!=0 ) {
+                if (userTroopsSelect.size()!=0 && userTroopsDel.size()>0) {
                     tempSql2.append(" ) ");
                 }
 
@@ -356,21 +365,94 @@ public class TcGdConfigmainController {
                  tempSql1 = new StringBuffer("select ");
                  tempSql2 = new StringBuffer("select ");
 
+                //此处增加是否生成客户群处理 dataConfig.saveTypes
+                //
+                boolean isAddTroop= params.get("taskStatus").equals("1")&& jsonObject.getJSONObject("dataConfig").getString("saveTypes").contains("U");
+                if(isAddTroop){
+                    // 先删除
+                    tcGdUsertroopService.deleteById(taskId);
+                    TcGdTagconfigFlow tcGdTagconfigFlow = new TcGdTagconfigFlow();
+                    tcGdTagconfigFlow.setTagFromId(taskId);
+                    tcGdTagconfigFlowService.deleteAllCon(tcGdTagconfigFlow);
+                    // System.out.println(jsonObject.getJSONObject("dataConfig").getString("troopEndDate"));
+                    TcGdUsertroop tcGdUsertroop = new TcGdUsertroop();
+                    tcGdUsertroop.setTroopId(taskId);
+                    //客户群名称规则暂时 user_troop_${troop_id}
+                    //先配置基本信息 后续扩展
+                    tcGdUsertroop.setTroopName("user_troop_"+taskId);
+                    tcGdUsertroop.setTroopNameZh(params.get("taskName").toString());
+                    tcGdUsertroop.setTroopFrom("getdata");
+                    tcGdUsertroop.setTroopStatus("1");
+                    tcGdUsertroop.setTroopKey("T"+taskId+"_"+getMainSourceKey().split("\\.")[1]);
+                    tcGdUsertroop.setTroopBeginDate(DateUtils.getDateTimeFormat(new Date()));
+                    String utcTime = jsonObject.getJSONObject("dataConfig").getString("troopEndDate");
+                    System.out.println("test==>"+utcTime);
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.000Z'");
+
+                    Date after = null;
+                    try {
+                        after = df.parse(utcTime);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    df.applyPattern("yyyy-MM-dd HH:mm:ss");
+                    tcGdUsertroop.setTroopEndDate( df.format(after));
+                    //后续修改
+                    tcGdUsertroop.setCreatePersion(createPerson);
+                    tcGdUsertroop.setCreateDate(DateUtils.getDateTimeFormat(new Date()));
+                    tcGdUsertroop.setStatus("1");
+                    tcGdUsertroopService.save(tcGdUsertroop);
+
+                }
+
+
+
+
                 for (int i = 0; i < dataSourceTag.size(); i++) {
                     tempSql1=tempSql1.append(" '"+JSONUtil.getJSONFromString(dataSourceTag.get(i).toString()).get("tagNameZh")+"' ,");
                     tempSql2=tempSql2.append(" T"+JSONUtil.getJSONFromString(dataSourceTag.get(i).toString()).get("tagFromId")+"."
-                            +JSONUtil.getJSONFromString(dataSourceTag.get(i).toString()).get("tagName")+" ,");
+                            +JSONUtil.getJSONFromString(dataSourceTag.get(i).toString()).get("tagName")+" as "
+                            +"T"+taskId+"_"+JSONUtil.getJSONFromString(dataSourceTag.get(i).toString()).get("tagName")+" ,");
                     flowValue3.append(JSONUtil.getJSONFromString(dataSourceTag.get(i).toString()).get("tagNameZh")+" ,");
+
+                    //增加用户群标签
+                    if(isAddTroop){
+                        TcGdTagconfigFlow tcGdTagconfigFlow = new TcGdTagconfigFlow();
+                        tcGdTagconfigFlow.setTagId( manageSqlTools.getSeqId(ConfigFactory.SEQ_COMMON_ID));
+                        tcGdTagconfigFlow.setTagName("T"+taskId+"_"+JSONUtil.getJSONFromString(dataSourceTag.get(i).toString()).get("tagName").toString());
+                        tcGdTagconfigFlow.setTagNameZh(JSONUtil.getJSONFromString(dataSourceTag.get(i).toString()).get("tagNameZh").toString());
+                        tcGdTagconfigFlow.setTagFromId(taskId);
+                        tcGdTagconfigFlow.setCreateDate(DateUtils.getDateTimeFormat(new Date()));
+                        tcGdTagconfigFlow.setCreatePersion(createPerson);
+                        tcGdTagconfigFlow.setStatus("1");
+                        tcGdTagconfigFlowService.save(tcGdTagconfigFlow);
+                    }
+
 
                 }
                 for (int i = 0; i < userTroopTag.size(); i++) {
                     tempSql1=tempSql1.append(" '"+JSONUtil.getJSONFromString(userTroopTag.get(i).toString()).get("tagNameZh")+"' ,");
                     tempSql2=tempSql2.append(" T"+JSONUtil.getJSONFromString(userTroopTag.get(i).toString()).get("tagFromId")+"."
-                            +JSONUtil.getJSONFromString(userTroopTag.get(i).toString()).get("tagName")+" ,");
+                            +JSONUtil.getJSONFromString(userTroopTag.get(i).toString()).get("tagName")+" as "
+                            +"T"+taskId+"_" + i + " ,");
                     flowValue3.append(JSONUtil.getJSONFromString(userTroopTag.get(i).toString()).get("tagNameZh")+" ,");
+
+                    if(isAddTroop){
+                        TcGdTagconfigFlow tcGdTagconfigFlow = new TcGdTagconfigFlow();
+                        tcGdTagconfigFlow.setTagId( manageSqlTools.getSeqId(ConfigFactory.SEQ_COMMON_ID));
+                        tcGdTagconfigFlow.setTagName("T"+taskId+"_" + i );
+                        tcGdTagconfigFlow.setTagNameZh(JSONUtil.getJSONFromString(userTroopTag.get(i).toString()).get("tagNameZh").toString());
+                        tcGdTagconfigFlow.setTagFromId(taskId);
+                        tcGdTagconfigFlow.setCreateDate(DateUtils.getDateTimeFormat(new Date()));
+                        tcGdTagconfigFlow.setCreatePersion(createPerson);
+                        tcGdTagconfigFlow.setStatus("1");
+                        tcGdTagconfigFlowService.save(tcGdTagconfigFlow);
+                    }
 
                 }
                 for (int i = 0; i < userOtherTag.size(); i++) {
+                    // 自定义标签未实现
                     tempSql1=tempSql1.append(" '"+JSONUtil.getJSONFromString(userOtherTag.get(i).toString()).get("tagNameZh")+"' ,");
                     tempSql2=tempSql2.append(" '"+JSONUtil.getJSONFromString(userOtherTag.get(i).toString()).get("tagValue")+"' ,");
                     flowValue3.append(JSONUtil.getJSONFromString(userOtherTag.get(i).toString()).get("tagNameZh")+" ,");
@@ -395,9 +477,17 @@ public class TcGdConfigmainController {
                 tcGdConfigflow.setFlowName("执行配置");
                 tcGdConfigflow.setFlowKey("execFlowConfig");
                 tcGdConfigflow.setFlowSort("1005");
+                JSONObject execJson= jsonObject.getJSONObject("execConfig");
+
+                flowValue1.append(execJson.getString("cycleBeginDate"));
+                flowValue2.append(execJson.getString("cycleEndDate"));
+                flowValue3.append(execJson.getString("cycleValue"));
+
                 break;
 
             case "dataFlow":
+                //增加用户群生成处理逻辑
+                //
                 flowValue5.append("{ \"dataConfig\": "+ jsonObject.get("dataConfig")+"}");
                 tcGdConfigflow.setFlowName("结果配置");
                 tcGdConfigflow.setFlowKey("dataFlowConfig");

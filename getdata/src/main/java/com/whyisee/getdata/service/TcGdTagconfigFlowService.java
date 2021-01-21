@@ -9,5 +9,6 @@ import java.util.List;
  */
 public interface TcGdTagconfigFlowService extends Service<TcGdTagconfigFlow> {
     List<TcGdTagconfigFlow> search(TcGdTagconfigFlow model);
+    void deleteAllCon(TcGdTagconfigFlow model);
 
 }
