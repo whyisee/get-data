@@ -1,22 +1,8 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.troopId" :placeholder="$t('getdata.troopId')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-input v-model="listQuery.troopNameZh" :placeholder="$t('getdata.troopNameZh')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-
-      <el-select v-model="listQuery.troopStatus" :placeholder="$t('getdata.troopStatus')" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in taskStatusOptions" :key="item.key" :label="item.display_name" :value="item.key" />
-      </el-select>
-
-      <el-date-picker
-        v-model="listQuery.createDate"
-        align="right"
-        type="datetime"
-        format="yyyy-MM-dd HH:mm:ss"
-        placeholder="创建时间"
-        :picker-options="pickerOptions"
-        style="width: 180px"
-      />
+      <el-input v-model="listQuery.sourceId" :placeholder="$t('getdata.sourceId')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+      <el-input v-model="listQuery.sourceNameZh" :placeholder="$t('getdata.sourceNameZh')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
 
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         {{ $t('table.search') }}
@@ -40,19 +26,19 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column :label="$t('getdata.troopId')" prop="taskId" sortable="custom" align="center" width="200" :class-name="getSortClass('taskId')">
+      <el-table-column :label="$t('getdata.sourceId')" prop="taskId" sortable="custom" align="center" width="200" :class-name="getSortClass('taskId')">
         <template slot-scope="{row}">
-          <span>{{ row.troopId }}</span>
+          <span>{{ row.sourceId }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('getdata.troopNameZh')" width="200" align="center">
+      <el-table-column :label="$t('getdata.sourceNameZh')" width="200" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.troopNameZh }}</span>
+          <span>{{ row.sourceNameZh }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('getdata.troopStatus')" width="130">
+      <el-table-column :label="$t('getdata.sourceKeyNameZh')" width="200" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.troopStatus | typeFilter }}</span>
+          <span>{{ row.sourceKeyNameZh }}</span>
         </template>
       </el-table-column>
 
@@ -66,36 +52,37 @@
           <span style="color:red;">{{ row.createDate }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('getdata.troopEndDate')" class-name="status-col" width="180">
+
+      <el-table-column :label="$t('getdata.showTagNum')" width="110px" align="center">
         <template slot-scope="{row}">
-          <span style="color:red;">{{ row.troopEndDate }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('getdata.troopNum')" width="99" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.troopNum }}</span>
+          <span>{{ row.showTagNum }}</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('getdata.actions')" align="left" width="280" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button size="mini" type="success">
             <router-link :to="{path:'/dataManager/getdata/createTask',query: {taskId: row.taskId,isEdit:0}} ">
-              {{ $t('getdata.tag') }}
+              {{ $t('getdata.view') }}
             </router-link>
 
           </el-button>
           <el-button type="primary" size="mini">
             <router-link :to="{path:'/dataManager/getdata/createTask',query: {taskId: row.taskId,isEdit:1}} ">
-              {{ $t('getdata.data') }}
+              {{ $t('table.edit') }}
 
             </router-link>
           </el-button>
-
-          <el-button size="mini" type="danger" @click="handleDelete(row,$index)">
-            {{ $t('table.download') }}
+          <el-button v-if="row.taskStatus=='0'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
+            {{ $t('getdata.submit') }}
+          </el-button>
+          <el-button v-if="row.taskStatus=='1' || row.taskStatus=='2'" size="mini" @click="handleModifyStatus(row,'draft')">
+            {{ $t('getdata.cancel') }}
           </el-button>
           <el-button size="mini" type="danger" @click="handleDelete(row,$index)">
             {{ $t('table.delete') }}
+          </el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(row,$index)">
+            {{ $t('table.download') }}
           </el-button>
           <!-- <el-button size="mini" type="primary" @click="handleDelete(row,$index)">
             {{ $t('getdata.copy') }}
@@ -121,7 +108,7 @@
 
 <script>
 import { deleteTask } from '@/api/getdata'
-import { getUserTroopList } from '@/api/data-source-troop'
+import { getDataSourceList } from '@/api/data-source-troop'
 
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
@@ -237,7 +224,7 @@ export default {
   methods: {
     getList() {
       this.listLoading = true
-      getUserTroopList(this.listQuery).then(response => {
+      getDataSourceList(this.listQuery).then(response => {
         this.list = response.data.list
         this.total = response.data.total
 

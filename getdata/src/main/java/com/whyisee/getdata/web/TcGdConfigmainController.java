@@ -385,19 +385,8 @@ public class TcGdConfigmainController {
                     tcGdUsertroop.setTroopStatus("1");
                     tcGdUsertroop.setTroopKey("T"+taskId+"_"+getMainSourceKey().split("\\.")[1]);
                     tcGdUsertroop.setTroopBeginDate(DateUtils.getDateTimeFormat(new Date()));
-                    String utcTime = jsonObject.getJSONObject("dataConfig").getString("troopEndDate");
-                    System.out.println("test==>"+utcTime);
-                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.000Z'");
 
-                    Date after = null;
-                    try {
-                        after = df.parse(utcTime);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-
-                    df.applyPattern("yyyy-MM-dd HH:mm:ss");
-                    tcGdUsertroop.setTroopEndDate( df.format(after));
+                    tcGdUsertroop.setTroopEndDate( jsonObject.getJSONObject("dataConfig").getString("troopEndDate"));
                     //后续修改
                     tcGdUsertroop.setCreatePersion(createPerson);
                     tcGdUsertroop.setCreateDate(DateUtils.getDateTimeFormat(new Date()));

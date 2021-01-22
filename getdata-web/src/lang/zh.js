@@ -159,7 +159,7 @@ export default {
     fileType: '下载文件类型',
     fileSeparator: '分隔符',
     fileSplit: '文件拆分方式',
-    fileSize: '文件条数/大小(MB)',
+    fileSize: '条数/大小(MB)/个数',
     zipType: '压缩方式',
     zipEncryption: '解压密码',
     operateType: '运算符',
@@ -173,7 +173,13 @@ export default {
     troopEndDate: '用户群失效时间',
     troopNum: '用户数量',
     createType: '数据来源类型',
-    receivers: '收件人'
+    receivers: '收件人',
+    sourceId: '数据源编码',
+    sourceNameZh: '数据源名称',
+    showTagNum: '展示指标数量',
+    sourceKeyNameZh: '主键',
+    tag: '标签',
+    data: '数据'
 
   },
   example: {

@@ -60,33 +60,34 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/example/table',
     name: '/DataManager',
-    meta: { title: '数据管理', icon: 'el-icon-s-help' },
+    meta: { title: '数据中心', icon: 'el-icon-s-help' },
     children: [
       {
-        path: 'table1',
-        name: 'Table1',
-        component: () => import('@/views/table/index'),
-        meta: { title: '数据源管理', icon: 'table' },
+        path: 'getdata',
+        name: 'Getdata',
+        component: () => import('@/views/getdata/index'),
+        meta: { title: '自助取数', icon: 'table' },
         children: [
           {
-            path: 'createDataSource',
-            name: 'createDataSource',
-            component: () => import('@/views/nested/menu2/index'),
-            meta: { title: '添加数据源' }
+            path: 'createTask',
+            name: 'CreateTask',
+            component: () => import('@/views/getdata/createTask/index'),
+            meta: { title: '创建取数' }
           },
           {
-            path: 'listDataSource',
-            name: 'listDataSource',
-            component: () => import('@/views/nested/menu2/index'),
-            meta: { title: '数据源列表' }
+            path: 'listTask',
+            component: () => import('@/views/getdata/taskList/index'),
+            name: 'listTask',
+            meta: { title: '任务列表' }
           },
           {
-            path: 'classTagManage',
-            name: 'classTagManage',
-            component: () => import('@/views/nested/menu2/index'),
-            meta: { title: '标签聚合分类' }
+            path: 'managerDownload',
+            component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
+            name: 'ManagerDownload',
+            meta: { title: '下载管理' }
           }
         ]
+
       },
       {
         path: 'usertroop',
@@ -115,31 +116,58 @@ export const constantRoutes = [
         ]
       },
       {
-        path: 'getdata',
-        name: 'Getdata',
+        path: 'tagManager',
+        name: 'TagManager',
         component: () => import('@/views/getdata/index'),
-        meta: { title: '自助取数', icon: 'table' },
+        meta: { title: '标签管理', icon: 'table' },
         children: [
           {
             path: 'createTask',
             name: 'CreateTask',
-            component: () => import('@/views/getdata/createTask/index'),
-            meta: { title: '创建取数' }
+            component: () => import('@/views/getdata/tagManager/index'),
+            meta: { title: '新增标签' }
           },
           {
             path: 'listTask',
-            component: () => import('@/views/getdata/taskList/index'),
+            component: () => import('@/views/getdata/tagManager/tagList/index'),
             name: 'listTask',
-            meta: { title: '任务列表' }
+            meta: { title: '标签列表' }
           },
           {
             path: 'managerDownload',
             component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
             name: 'ManagerDownload',
-            meta: { title: '下载管理' }
+            meta: { title: '标签分类' }
+          },
+          {
+            path: 'managerDownload',
+            component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
+            name: 'ManagerDownload',
+            meta: { title: '用户画像' }
           }
         ]
 
+      },
+      {
+        path: 'dataSource',
+        name: 'DataSource',
+        component: () => import('@/views/getdata/index'),
+        meta: { title: '数据源管理', icon: 'table' },
+        children: [
+          {
+            path: 'createDataSource',
+            name: 'createDataSource',
+            component: () => import('@/views/nested/menu2/index'),
+            meta: { title: '添加数据源' }
+          },
+          {
+            path: 'listDataSource',
+            name: 'listDataSource',
+            component: () => import('@/views/getdata/dataSource/dataSourceList/index'),
+            meta: { title: '数据源列表' }
+          }
+
+        ]
       }
 
     ]
@@ -152,38 +180,38 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
-  {
-    path: '/form',
-    name: 'Form',
-    component: () => import('@/views/form/index'),
-    meta: { title: '任务管理', icon: 'form' },
-    children: [
-      {
-        name: 'xxl-job',
-        path: 'http://localhost:8080/xxl-job-admin/',
-        // component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'xxl-job' }
-      },
-      {
-        path: 'getDataTask',
-        name: 'getDataTask',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: '取数任务' }
-      },
-      {
-        path: 'etlTask',
-        name: 'etlTask',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'ETL任务' }
-      },
-      {
-        path: 'rptTask',
-        name: 'rptTask',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: '报表任务' }
-      }
-    ]
-  },
+  // {
+  //   path: '/form',
+  //   name: 'Form',
+  //   component: () => import('@/views/form/index'),
+  //   meta: { title: '任务管理', icon: 'form' },
+  //   children: [
+  //     {
+  //       name: 'xxl-job',
+  //       path: 'http://localhost:8080/xxl-job-admin/',
+  //       // component: () => import('@/views/nested/menu2/index'),
+  //       meta: { title: 'xxl-job' }
+  //     },
+  //     {
+  //       path: 'getDataTask',
+  //       name: 'getDataTask',
+  //       component: () => import('@/views/nested/menu2/index'),
+  //       meta: { title: '取数任务' }
+  //     },
+  //     {
+  //       path: 'etlTask',
+  //       name: 'etlTask',
+  //       component: () => import('@/views/nested/menu2/index'),
+  //       meta: { title: 'ETL任务' }
+  //     },
+  //     {
+  //       path: 'rptTask',
+  //       name: 'rptTask',
+  //       component: () => import('@/views/nested/menu2/index'),
+  //       meta: { title: '报表任务' }
+  //     }
+  //   ]
+  // },
   {
     path: '/doc',
     component: Layout,

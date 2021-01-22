@@ -324,8 +324,23 @@
           </el-row>
 
           <el-row>
-
             <el-col :span="8 ">
+
+              <el-form-item label-width="120px" label="用户群生效日期:" :class="saveTypes.indexOf('U')==-1 ? 'display-none' :'postInfo-container-item' ">
+                <el-date-picker
+                  v-model="postForm.troopBeginDate"
+                  align="right"
+                  type="datetime"
+                  format="yyyy-MM-dd"
+                  value-format="yyyy-MM-dd"
+                  placeholder="用户群生效时间"
+                  :picker-options="pickerOptions"
+                  style="width: 200px;"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="8 ">
+
               <el-form-item label-width="120px" label="用户群失效日期:" :class="saveTypes.indexOf('U')==-1 ? 'display-none' :'postInfo-container-item' ">
                 <el-date-picker
                   v-model="postForm.troopEndDate"
@@ -339,16 +354,44 @@
                 />
               </el-form-item>
             </el-col>
+          </el-row>
 
+          <el-row>
             <el-col :span="8">
               <el-form-item label-width="120px" label="对接接口:" :class="saveTypes.indexOf('I')==-1 ? 'display-none' :'postInfo-container-item'">
                 <el-select v-model="postForm.interType" :placeholder="$t('getdata.interType')" clearable class="filter-item" style="width: 200px">
                   <el-option v-for="item in interfaceOptions" :key="item.key" :label="item.label" :value="item.key" />
-
                 </el-select>
               </el-form-item>
             </el-col>
-
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label-width="120px" label="分批规则:" :class="postForm.interType=='AIS' && saveTypes.indexOf('I')>=1 ? 'postInfo-container-item' :'display-none' ">
+                <el-select v-model="postForm.inter_partType" placeholder="分批规则" clearable class="filter-item" style="width: 200px">
+                  <el-option v-for="item in partTypeOptions" :key="item.key" :label="item.label" :value="item.key" />
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label-width="120px" label="推送批次:" :class="postForm.interType=='AIS' && saveTypes.indexOf('I')>=1 ? 'postInfo-container-item' :'display-none' ">
+                <el-input v-model="postForm.inter_partValue" placeholder="推送批次" style="width: 200px;" class="filter-item" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="8">
+              <el-form-item label-width="120px" label="id:" :class="postForm.interType=='AIS'&&saveTypes.indexOf('I')>=1 ? 'postInfo-container-item' :'display-none' ">
+                <el-input v-model="postForm.inter_labelId" placeholder="label_id" style="width: 200px;" class="filter-item" />
+              </el-form-item>
+            </el-col>
+            <el-col :span="8">
+              <el-form-item label-width="120px" label="value前缀:" :class="postForm.interType=='AIS'&&saveTypes.indexOf('I')>=1 ? 'postInfo-container-item' :'display-none' ">
+                <el-input v-model="postForm.inter_labelValueHead" placeholder="label_value" style="width: 200px;" class="filter-item" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
             <el-col :span="8">
               <el-form-item label-width="120px" label="收件人:" :class="saveTypes.indexOf('M')==-1 ? 'display-none' :'postInfo-container-item'">
                 <el-input v-model="postForm.receivers" :placeholder="$t('getdata.receivers')" style="width: 200px;" class="filter-item" />
@@ -368,7 +411,7 @@
             </el-col>
 
             <el-col :span="8">
-              <el-form-item label-width="120px" label="文件条数/大小:" :class="postForm.fileSplit === 'N' ? 'display-none' :'postInfo-container-item' ">
+              <el-form-item label-width="120px" label="条数/大小/个数:" :class="postForm.fileSplit === 'N' ? 'display-none' :'postInfo-container-item' ">
                 <el-input v-model="postForm.fileSplitValue" :placeholder="$t('getdata.fileSize')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
               </el-form-item>
             </el-col>
@@ -448,7 +491,10 @@ const defaultForm = {
   fileSeparator: ',', // 文件分隔符,默认-逗号
   fileSplit: 'N', // 文件拆分方式,默认-不拆分
   zipType: 'zip', // 压缩方式,默认-zip
-  dataSourcesSelect: [] // 选择的数据源
+  dataSourcesSelect: [], // 选择的数据源
+  inter_partType: 'HASH'
+
+  // interInfo: {}
 
 }
 export default {
@@ -491,10 +537,11 @@ export default {
         { label: '每周执行', key: 'W' }],
       saveTypeOptions: [{ key: 'D', label: '下载' }, { key: 'U', label: '用户群' }, { key: 'I', label: '接口' }, { key: 'M', label: '邮件' }],
       fileTypeOptions: ['csv', 'txt'],
-      interfaceOptions: [{ key: 'A', label: 'AS系统' }, { key: 'B', label: '黑鸟' }],
+      interfaceOptions: [{ key: 'AIS', label: 'AIS系统' }, { key: 'BB', label: '黑鸟' }],
+      partTypeOptions: [{ key: 'HASH', label: '学员ID HASH' }],
 
       fileSeparatorOptions: [',', '|'],
-      fileSplitOptions: [{ label: '不拆分', key: 'N' }, { label: '按条数拆分', key: 'L' }, { label: '按大小拆分', key: 'S' }],
+      fileSplitOptions: [{ label: '不拆分', key: 'N' }, { label: '按条数拆分', key: 'L' }, { label: '按大小拆分', key: 'S' }, { label: '按个数拆分', key: 'P' }],
       zipTypeOptions: ['zip', 'rar', '7z', 'gz'],
       isEdit: '1',
       rules: {
@@ -509,7 +556,7 @@ export default {
       condTagsDel: [],
       dataSourceTag: [],
       dataShowTag: [],
-
+      inter_partType: '',
       dataSourceTagOptions: [],
       userTroopTag: [],
       userTroopTagOptions: [],
@@ -662,6 +709,7 @@ export default {
 
           this.saveTypes = dataConfig.saveTypes
           // this.postForm.troopEndDate = dataConfig.troopEndDate
+          this.$set(this.postForm, 'troopBeginDate', dataConfig.troopBeginDate)
           this.$set(this.postForm, 'troopEndDate', dataConfig.troopEndDate)
           this.$set(this.postForm, 'interType', dataConfig.interType)
           this.$set(this.postForm, 'fileSplit', dataConfig.fileSplit)
@@ -671,6 +719,14 @@ export default {
           this.$set(this.postForm, 'zipType', dataConfig.zipType)
           this.$set(this.postForm, 'zipEncryption', dataConfig.zipEncryption)
           this.$set(this.postForm, 'receivers', dataConfig.receivers)
+          console.log(dataConfig.interInfo)
+          if (dataConfig.interInfo !== undefined) {
+            var interInfo = dataConfig.interInfo
+            this.$set(this.postForm, 'inter_partType', interInfo.inter_partType)
+            this.$set(this.postForm, 'inter_partValue', interInfo.inter_partValue)
+            this.$set(this.postForm, 'inter_labelId', interInfo.inter_labelId)
+            this.$set(this.postForm, 'inter_labelValueHead', interInfo.inter_labelValueHead)
+          }
         })
       }).catch(err => {
         console.log(err)
@@ -757,6 +813,8 @@ export default {
 
           this.postForm.dataConfig.saveTypes = this.saveTypes
           this.postForm.dataConfig.troopEndDate = this.postForm.troopEndDate
+          this.postForm.dataConfig.troopBeginDate = this.postForm.troopBeginDate
+
           this.postForm.dataConfig.interType = this.postForm.interType
           this.postForm.dataConfig.fileSplit = this.postForm.fileSplit
           this.postForm.dataConfig.receivers = this.postForm.receivers
@@ -766,6 +824,11 @@ export default {
           this.postForm.dataConfig.fileSeparator = this.postForm.fileSeparator
           this.postForm.dataConfig.zipType = this.postForm.zipType
           this.postForm.dataConfig.zipEncryption = this.postForm.zipEncryption
+          this.postForm.dataConfig.interInfo = {}
+          this.postForm.dataConfig.interInfo.inter_partType = this.postForm.inter_partType
+          this.postForm.dataConfig.interInfo.inter_partValue = this.postForm.inter_partValue
+          this.postForm.dataConfig.interInfo.inter_labelId = this.postForm.inter_labelId
+          this.postForm.dataConfig.interInfo.inter_labelValueHead = this.postForm.inter_labelValueHead
 
           if (this.postForm.taskId === '') {
             createTask(this.postForm).then(response => {
@@ -803,6 +866,11 @@ export default {
             duration: 2000
           })
           this.loading = false
+          // 调用全局挂载的方法
+          this.$store.dispatch('tagsView/delView', this.$route)
+          // 返回上一步路由
+          this.$router.go(-1)
+          this.$router.push('/dataManager/getdata/listTask')
         } else {
           console.log('error submit!!')
           return false
