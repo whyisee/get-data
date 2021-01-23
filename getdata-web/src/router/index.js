@@ -85,6 +85,12 @@ export const constantRoutes = [
             component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
             name: 'ManagerDownload',
             meta: { title: '下载管理' }
+          },
+          {
+            path: 'managerInterface',
+            component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
+            name: 'ManagerInterface',
+            meta: { title: '接口管理' }
           }
         ]
 
